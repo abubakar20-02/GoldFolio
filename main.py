@@ -24,16 +24,14 @@ conn = sqlite3.connect('test_database')
 c = conn.cursor()
 
 
-def deleteTable():
+def deleteTable(c):
     c.execute("DROP TABLE User")
 
 
-deleteTable()
+deleteTable(c)
 
 
-def createTable():
-    conn = sqlite3.connect('test_database')
-    c = conn.cursor()
+def createTable(c):
     c.execute('''
           CREATE TABLE IF NOT EXISTS User
           ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL, [Gold] REAL)
@@ -41,10 +39,17 @@ def createTable():
     conn.commit()
 
 
-createTable()
+createTable(c)
 
 
-def insertIntoTable(FName, LName, Money, Gold):
+def deleteRecord(User_ID):
+    c.execute('''
+          DELETE FROM User WHERE User_Id = ?
+          ''', (User_ID,))
+    conn.commit()
+
+
+def insertIntoTable(c, FName, LName, Money, Gold):
     c.execute('''
           INSERT INTO User (User_ID, FirstName,LastName,Money,Gold)
 
@@ -54,13 +59,28 @@ def insertIntoTable(FName, LName, Money, Gold):
     conn.commit()
 
 
-insertIntoTable("Muhammad", "Abubakar", 123.1, 11)
-insertIntoTable("Muhammad", "Abubakar", 123.1, 11)
-insertIntoTable("Muhammad", "Abubakar", 123.1, 11)
+def updateRecord(c, User_ID, Money, Gold):
+    c.execute('''
+          UPDATE User SET Money = ? , Gold = ? WHERE User_ID = ?
+          ''', (Money, Gold, User_ID))
+    conn.commit()
+
+
+insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
+insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
+insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
+deleteRecord("ma1")
+insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 12)
+updateRecord(c, "ma2", 10.1, 10)
 
 c.execute('''
           SELECT * FROM User
           ''')
 
-df = pd.DataFrame(c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money', 'Gold'])
-print(df)
+
+def showTable():
+    df = pd.DataFrame(c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money', 'Gold'])
+    print(df)
+
+
+showTable()
