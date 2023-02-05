@@ -1,5 +1,7 @@
 import sqlite3
 import pandas as pd
+from xlsxwriter import Workbook
+import os
 
 
 def generate_initials(first_name, last_name):
@@ -42,7 +44,7 @@ def createTable(c):
 createTable(c)
 
 
-def deleteRecord(User_ID):
+def deleteRecord(c, User_ID):
     c.execute('''
           DELETE FROM User WHERE User_Id = ?
           ''', (User_ID,))
@@ -69,18 +71,32 @@ def updateRecord(c, User_ID, Money, Gold):
 insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
 insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
 insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 11)
-deleteRecord("ma1")
+deleteRecord(c, "ma1")
 insertIntoTable(c, "Muhammad", "Abubakar", 123.1, 12)
 updateRecord(c, "ma2", 10.1, 10)
+insertIntoTable(c, "Hamza", "Rizwan", 10, 1)
+updateRecord(c, "hr", 12.6, 1234)
+insertIntoTable(c, "Hamza", "Rizwan", 10, 1)
 
-c.execute('''
-          SELECT * FROM User
-          ''')
 
-
-def showTable():
+def showTable(c):
+    c.execute('''
+              SELECT * FROM User
+              ''')
     df = pd.DataFrame(c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money', 'Gold'])
     print(df)
+    convertToExcel(c)
 
 
-showTable()
+def convertToExcel(c):
+    workbook = Workbook('output.xlsx')
+    worksheet = workbook.add_worksheet()
+    c.execute("select * from User")
+    mysel = c.execute("select * from User")
+    for i, row in enumerate(mysel):
+        for j, value in enumerate(row):
+            worksheet.write(i+1, j, value)
+    workbook.close()
+    os.system('output.xlsx')
+
+showTable(c)
