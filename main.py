@@ -20,16 +20,18 @@ class User:
         initials = self.generate_initials(first_name, last_name)
         i = 1
         while True:
-            cursor = self.c
-            cursor.execute("SELECT COUNT(*) FROM User WHERE User_Id = ?", (initials,))
-            count = cursor.fetchone()[0]
+            self.c.execute("SELECT COUNT(*) FROM User WHERE User_Id = ?", (initials,))
+            count = self.c.fetchone()[0]
             if count == 0:
                 return initials
             initials = self.generate_initials(first_name, last_name) + str(i)
             i += 1
 
     def deleteTable(self):
-        self.c.execute("DROP TABLE User")
+        try:
+            self.c.execute("DROP TABLE User")
+        except sqlite3.Error as error:
+            print("Failed to delete record from sqlite table", error)
 
     def createTable(self):
         self.c.execute('''
@@ -81,6 +83,7 @@ class User:
 
 User = User()
 
+User.deleteTable()
 User.deleteTable()
 
 User.createTable()
