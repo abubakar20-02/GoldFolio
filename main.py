@@ -3,11 +3,13 @@ import pandas as pd
 from xlsxwriter import Workbook
 import os
 
+import SetUpFile
+
 
 class User:
     def __init__(self):
         super().__init__()
-        self.conn = sqlite3.connect('test_database')
+        self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
     def generate_initials(self, first_name, last_name):
@@ -66,7 +68,7 @@ class User:
         self.convertToExcel()
 
     def convertToExcel(self):
-        workbook = Workbook('output.xlsx')
+        workbook = Workbook(SetUpFile.ExcelFileName)
         worksheet = workbook.add_worksheet()
         self.c.execute("select * from User")
         mysel = self.c.execute("select * from User")
@@ -74,7 +76,7 @@ class User:
             for j, value in enumerate(row):
                 worksheet.write(i + 1, j, value)
         workbook.close()
-        os.system('output.xlsx')
+        os.system(SetUpFile.ExcelFileName)
 
 
 User = User()
