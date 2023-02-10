@@ -28,6 +28,7 @@ class Investment:
             self.conn.close()
 
     def createTable(self):
+        # date, gold rate, weight
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
@@ -93,7 +94,20 @@ class Investment:
                   SELECT * FROM Investment WHERE User_ID =?
                   ''', (User_ID,))
         self.conn.commit()
-        self.conn.close()
         df = pd.DataFrame(self.c.fetchall(),
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
+        self.conn.close()
         print(df)
+
+    def showProfitLoss(self, GoldRate):
+        self.__SetUpConnection()
+        self.c.execute('''
+                  SELECT User_ID ,Gold,BoughtFor, round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) AS result FROM Investment 
+                  ''', (GoldRate,))
+        self.conn.commit()
+        df = pd.DataFrame(self.c.fetchall(),
+                          columns=['User_ID','Gold(g)', 'BoughtFor', 'Change (%)'])
+        self.conn.close()
+        print("---------------")
+        print(df)
+        print("---------------")
