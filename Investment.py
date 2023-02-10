@@ -12,12 +12,13 @@ class Investment:
         self.c = None
         self.conn = None
 
-    def SetUpConnection(self):
+    # __ makes the method private
+    def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
     def deleteTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
@@ -27,17 +28,17 @@ class Investment:
             self.conn.close()
 
     def createTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
-              ([Investment_ID] VARCHAR PRIMARY KEY, [User_ID] VARCHAR,[Gold] REAL , [BoughtFor] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
         self.conn.close()
 
     def deleteRecord(self, User_ID):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute('''
                   DELETE FROM Investment WHERE User_Id = ?
@@ -48,38 +49,38 @@ class Investment:
         finally:
             self.conn.close()
 
-    def insertIntoTable(self, InvestmentId, UserID, Gold, BoughtFor):
-        self.SetUpConnection()
+    def insertIntoTable(self, InvestmentId, UserID, Gold, Purity, BoughtFor):
+        self.__SetUpConnection()
         try:
             self.c.execute('''
-                  INSERT INTO Investment (Investment_ID, User_ID , Gold ,BoughtFor)
+                  INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor)
 
                         VALUES
-                        (?,?,?,?)
-                  ''', (InvestmentId, UserID, Gold, BoughtFor))
+                        (?,?,?,?,?)
+                  ''', (InvestmentId, UserID, Gold, Purity, BoughtFor))
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def updateRecord(self, User_ID, Money, Gold):
-        self.SetUpConnection()
+    def updateRecord(self, User_ID, Money, Gold, Purity):
+        self.__SetUpConnection()
         self.c.execute('''
-              UPDATE User SET Money = ? , Gold = ? WHERE User_ID = ?
-              ''', (Money, Gold, User_ID))
+              UPDATE User SET Money = ? , Gold = ?, Purity=? WHERE User_ID = ?
+              ''', (Money, Gold, Purity, User_ID))
         self.conn.commit()
         self.conn.close()
 
     def showTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute('''
                       SELECT * FROM Investment
                       ''')
             self.conn.commit()
             df = pd.DataFrame(self.c.fetchall(),
-                              columns=['Investment_ID', 'User_ID', 'Gold', 'BoughtFor'])
+                              columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
             print(df)
         except sqlite3.Error as error:
             print(error)
@@ -87,12 +88,12 @@ class Investment:
             self.conn.close()
 
     def showInvestmentForUser(self, User_ID):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
                   SELECT * FROM Investment WHERE User_ID =?
                   ''', (User_ID,))
         self.conn.commit()
         self.conn.close()
         df = pd.DataFrame(self.c.fetchall(),
-                          columns=['Investment_ID', 'User_ID', 'Gold', 'BoughtFor'])
+                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
         print(df)

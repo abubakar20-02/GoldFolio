@@ -12,7 +12,7 @@ class User:
         self.c = None
         self.conn = None
 
-    def SetUpConnection(self):
+    def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
@@ -32,7 +32,7 @@ class User:
             i += 1
 
     def deleteTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute("DROP TABLE User")
             self.conn.commit()
@@ -42,7 +42,7 @@ class User:
             self.conn.close()
 
     def createTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
               ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL, [Gold] REAL)
@@ -51,7 +51,7 @@ class User:
         self.conn.close()
 
     def deleteRecord(self, User_ID):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute('''DELETE FROM Investment WHERE User_ID = ?''', (User_ID,))
             self.c.execute('''
@@ -65,7 +65,7 @@ class User:
             self.conn.close()
 
     def insertIntoTable(self, FName, LName, Money, Gold):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
           INSERT INTO User (User_ID, FirstName,LastName,Money,Gold)
 
@@ -76,7 +76,7 @@ class User:
         self.conn.close()
 
     def updateRecord(self, User_ID, Money, Gold):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
               UPDATE User SET Money = ? , Gold = ? WHERE User_ID = ?
               ''', (Money, Gold, User_ID))
@@ -84,7 +84,7 @@ class User:
         self.conn.close()
 
     def showTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
             self.c.execute('''
                       SELECT * FROM User
@@ -99,7 +99,7 @@ class User:
         # self.convertToExcel()
 
     def convertToExcel(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         workbook = Workbook(SetUpFile.ExcelFileName)
         worksheet = workbook.add_worksheet()
         self.c.execute("select * from User")
