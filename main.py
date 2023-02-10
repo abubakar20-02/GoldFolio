@@ -11,6 +11,8 @@ User.showTable()
 Investment = Investment()
 Investment.deleteTable()
 Investment.createTable()
+# code to show help
+print(Investment.insertIntoTable.__doc__)
 Investment.insertIntoTable("1","ma",123,21,123)
 Investment.insertIntoTable("2", "ma" , 21,1,1)
 Investment.insertIntoTable("3", "ma",1000,21,20)

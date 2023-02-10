@@ -39,6 +39,7 @@ class Investment:
         self.conn.close()
 
     def deleteRecord(self, User_ID):
+        """Takes in the user ID to delete investment for that ID."""
         self.__SetUpConnection()
         try:
             self.c.execute('''
@@ -51,6 +52,7 @@ class Investment:
             self.conn.close()
 
     def insertIntoTable(self, InvestmentId, UserID, Gold, Purity, BoughtFor):
+        """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         try:
             self.c.execute('''
@@ -66,6 +68,7 @@ class Investment:
             self.conn.close()
 
     def updateRecord(self, User_ID, Money, Gold, Purity):
+        """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
         self.__SetUpConnection()
         self.c.execute('''
               UPDATE User SET Money = ? , Gold = ?, Purity=? WHERE User_ID = ?
@@ -89,6 +92,7 @@ class Investment:
             self.conn.close()
 
     def showInvestmentForUser(self, User_ID):
+        """Show the investment of the given user id"""
         self.__SetUpConnection()
         self.c.execute('''
                   SELECT * FROM Investment WHERE User_ID =?
