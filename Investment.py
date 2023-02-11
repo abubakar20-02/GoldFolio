@@ -32,7 +32,7 @@ class Investment:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
-              ([Investment_ID] VARCHAR PRIMARY KEY, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
@@ -56,23 +56,23 @@ class Investment:
         self.__SetUpConnection()
         try:
             self.c.execute('''
-                  INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor)
+                  INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
 
                         VALUES
-                        (?,?,?,?,?)
-                  ''', (InvestmentId, UserID, Gold, Purity, BoughtFor))
+                        (?,?,?,?,?,?)
+                  ''', (InvestmentId, UserID, Gold, Purity, BoughtFor, 0.00))
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def updateRecord(self, User_ID, Money, Gold, Purity):
+    def updateRecord(self, User_ID, Money, Gold, Purity, GoldRate):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
         self.__SetUpConnection()
         self.c.execute('''
-              UPDATE User SET Money = ? , Gold = ?, Purity=? WHERE User_ID = ?
-              ''', (Money, Gold, Purity, User_ID))
+              UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID = ?
+              ''', (Money, Gold, Purity, User_ID, GoldRate))
         self.conn.commit()
         self.conn.close()
 
@@ -84,7 +84,7 @@ class Investment:
                       ''')
             self.conn.commit()
             df = pd.DataFrame(self.c.fetchall(),
-                              columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
+                              columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
             print(df)
         except sqlite3.Error as error:
             print(error)
@@ -103,15 +103,34 @@ class Investment:
         self.conn.close()
         print(df)
 
-    def showProfitLoss(self, GoldRate):
+    def updateProfitLoss(self, GoldRate):
+        """Run continuously to update profit/loss"""
         self.__SetUpConnection()
         self.c.execute('''
-                  SELECT User_ID ,Gold,BoughtFor, round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) AS result FROM Investment 
+                  UPDATE Investment SET ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2))
                   ''', (GoldRate,))
         self.conn.commit()
-        df = pd.DataFrame(self.c.fetchall(),
-                          columns=['User_ID','Gold(g)', 'BoughtFor', 'Change (%)'])
         self.conn.close()
-        print("---------------")
+        self.showTable()
+
+    def showProfit(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+                    SELECT * FROM Investment WHERE ProfitLoss>0
+                  ''')
+        self.conn.commit()
+        df = pd.DataFrame(self.c.fetchall(),
+                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
         print(df)
-        print("---------------")
+        self.conn.close()
+
+    def showLoss(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+                    SELECT * FROM Investment WHERE ProfitLoss<0
+                  ''')
+        self.conn.commit()
+        df = pd.DataFrame(self.c.fetchall(),
+                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
+        print(df)
+        self.conn.close()
