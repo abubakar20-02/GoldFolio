@@ -31,6 +31,15 @@ class User:
             initials = self.generate_initials(first_name, last_name) + str(i)
             i += 1
 
+    def createTable(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+              CREATE TABLE IF NOT EXISTS User
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL, [Gold] REAL)
+              ''')
+        self.conn.commit()
+        self.conn.close()
+
     def deleteTable(self):
         self.__SetUpConnection()
         try:
@@ -40,15 +49,6 @@ class User:
             print(error)
         finally:
             self.conn.close()
-
-    def createTable(self):
-        self.__SetUpConnection()
-        self.c.execute('''
-              CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL, [Gold] REAL)
-              ''')
-        self.conn.commit()
-        self.conn.close()
 
     def deleteRecord(self, User_ID):
         self.__SetUpConnection()

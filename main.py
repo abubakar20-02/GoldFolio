@@ -1,5 +1,11 @@
 from User import User
 from Investment import Investment
+from ProfitLoss import Statement
+# start temp db to store commands that are run. so we can backtrack if needed.
+Statement = Statement()
+Statement.deleteTable()
+Statement.createTable()
+Statement.showStatement()
 
 User = User()
 User.deleteTable()
@@ -30,6 +36,8 @@ Investment.insertIntoTable("5", "ma", 1, 21, 21)
 Investment.updateProfitLoss(12)
 User.showTable()
 print("------------------")
-Investment.showProfit()
+# Investment.showProfit()
+Investment.sellAll()
+Statement.showStatement()
 print("------------------")
-Investment.showLoss()
+# Investment.showLoss()

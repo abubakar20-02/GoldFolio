@@ -6,6 +6,7 @@ import os
 import SetUpFile
 
 
+# create a function that can convert excel file to db.
 class Investment:
     def __init__(self):
         super().__init__()
@@ -17,16 +18,6 @@ class Investment:
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
-    def deleteTable(self):
-        self.__SetUpConnection()
-        try:
-            self.c.execute("DROP TABLE Investment")
-            self.conn.commit()
-        except sqlite3.Error as error:
-            print(error)
-        finally:
-            self.conn.close()
-
     def createTable(self):
         # date, gold rate, weight
         self.__SetUpConnection()
@@ -37,6 +28,16 @@ class Investment:
               ''')
         self.conn.commit()
         self.conn.close()
+
+    def deleteTable(self):
+        self.__SetUpConnection()
+        try:
+            self.c.execute("DROP TABLE Investment")
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()
 
     def deleteRecord(self, User_ID):
         """Takes in the user ID to delete investment for that ID."""
@@ -133,4 +134,26 @@ class Investment:
         df = pd.DataFrame(self.c.fetchall(),
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
         print(df)
+        self.conn.close()
+
+    def sellProfit(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+                    INSERT INTO Statement SELECT * FROM Investment WHERE ProfitLoss>0
+                  ''')
+        self.c.execute('''
+                    DELETE FROM Investment WHERE ProfitLoss>0
+                  ''')
+        self.conn.commit()
+        self.conn.close()
+
+    def sellAll(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+                    INSERT INTO Statement SELECT * FROM Investment
+                  ''')
+        self.c.execute('''
+                    DELETE FROM Investment
+                  ''')
+        self.conn.commit()
         self.conn.close()
