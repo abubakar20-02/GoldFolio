@@ -12,6 +12,10 @@ class Statement:
         super().__init__()
         self.c = None
         self.conn = None
+        self.Profile = None
+
+    def setProfile(self, user):
+        self.Profile = user
 
     # __ makes the method private
     def __SetUpConnection(self):
@@ -62,10 +66,11 @@ class Statement:
     def showStatement(self):
         self.__SetUpConnection()
         self.c.execute('''
-                    SELECT * FROM Statement
-                  ''')
+                    SELECT * FROM Statement WHERE User_ID = ?
+                  ''', (self.Profile,))
         self.conn.commit()
         df = pd.DataFrame(self.c.fetchall(),
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
         print(df)
         self.conn.close()
+
