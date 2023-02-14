@@ -1,10 +1,13 @@
 import sqlite3
 import pandas as pd
+import uuid
 from xlsxwriter import Workbook
 import os
 
 import SetUpFile
 
+
+# give user the ability when selling to input manual gold rate too.
 
 # create a function that can convert excel file to db.
 class Investment:
@@ -12,6 +15,10 @@ class Investment:
         super().__init__()
         self.c = None
         self.conn = None
+        self.Profile = None
+
+    def setProfile(self, profile):
+        self.Profile = profile
 
     # __ makes the method private
     def __SetUpConnection(self):
@@ -39,6 +46,7 @@ class Investment:
         finally:
             self.conn.close()
 
+    # need to use investment id to delete
     def deleteRecord(self, User_ID):
         """Takes in the user ID to delete investment for that ID."""
         self.__SetUpConnection()
@@ -52,28 +60,34 @@ class Investment:
         finally:
             self.conn.close()
 
-    def insertIntoTable(self, InvestmentId, UserID, Gold, Purity, BoughtFor):
+    def insertIntoTable(self, Gold, Purity, BoughtFor):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
-        try:
-            self.c.execute('''
-                  INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+        Error = True
+        # loop until there is no error.
+        while Error:
+            Error = False
+            my_uuid = uuid.uuid4()
+            try:
+                self.c.execute('''
+                      INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+    
+                            VALUES
+                            (?,?,?,?,?,?)
+                      ''', (str(my_uuid), self.Profile, Gold, Purity, BoughtFor, 0.00))
+            except sqlite3.Error as error:
+                print(error)
+                Error = True
+        self.conn.commit()
+        self.conn.close()
 
-                        VALUES
-                        (?,?,?,?,?,?)
-                  ''', (InvestmentId, UserID, Gold, Purity, BoughtFor, 0.00))
-            self.conn.commit()
-        except sqlite3.Error as error:
-            print(error)
-        finally:
-            self.conn.close()
-
-    def updateRecord(self, User_ID, Money, Gold, Purity, GoldRate):
+    # need investment id to update.
+    def updateRecord(self, Money, Gold, Purity, GoldRate):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
         self.__SetUpConnection()
         self.c.execute('''
               UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID = ?
-              ''', (Money, Gold, Purity, User_ID, GoldRate))
+              ''', (Money, Gold, Purity, self.Profile, GoldRate))
         self.conn.commit()
         self.conn.close()
 
@@ -92,12 +106,12 @@ class Investment:
         finally:
             self.conn.close()
 
-    def showInvestmentForUser(self, User_ID):
+    def showInvestmentForUser(self):
         """Show the investment of the given user id"""
         self.__SetUpConnection()
         self.c.execute('''
                   SELECT * FROM Investment WHERE User_ID =?
-                  ''', (User_ID,))
+                  ''', (self.Profile,))
         self.conn.commit()
         df = pd.DataFrame(self.c.fetchall(),
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
@@ -136,24 +150,26 @@ class Investment:
         print(df)
         self.conn.close()
 
+    # add user here
     def sellProfit(self):
         self.__SetUpConnection()
         self.c.execute('''
-                    INSERT INTO Statement SELECT * FROM Investment WHERE ProfitLoss>0
-                  ''')
+                    INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
+                  ''', (self.Profile,))
         self.c.execute('''
-                    DELETE FROM Investment WHERE ProfitLoss>0
-                  ''')
+                    DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
+                  ''', (self.Profile,))
         self.conn.commit()
         self.conn.close()
 
+    # add user here
     def sellAll(self):
         self.__SetUpConnection()
         self.c.execute('''
-                    INSERT INTO Statement SELECT * FROM Investment
-                  ''')
+                    INSERT INTO Statement SELECT * FROM Investment WHERE User_ID= ?
+                  ''', (self.Profile,))
         self.c.execute('''
-                    DELETE FROM Investment
-                  ''')
+                    DELETE FROM Investment WHERE User_ID=?
+                  ''', (self.Profile,))
         self.conn.commit()
         self.conn.close()
