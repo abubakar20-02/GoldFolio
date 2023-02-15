@@ -49,13 +49,13 @@ class User:
             Values = self.c.fetchall()
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            self.method_name(Values)
+            self.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def method_name(self, Values):
+    def Archive(self, Values):
         self.a.SetUpConnection()
         try:
 
@@ -76,7 +76,7 @@ class User:
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.method_name(Values)
+            self.Archive(Values)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")

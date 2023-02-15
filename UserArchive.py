@@ -20,14 +20,3 @@ class UserArchive:
               ''')
         self.conn.commit()
         self.conn.close()
-
-    def insertIntoTable(self, UserID, FName, LName, Money):
-        self.SetUpConnection()
-        self.c.execute('''
-          INSERT INTO ArchiveUser (User_ID, FirstName,LastName,Money,Gold)
-
-                VALUES
-                (?,?,?,?,?)
-          ''', (UserID, FName, LName, Money, ))
-        self.conn.commit()
-        self.conn.close()

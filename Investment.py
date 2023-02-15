@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import uuid
+from InvestmentArchive import InvestmentArchive
 from xlsxwriter import Workbook
 import os
 
@@ -16,6 +17,7 @@ class Investment:
         self.c = None
         self.conn = None
         self.Profile = None
+        self.a = InvestmentArchive()
 
     def setProfile(self, profile):
         self.Profile = profile
@@ -39,12 +41,26 @@ class Investment:
     def deleteTable(self):
         self.__SetUpConnection()
         try:
+            self.c.execute("SELECT * FROM Investment")
+            Values = self.c.fetchall()
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
+            self.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
+
+    def Archive(self, Values):
+        self.a.SetUpConnection()
+        try:
+
+            self.a.c.executemany("INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)", Values)
+            self.a.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.a.conn.close()
 
     # need to use investment id to delete
     def deleteRecord(self, User_ID):
@@ -153,6 +169,8 @@ class Investment:
     # add user here
     def sellProfit(self):
         self.__SetUpConnection()
+        self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',(self.Profile,))
+        Values = self.c.fetchall()
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
@@ -160,11 +178,14 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
+        self.Archive(Values)
         self.conn.close()
 
     # add user here
     def sellAll(self):
         self.__SetUpConnection()
+        self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''',(self.Profile,))
+        Values = self.c.fetchall()
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE User_ID= ?
                   ''', (self.Profile,))
@@ -172,4 +193,5 @@ class Investment:
                     DELETE FROM Investment WHERE User_ID=?
                   ''', (self.Profile,))
         self.conn.commit()
+        self.Archive(Values)
         self.conn.close()
