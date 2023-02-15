@@ -2,6 +2,7 @@ import os
 import sqlite3
 
 from xlsxwriter import Workbook
+from UserArchive import UserArchive
 
 import SetUpFile
 import pandas as pd
@@ -11,6 +12,7 @@ class User:
     def __init__(self):
         self.c = None
         self.conn = None
+        self.a = UserArchive()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -35,7 +37,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL, [Gold] REAL)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -43,43 +45,60 @@ class User:
     def deleteTable(self):
         self.__SetUpConnection()
         try:
-            self.c.execute("DROP TABLE User")
+            self.c.execute("SELECT * FROM User")
+            Values = self.c.fetchall()
+            self.c.execute("DELETE FROM User")
             self.conn.commit()
+            self.method_name(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
+    def method_name(self, Values):
+        self.a.SetUpConnection()
+        try:
+
+            self.a.c.executemany("INSERT INTO ArchiveUser(User_ID, FirstName, LastName, Money) VALUES(?,?,?,?)", Values)
+            self.a.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.a.conn.close()
+
     def deleteRecord(self, User_ID):
         self.__SetUpConnection()
         try:
+            self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
+            Values = self.c.fetchall()
             self.c.execute('''DELETE FROM Investment WHERE User_ID = ?''', (User_ID,))
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
+            self.method_name(Values)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
         finally:
             self.conn.close()
 
-    def insertIntoTable(self, FName, LName, Money, Gold):
+    def insertIntoTable(self, FName, LName, Money):
         self.__SetUpConnection()
         self.c.execute('''
-          INSERT INTO User (User_ID, FirstName,LastName,Money,Gold)
+          INSERT INTO User (User_ID, FirstName,LastName,Money)
 
                 VALUES
-                (?,?,?,?,?)
-          ''', (self.generate_unique_initials(FName, LName), FName, LName, Money, Gold))
+                (?,?,?,?)
+          ''', (self.generate_unique_initials(FName, LName), FName, LName, Money))
         self.conn.commit()
         self.conn.close()
 
-    def updateRecord(self, User_ID, Money, Gold):
+    def updateRecord(self, User_ID, Money):
         self.__SetUpConnection()
         self.c.execute('''
-              UPDATE User SET Money = ? , Gold = ? WHERE User_ID = ?
-              ''', (Money, Gold, User_ID))
+              UPDATE User SET Money = ? WHERE User_ID = ?
+              ''', (Money, User_ID))
         self.conn.commit()
         self.conn.close()
 
@@ -90,7 +109,7 @@ class User:
                       SELECT * FROM User
                       ''')
             self.conn.commit()
-            df = pd.DataFrame(self.c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money', 'Gold'])
+            df = pd.DataFrame(self.c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money'])
             print(df)
         except sqlite3.Error as error:
             print(error)
@@ -111,5 +130,3 @@ class User:
         self.conn.commit()
         self.conn.close()
         os.system(SetUpFile.ExcelFileName)
-
-
