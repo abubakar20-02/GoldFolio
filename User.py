@@ -3,6 +3,7 @@ import sqlite3
 
 from xlsxwriter import Workbook
 from UserArchive import UserArchive
+from Log import Log
 
 import SetUpFile
 import pandas as pd
@@ -13,6 +14,7 @@ class User:
         self.c = None
         self.conn = None
         self.a = UserArchive()
+        self.b = Log()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -49,6 +51,7 @@ class User:
             Values = self.c.fetchall()
             self.c.execute("DELETE FROM User")
             self.conn.commit()
+            self.b.insert("User")
             self.Archive(Values)
         except sqlite3.Error as error:
             print(error)

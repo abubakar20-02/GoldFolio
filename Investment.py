@@ -55,7 +55,9 @@ class Investment:
         self.a.SetUpConnection()
         try:
 
-            self.a.c.executemany("INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)", Values)
+            self.a.c.executemany(
+                "INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)",
+                Values)
             self.a.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -169,7 +171,7 @@ class Investment:
     # add user here
     def sellProfit(self):
         self.__SetUpConnection()
-        self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',(self.Profile,))
+        self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
         Values = self.c.fetchall()
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
@@ -184,7 +186,7 @@ class Investment:
     # add user here
     def sellAll(self):
         self.__SetUpConnection()
-        self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''',(self.Profile,))
+        self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
         Values = self.c.fetchall()
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE User_ID= ?
