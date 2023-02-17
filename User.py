@@ -83,9 +83,10 @@ class User:
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.b.insert(id, DB_Code.UD)
-            self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, User_ID)
-            self.a.Archive(Values)
+            if RecordsAffected > 0:
+                self.b.insert(id, DB_Code.UD)
+                self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, User_ID)
+                self.a.Archive(Values)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")

@@ -54,9 +54,10 @@ class Investment:
             RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
-            self.b.insert(id, "DeleteInvestment")
-            self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, None)
-            self.a.Archive(Values)
+            if RecordsAffected > 0:
+                self.b.insert(id, "DeleteInvestment")
+                self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, None)
+                self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
@@ -189,9 +190,10 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
-        self.b.insert(my_uuid, DB_Code.ISP)
-        self.InvestmentLog.DeleteStatement(my_uuid, DB_Code.ISP, RecordsAffected, self.Profile)
-        self.a.Archive(Values)
+        if RecordsAffected > 0:
+            self.b.insert(my_uuid, DB_Code.ISP)
+            self.InvestmentLog.DeleteStatement(my_uuid, DB_Code.ISP, RecordsAffected, self.Profile)
+            self.a.Archive(Values)
         self.conn.close()
 
     # add user here
@@ -209,7 +211,8 @@ class Investment:
                     DELETE FROM Investment WHERE User_ID=?
                   ''', (self.Profile,))
         self.conn.commit()
-        self.b.insert(id, DB_Code.ISA)
-        self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, self.Profile)
-        self.a.Archive(Values)
+        if RecordsAffected > 0:
+            self.b.insert(id, DB_Code.ISA)
+            self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, self.Profile)
+            self.a.Archive(Values)
         self.conn.close()
