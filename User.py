@@ -1,11 +1,13 @@
 import os
 import sqlite3
+import uuid
 
 from xlsxwriter import Workbook
 
 import DB_Code
 from UserArchive import UserArchive
 from Log import Log
+from UserLog import UserLog
 
 import SetUpFile
 import pandas as pd
@@ -17,6 +19,7 @@ class User:
         self.conn = None
         self.a = UserArchive()
         self.b = Log()
+        self.UserLog = UserLog()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -47,13 +50,20 @@ class User:
         self.conn.close()
 
     def deleteTable(self):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User")
             Values = self.c.fetchall()
+            self.c.execute("SELECT COUNT(*) FROM User")
+            RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            self.b.insert(DB_Code.UD)
+            self.b.insert(id, DB_Code.UD)
+            #------------------------------------------------------------
+            self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, None)
+            # ------------------------------------------------------------
+
             self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
@@ -61,16 +71,20 @@ class User:
             self.conn.close()
 
     def deleteRecord(self, User_ID):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
             Values = self.c.fetchall()
+            self.c.execute("SELECT COUNT(*) FROM User WHERE User_ID = ?", (User_ID,))
+            RecordsAffected = self.c.fetchone()[0]
             self.c.execute('''DELETE FROM Investment WHERE User_ID = ?''', (User_ID,))
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.b.insert(DB_Code.UD)
+            self.b.insert(id, DB_Code.UD)
+            self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, User_ID)
             self.a.Archive(Values)
         except Exception as e:
             self.conn.rollback()
@@ -79,6 +93,7 @@ class User:
             self.conn.close()
 
     def insertIntoTable(self, FName, LName, Money):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         self.c.execute('''
           INSERT INTO User (User_ID, FirstName,LastName,Money)
@@ -87,16 +102,19 @@ class User:
                 (?,?,?,?)
           ''', (self.generate_unique_initials(FName, LName), FName, LName, Money))
         self.conn.commit()
-        self.b.insert(DB_Code.UI)
+        self.UserLog.InsertStatement(id, DB_Code.UI, self.generate_unique_initials(FName, LName), FName, LName, Money)
+        self.b.insert(id, DB_Code.UI)
         self.conn.close()
 
     def updateRecord(self, User_ID, Money):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         self.c.execute('''
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
-        self.b.insert(DB_Code.UU)
+        self.b.insert(id, DB_Code.UU)
+        self.UserLog.UpdateStatement(id, DB_Code.UU, User_ID, Money)
         self.conn.close()
 
     def showTable(self):

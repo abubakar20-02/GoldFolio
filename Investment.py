@@ -43,13 +43,14 @@ class Investment:
         self.conn.close()
 
     def deleteTable(self):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM Investment")
             Values = self.c.fetchall()
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
-            self.b.insert("DeleteInvestment")
+            self.b.insert(id,"DeleteInvestment")
             self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
@@ -87,7 +88,7 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?)
                       ''', (str(my_uuid), self.Profile, Gold, Purity, BoughtFor, 0.00))
-                self.b.insert(DB_Code.IB)
+                self.b.insert(str(my_uuid),DB_Code.IB)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
@@ -182,6 +183,7 @@ class Investment:
 
     # add user here
     def sellAll(self):
+        id = str(uuid.uuid4())
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
         Values = self.c.fetchall()
@@ -192,6 +194,6 @@ class Investment:
                     DELETE FROM Investment WHERE User_ID=?
                   ''', (self.Profile,))
         self.conn.commit()
-        self.b.insert(DB_Code.ISA)
+        self.b.insert(id,DB_Code.ISA)
         self.a.Archive(Values)
         self.conn.close()

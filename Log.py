@@ -11,12 +11,12 @@ class Log:
         self.c = None
         self.conn = None
         self.Profile = None
-        # done temporarily to skip the pain of deleting table everytime I run.
-        # self.dropTable()
+        self.uid = None
+        self.TransactionType = None
         self.createTable()
 
-    def setProfile(self, user):
-        self.Profile = user
+    def generateTransactionID(self):
+        self.uid = str(uuid.uuid4())
 
     # __ makes the method private
     def __SetUpConnection(self):
@@ -42,12 +42,23 @@ class Log:
         finally:
             self.conn.close()
 
-    def insert(self, TransactionType):
+    def insert(self, Transaction_ID, TransactionType):
         self.__SetUpConnection()
+        self.generateTransactionID()
+        self.TransactionType = TransactionType
         self.c.execute('''
               INSERT INTO Log (Transaction_ID,TransactionType)
                     VALUES 
                     (?,?)
-              ''', (str(uuid.uuid4()), TransactionType,))
+              ''', (Transaction_ID, TransactionType,))
         self.conn.commit()
         self.conn.close()
+
+    # def Values(self, User_ID, FName, LName, Money):
+    #     self.SetUpConnection()
+    #     self.c.execute('''
+    #           INSERT INTO UserLog (Transaction_ID,TransactionType,NoOfRecordsAffected,User_ID, FName, LName, Money)
+    #                 VALUES
+    #                 (?,?,?,?,?,?,?)
+    #     ''', ())
+    #     self.conn.close()
