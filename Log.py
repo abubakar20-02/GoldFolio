@@ -1,7 +1,8 @@
 # create a function that can convert excel file to db.
 import sqlite3
 import uuid
-
+from UserLog import UserLog
+from InvestmentLog import InvestmentLog
 import SetUpFile
 
 
@@ -13,6 +14,8 @@ class Log:
         self.Profile = None
         self.uid = None
         self.TransactionType = None
+        self.UserLog = UserLog()
+        self.InvestmentLog = InvestmentLog()
         self.createTable()
 
     def generateTransactionID(self):
@@ -53,6 +56,21 @@ class Log:
               ''', (Transaction_ID, TransactionType,))
         self.conn.commit()
         self.conn.close()
+
+    def previousStage(self):
+        self.__SetUpConnection()
+        self.generateTransactionID()
+        self.c.execute('''
+            SELECT * FROM Log ORDER BY TimeStamp
+              ''')
+        Data = self.c.fetchone()
+        print(Data[1])
+        self.c.execute('''
+            DELETE FROM Log WHERE Transaction_ID = ?
+              ''', (Data[1],))
+        self.conn.commit()
+        self.conn.close()
+        self.UserLog.SearchByID(Data[1])
 
     # def Values(self, User_ID, FName, LName, Money):
     #     self.SetUpConnection()

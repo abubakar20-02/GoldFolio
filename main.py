@@ -16,6 +16,7 @@ def ClearArchive():
     InvestmentArchive = InvestmentArchive()
     InvestmentArchive.dropTable()
 
+
 def ClearLog():
     global Log, InvestmentLog, UserLog
     Log = Log()
@@ -39,6 +40,27 @@ User = User()
 User.deleteTable()
 User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.insertIntoTable("Muhammad", "Abubakar", 100)
+User.deleteRecord("ma10")
+
+
+
+
 User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
 User.deleteRecord("kj1")
@@ -79,5 +101,13 @@ Investment.sellAll()
 Statement.setProfile("kj")
 Statement.showStatement()
 print("------------------")
+
+
+def previousStage(num):
+    for i in range(0, num):
+        Log.previousStage()
+
+
+previousStage(30)
 
 # Investment.showLoss()

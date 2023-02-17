@@ -1,4 +1,6 @@
 import sqlite3
+
+import DB_Code
 import SetUpFile
 
 
@@ -61,3 +63,46 @@ class UserLog:
             print(error)
         finally:
             self.conn.close()
+
+    def SearchByID(self, Transaction_ID):
+        self.SetUpConnection()
+        self.c.execute("BEGIN TRANSACTION")
+        self.c.execute('''
+        SELECT * FROM UserLog WHERE Transaction_ID = ?
+              ''', (Transaction_ID,))
+        Data = self.c.fetchone()
+
+        self.c.execute('''
+        SELECT COUNT(*) FROM UserLog WHERE Transaction_ID = ?
+              ''', (Transaction_ID,))
+        Records = self.c.fetchone()[0]
+        print(Records)
+        if Records > 0:
+            try:
+                self.c.execute('''
+                DELETE FROM UserLog WHERE Transaction_ID = ?
+                      ''', (Transaction_ID,))
+                self.conn.commit()
+            except sqlite3.Error as Error:
+                print(Error)
+        self.conn.commit()
+        Transaction_Type = Data[2]
+        NoOfRecordsAffected = Data[3]
+        User_ID = Data[4]
+        FirstName = Data[5]
+        LastName = Data[6]
+        Money = Data[7]
+
+        if Transaction_Type == DB_Code.UD:
+            if User_ID is None:
+                print("Recover from User archive using No of records")
+            else:
+                print("Recover using user id")
+        elif Transaction_Type == DB_Code.UI:
+            print("Delete using User_ID")
+        elif Transaction_Type == DB_Code.UU:
+            print("Update using archive user data")
+        else:
+            print("Something else")
+        # print(User_ID)
+        self.conn.close()
