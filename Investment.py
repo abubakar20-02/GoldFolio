@@ -1,6 +1,8 @@
 import sqlite3
 import pandas as pd
 import uuid
+
+import DB_Code
 from InvestmentArchive import InvestmentArchive
 from Log import Log
 from xlsxwriter import Workbook
@@ -97,7 +99,7 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?)
                       ''', (str(my_uuid), self.Profile, Gold, Purity, BoughtFor, 0.00))
-                self.b.insert("InsertInvestment")
+                self.b.insert(DB_Code.IB)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
@@ -112,7 +114,7 @@ class Investment:
               UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID = ?
               ''', (Money, Gold, Purity, self.Profile, GoldRate))
         self.conn.commit()
-        self.b.insert("UpdateInvestment")
+        self.b.insert(DB_Code.IU)
         self.conn.close()
 
     def showTable(self):
@@ -186,7 +188,7 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
-        self.b.insert("SellProfitInvestment")
+        self.b.insert(DB_Code.ISP)
         self.Archive(Values)
         self.conn.close()
 
@@ -202,6 +204,6 @@ class Investment:
                     DELETE FROM Investment WHERE User_ID=?
                   ''', (self.Profile,))
         self.conn.commit()
-        self.b.insert("SellAllInvestment")
+        self.b.insert(DB_Code.ISA)
         self.Archive(Values)
         self.conn.close()

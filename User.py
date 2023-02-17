@@ -2,6 +2,8 @@ import os
 import sqlite3
 
 from xlsxwriter import Workbook
+
+import DB_Code
 from UserArchive import UserArchive
 from Log import Log
 
@@ -51,7 +53,7 @@ class User:
             Values = self.c.fetchall()
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            self.b.insert("UserDeleted")
+            self.b.insert(DB_Code.UD)
             self.Archive(Values)
         except sqlite3.Error as error:
             print(error)
@@ -79,7 +81,7 @@ class User:
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.b.insert("UserDeleted")
+            self.b.insert(DB_Code.UD)
             self.Archive(Values)
         except Exception as e:
             self.conn.rollback()
@@ -96,7 +98,7 @@ class User:
                 (?,?,?,?)
           ''', (self.generate_unique_initials(FName, LName), FName, LName, Money))
         self.conn.commit()
-        self.b.insert("UserAdded")
+        self.b.insert(DB_Code.UI)
         self.conn.close()
 
     def updateRecord(self, User_ID, Money):
@@ -105,7 +107,7 @@ class User:
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
-        self.b.insert("UserUpdated")
+        self.b.insert(DB_Code.UU)
         self.conn.close()
 
     def showTable(self):
