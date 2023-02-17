@@ -11,6 +11,8 @@ class Log:
         self.c = None
         self.conn = None
         self.Profile = None
+        # done temporarily to skip the pain of deleting table everytime I run.
+        self.dropTable()
         self.createTable()
 
     def setProfile(self, user):
@@ -25,12 +27,22 @@ class Log:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Log
-              ([Time] TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TableName] VARCHAR)
+              ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TransactionType] VARCHAR)
               ''')
         self.conn.commit()
         self.conn.close()
 
-    def insert(self, TableName):
+    def dropTable(self):
+        self.__SetUpConnection()
+        try:
+            self.c.execute("DROP TABLE Log")
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()
+
+    def insert(self, TransactionType):
         id = str(uuid.uuid4())
         # try:
         #     self.c.execute('''
@@ -41,9 +53,9 @@ class Log:
         #           ''', (InvestmentId, UserID, Gold, Purity, BoughtFor, 0.00))
         self.__SetUpConnection()
         self.c.execute('''
-              INSERT INTO Log (Transaction_ID,TableName)
+              INSERT INTO Log (Transaction_ID,TransactionType)
                     VALUES 
                     (?,?)
-              ''', (id, TableName,))
+              ''', (id, TransactionType,))
         self.conn.commit()
         self.conn.close()
