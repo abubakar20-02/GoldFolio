@@ -1,6 +1,10 @@
 from User import User
 from Investment import Investment
 from ProfitLoss import Statement
+from Log import Log
+
+Log =Log()
+Log.dropTable()
 
 # start temp db to store commands that are run. so we can backtrack if needed.
 Statement = Statement()

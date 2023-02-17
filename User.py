@@ -54,22 +54,11 @@ class User:
             self.c.execute("DELETE FROM User")
             self.conn.commit()
             self.b.insert(DB_Code.UD)
-            self.Archive(Values)
+            self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
-
-    def Archive(self, Values):
-        self.a.SetUpConnection()
-        try:
-
-            self.a.c.executemany("INSERT INTO ArchiveUser(User_ID, FirstName, LastName, Money) VALUES(?,?,?,?)", Values)
-            self.a.conn.commit()
-        except sqlite3.Error as error:
-            print(error)
-        finally:
-            self.a.conn.close()
 
     def deleteRecord(self, User_ID):
         self.__SetUpConnection()
@@ -82,7 +71,7 @@ class User:
                   ''', (User_ID,))
             self.conn.commit()
             self.b.insert(DB_Code.UD)
-            self.Archive(Values)
+            self.a.Archive(Values)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")

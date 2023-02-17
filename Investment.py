@@ -50,24 +50,12 @@ class Investment:
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
             self.b.insert("DeleteInvestment")
-            self.Archive(Values)
+            self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def Archive(self, Values):
-        self.a.SetUpConnection()
-        try:
-
-            self.a.c.executemany(
-                "INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)",
-                Values)
-            self.a.conn.commit()
-        except sqlite3.Error as error:
-            print(error)
-        finally:
-            self.a.conn.close()
 
     # need to use investment id to delete
     def deleteRecord(self, User_ID):
@@ -189,7 +177,7 @@ class Investment:
                   ''', (self.Profile,))
         self.conn.commit()
         self.b.insert(DB_Code.ISP)
-        self.Archive(Values)
+        self.a.Archive(Values)
         self.conn.close()
 
     # add user here
@@ -205,5 +193,5 @@ class Investment:
                   ''', (self.Profile,))
         self.conn.commit()
         self.b.insert(DB_Code.ISA)
-        self.Archive(Values)
+        self.a.Archive(Values)
         self.conn.close()

@@ -20,3 +20,14 @@ class UserArchive:
               ''')
         self.conn.commit()
         self.conn.close()
+
+    def Archive(self, Values):
+        self.SetUpConnection()
+        try:
+
+            self.c.executemany("INSERT INTO ArchiveUser(User_ID, FirstName, LastName, Money) VALUES(?,?,?,?)", Values)
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()
