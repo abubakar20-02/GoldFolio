@@ -51,3 +51,12 @@ class InvestmentLog:
     #           ''', (id, DB_Code, User_ID, Money))
     #     self.conn.commit()
     #     self.conn.close()
+    def dropTable(self):
+        self.SetUpConnection()
+        try:
+            self.c.execute("DROP TABLE InvestmentLog")
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()

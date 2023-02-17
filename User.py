@@ -95,14 +95,15 @@ class User:
     def insertIntoTable(self, FName, LName, Money):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
+        User_ID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
           INSERT INTO User (User_ID, FirstName,LastName,Money)
 
                 VALUES
                 (?,?,?,?)
-          ''', (self.generate_unique_initials(FName, LName), FName, LName, Money))
+          ''', (User_ID, FName, LName, Money))
         self.conn.commit()
-        self.UserLog.InsertStatement(id, DB_Code.UI, self.generate_unique_initials(FName, LName), FName, LName, Money)
+        self.UserLog.InsertStatement(id, DB_Code.UI, User_ID, FName, LName, Money)
         self.b.insert(id, DB_Code.UI)
         self.conn.close()
 

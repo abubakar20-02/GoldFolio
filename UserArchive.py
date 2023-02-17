@@ -31,3 +31,13 @@ class UserArchive:
             print(error)
         finally:
             self.conn.close()
+
+    def dropTable(self):
+        self.SetUpConnection()
+        try:
+            self.c.execute("DROP TABLE ArchiveUser")
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()

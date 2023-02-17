@@ -2,9 +2,32 @@ from User import User
 from Investment import Investment
 from ProfitLoss import Statement
 from Log import Log
+from InvestmentLog import InvestmentLog
+from UserLog import UserLog
 
-Log =Log()
-Log.dropTable()
+from UserArchive import UserArchive
+from InvestmentArchive import InvestmentArchive
+
+
+def ClearArchive():
+    global UserArchive, InvestmentArchive
+    UserArchive = UserArchive()
+    UserArchive.dropTable()
+    InvestmentArchive = InvestmentArchive()
+    InvestmentArchive.dropTable()
+
+def ClearLog():
+    global Log, InvestmentLog, UserLog
+    Log = Log()
+    InvestmentLog = InvestmentLog()
+    UserLog = UserLog()
+    Log.dropTable()
+    InvestmentLog.dropTable()
+    UserLog.dropTable()
+
+
+ClearArchive()
+ClearLog()
 
 # start temp db to store commands that are run. so we can backtrack if needed.
 Statement = Statement()
@@ -37,6 +60,7 @@ Investment.insertIntoTable(1, 21, 21)
 Investment.setProfile("kj")
 Investment.insertIntoTable(123, 21, 21)
 Investment.insertIntoTable(1, 21, 40)
+User.deleteRecord("ma")
 # User.deleteRecord("ma")
 # Investment.deleteRecord("ma")
 
@@ -55,4 +79,5 @@ Investment.sellAll()
 Statement.setProfile("kj")
 Statement.showStatement()
 print("------------------")
+
 # Investment.showLoss()
