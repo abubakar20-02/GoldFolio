@@ -197,7 +197,8 @@ class Log:
                     RecoverdData = self.UserArchive.getData()
                     print("-------------")
                     print(RecoverdData)
-                    self.user.updateRecord(RecoverdData[0], RecoverdData[3], False)
+                    if RecoverdData is not None:
+                        self.user.updateRecord(RecoverdData[0], RecoverdData[3], False)
                     print("-------------")
                     # self.userArchive.getData()
                 else:
@@ -224,6 +225,17 @@ class Log:
                   ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 1 , [Investment_ID] VARCHAR DEFAULT "", [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
+            self.conn.commit()
+            self.conn.close()
+
+        # could be refactored
+        def SellAllStatement(self, id, RecordsAffected, User_ID):
+            self.SetUpConnection()
+            self.c.execute('''
+            INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
+                    VALUES 
+                    (?,?,?,?)
+                  ''', (id, DB_Code.ISA, RecordsAffected, User_ID))
             self.conn.commit()
             self.conn.close()
 
@@ -297,21 +309,31 @@ class Log:
 
                 from Investment import Investment
                 from InvestmentArchive import InvestmentArchive
+                from ProfitLoss import Statement
                 self.Investment = Investment()
                 self.InvestmentArchive = InvestmentArchive()
+                self.Statement = Statement()
 
                 print("Investment")
+                print(Transaction_Type)
                 if Transaction_Type == DB_Code.IB:
                     print("Use Investment ID to delete")
-                    # RecoverdData = self.InvestmentArchive.getData()
-                    # print(RecoverdData)
-                    # self.Investment.deleteRecord(RecoverdData[0], False)
+                    RecoverdData = self.InvestmentArchive.getData(User_ID)
+                    print(RecoverdData)
+                    if RecoverdData is not None:
+                        self.Investment.deleteRecord(RecoverdData[0], False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
                     print("Use User_ID to find most recent deleted investment using count")
                 elif Transaction_Type == DB_Code.ISA:
-                    print("Use User_ID to find most recent deleted investment using count")
+                    print("Use User_ID to find most recent statement using count")
+                    self.Investment.setProfile(User_ID)
+                    # loop count till all values inserted
+                    while NoOfRecordsAffected >0:
+                        RecoverdData = self.Statement.getData(User_ID)
+                        self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
+                        NoOfRecordsAffected = NoOfRecordsAffected-1
                 else:
                     print("nothing")
                 print("")

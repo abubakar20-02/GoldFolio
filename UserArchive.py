@@ -43,24 +43,26 @@ class UserArchive:
 
     def getData(self, *User_ID):
         self.SetUpConnection()
+        Data = None
         self.c.execute("SELECT COUNT(*) FROM ArchiveUser")
         Count = self.c.fetchone()[0]
         print(Count)
 
-        if not User_ID:
-            self.c.execute("SELECT * FROM ArchiveUser LIMIT 1 OFFSET ?", (Count - 1,))
-        else:
-            self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?", (User_ID, Count - 1,))
-        Data = self.c.fetchone()
-        if not User_ID:
-            # needs id to delete, its fine as id is primary key and unique.
-            self.c.execute(
-                "DELETE FROM ArchiveUser WHERE User_ID IN (SELECT User_ID FROM ArchiveUser LIMIT 1 OFFSET ?)",
-                (Count - 1,))
-        else:
-            self.c.execute(
-                "DELETE FROM ArchiveUser WHERE (SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?)",
-                (User_ID, Count - 1,))
+        if Count > 0:
+            if not User_ID:
+                self.c.execute("SELECT * FROM ArchiveUser LIMIT 1 OFFSET ?", (Count - 1,))
+            else:
+                self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?", (User_ID, Count - 1,))
+            Data = self.c.fetchone()
+            if not User_ID:
+                # needs id to delete, its fine as id is primary key and unique.
+                self.c.execute(
+                    "DELETE FROM ArchiveUser WHERE User_ID IN (SELECT User_ID FROM ArchiveUser LIMIT 1 OFFSET ?)",
+                    (Count - 1,))
+            else:
+                self.c.execute(
+                    "DELETE FROM ArchiveUser WHERE (SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?)",
+                    (User_ID, Count - 1,))
 
         self.conn.commit()
         self.conn.close()

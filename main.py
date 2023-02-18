@@ -89,7 +89,7 @@ def previousStage(num):
         Log.previousStage()
 
 
-# time.sleep(5)
+# # time.sleep(5)
 previousStage(1)
 
 # Investment.showLoss()

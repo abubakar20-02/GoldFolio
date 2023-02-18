@@ -74,3 +74,31 @@ class Statement:
         print(df)
         self.conn.close()
 
+    def getData(self, User_ID, *Investment_ID):
+        self.__SetUpConnection()
+        Data = None
+        self.c.execute("SELECT COUNT(*) FROM Statement WHERE User_ID = ?", (User_ID,))
+        Count = self.c.fetchone()[0]
+        print(Count)
+        if Count > 0:
+            if not Investment_ID:
+                self.c.execute("SELECT * FROM Statement WHERE User_ID = ? LIMIT 1 OFFSET ?",
+                               (User_ID, Count - 1,))
+            else:
+                self.c.execute(
+                    "SELECT * FROM Statement WHERE Investment_ID = ? AND User_ID = ? LIMIT 1 OFFSET ?",
+                    (Investment_ID, User_ID, Count - 1,))
+            Data = self.c.fetchone()
+            if not Investment_ID:
+                # needs id to delete, its fine as id is primary key and unique.
+                self.c.execute(
+                    "DELETE FROM Statement WHERE Investment_ID IN (SELECT Investment_ID FROM Statement WHERE User_ID = ? LIMIT 1 OFFSET ?)",
+                    (User_ID, Count - 1,))
+            else:
+                self.c.execute(
+                    "DELETE FROM Statement WHERE (SELECT * FROM Statement WHERE User_ID = ? LIMIT 1 OFFSET ?)",
+                    (User_ID, Count - 1,))
+
+        self.conn.commit()
+        self.conn.close()
+        return Data

@@ -93,7 +93,7 @@ class Investment:
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
         self.a.Archive(Values)
 
-    def insertIntoTable(self, Gold, Purity, BoughtFor):
+    def insertIntoTable(self, Gold, Purity, BoughtFor, *LogChanges):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         Error = True
@@ -108,7 +108,8 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?)
                       ''', (my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00))
-                self.LogForInsert(BoughtFor, Gold, Purity, my_uuid)
+                if LogChanges == ():
+                    self.LogForInsert(BoughtFor, Gold, Purity, my_uuid)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
@@ -233,11 +234,10 @@ class Investment:
                   ''', (self.Profile,))
         self.conn.commit()
         self.conn.close()
-
         if RecordsAffected > 0 and LogChanges == ():
             self.LogSellAll(RecordsAffected, Values, id)
 
     def LogSellAll(self, RecordsAffected, Values, id):
         self.b.insert(id, DB_Code.ISA)
-        self.InvestmentLog.DeleteStatement(id, RecordsAffected, self.Profile)
+        self.InvestmentLog.SellAllStatement(id, RecordsAffected, self.Profile)
         self.a.Archive(Values)
