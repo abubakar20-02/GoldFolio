@@ -7,7 +7,6 @@ from xlsxwriter import Workbook
 import DB_Code
 from UserArchive import UserArchive
 from Log import Log
-from UserLog import UserLog
 
 import SetUpFile
 import pandas as pd
@@ -19,7 +18,6 @@ class User:
         self.conn = None
         self.a = UserArchive()
         self.b = Log()
-        self.UserLog = UserLog()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -61,7 +59,7 @@ class User:
             self.conn.commit()
             self.b.insert(id, DB_Code.UD)
             #------------------------------------------------------------
-            self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, None)
+            self.b.UserLogDeleteStatement(id, RecordsAffected, None)
             # ------------------------------------------------------------
 
             self.a.Archive(Values)
@@ -85,7 +83,7 @@ class User:
             self.conn.commit()
             if RecordsAffected > 0:
                 self.b.insert(id, DB_Code.UD)
-                self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, User_ID)
+                self.b.UserLogDeleteStatement(id, RecordsAffected, User_ID)
                 self.a.Archive(Values)
         except Exception as e:
             self.conn.rollback()
@@ -104,7 +102,7 @@ class User:
                 (?,?,?,?)
           ''', (User_ID, FName, LName, Money))
         self.conn.commit()
-        self.UserLog.InsertStatement(id, DB_Code.UI, User_ID, FName, LName, Money)
+        self.b.UserLogInsertStatement(id, User_ID, FName, LName, Money)
         self.b.insert(id, DB_Code.UI)
         self.conn.close()
 
@@ -116,7 +114,7 @@ class User:
               ''', (Money, User_ID))
         self.conn.commit()
         self.b.insert(id, DB_Code.UU)
-        self.UserLog.UpdateStatement(id, DB_Code.UU, User_ID, Money)
+        self.b.UserLogUpdateStatement(id, User_ID, Money)
         self.conn.close()
 
     def showTable(self):

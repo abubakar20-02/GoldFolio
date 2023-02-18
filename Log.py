@@ -1,6 +1,8 @@
 # create a function that can convert excel file to db.
 import sqlite3
 import uuid
+
+import DB_Code
 from UserLog import UserLog
 from InvestmentLog import InvestmentLog
 import SetUpFile
@@ -77,11 +79,11 @@ class Log:
         self.UserLog.SearchByID(Data[1])
         self.InvestmentLog.SearchByID(Data[1])
 
-    # def Values(self, User_ID, FName, LName, Money):
-    #     self.SetUpConnection()
-    #     self.c.execute('''
-    #           INSERT INTO UserLog (Transaction_ID,TransactionType,NoOfRecordsAffected,User_ID, FName, LName, Money)
-    #                 VALUES
-    #                 (?,?,?,?,?,?,?)
-    #     ''', ())
-    #     self.conn.close()
+    def UserLogInsertStatement(self, id, User_ID, FName, LName, Money):
+        self.UserLog.InsertStatement(id, DB_Code.UI, User_ID, FName, LName, Money)
+
+    def UserLogDeleteStatement(self, id, RecordsAffected, User_ID):
+        self.UserLog.DeleteStatement(id, DB_Code.UD, RecordsAffected, User_ID)
+
+    def UserLogUpdateStatement(self, id, User_ID, Money):
+        self.UserLog.DeleteStatement(id, DB_Code.UU, User_ID, Money)
