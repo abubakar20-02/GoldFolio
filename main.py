@@ -108,6 +108,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-# previousStage(30)
+previousStage(31)
 
 # Investment.showLoss()

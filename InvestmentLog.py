@@ -18,7 +18,7 @@ class InvestmentLog:
         self.SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS InvestmentLog
-              ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 1 , [Investment_ID] VARCHAR, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
+              ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 1 , [Investment_ID] VARCHAR DEFAULT "", [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
               FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
               ''')
         self.conn.commit()
@@ -79,33 +79,29 @@ class InvestmentLog:
         if Records > 0:
             try:
                 self.c.execute('''
-                DELETE FROM Investment WHERE Transaction_ID = ?
+                DELETE FROM InvestmentLog WHERE Transaction_ID = ?
                       ''', (Transaction_ID,))
                 self.conn.commit()
             except sqlite3.Error as Error:
                 print(Error)
-        self.conn.commit()
-        Transaction_Type = Data[2]
-        NoOfRecordsAffected = Data[3]
-        Investment_ID = Data[4]
-        User_ID = Data[5]
-        Gold = Data[6]
-        Purity = Data[7]
-        BoughtFor = Data[8]
-        ProfitLoss = Data[9]
+            Transaction_Type = Data[2]
+            NoOfRecordsAffected = Data[3]
+            Investment_ID = Data[4]
+            User_ID = Data[5]
+            Gold = Data[6]
+            Purity = Data[7]
+            BoughtFor = Data[8]
+            ProfitLoss = Data[9]
 
-        # if Transaction_Type == DB_Code.IB:
-        #     print("Use Investment ID to delete")
-        # elif Transaction_Type == DB_Code.IU:
-        #     print("Use archive data to update using Investment ID")
-        # elif Transaction_Type == DB_Code.ISP
-        #     else:
-        #         print("Recover using user id")
-        # elif Transaction_Type == DB_Code.UI:
-        #     print("Delete using User_ID")
-        # elif Transaction_Type == DB_Code.UU:
-        #     print("Update using archive user data")
-        # else:
-        #     print("Something else")
-        # print(User_ID)
+            if Transaction_Type == DB_Code.IB:
+                print("Use Investment ID to delete")
+            elif Transaction_Type == DB_Code.IU:
+                print("Use archive data to update using Investment ID")
+            elif Transaction_Type == DB_Code.ISP:
+                print("Use User_ID to find most recent deleted investment using count")
+            elif Transaction_Type == DB_Code.ISA:
+                print("Use User_ID to find most recent deleted investment using count")
+            else:
+                print("nothing")
+        self.conn.commit()
         self.conn.close()

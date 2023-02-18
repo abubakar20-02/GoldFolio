@@ -71,6 +71,7 @@ class Log:
         self.conn.commit()
         self.conn.close()
         self.UserLog.SearchByID(Data[1])
+        self.InvestmentLog.SearchByID(Data[1])
 
     # def Values(self, User_ID, FName, LName, Money):
     #     self.SetUpConnection()

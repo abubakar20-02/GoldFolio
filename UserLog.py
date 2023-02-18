@@ -85,24 +85,24 @@ class UserLog:
                 self.conn.commit()
             except sqlite3.Error as Error:
                 print(Error)
-        self.conn.commit()
-        Transaction_Type = Data[2]
-        NoOfRecordsAffected = Data[3]
-        User_ID = Data[4]
-        FirstName = Data[5]
-        LastName = Data[6]
-        Money = Data[7]
+            Transaction_Type = Data[2]
+            NoOfRecordsAffected = Data[3]
+            User_ID = Data[4]
+            FirstName = Data[5]
+            LastName = Data[6]
+            Money = Data[7]
 
-        if Transaction_Type == DB_Code.UD:
-            if User_ID is None:
-                print("Recover from User archive using No of records")
+            if Transaction_Type == DB_Code.UD:
+                if User_ID is None:
+                    print("Recover from User archive using No of records")
+                else:
+                    print("Recover using user id")
+            elif Transaction_Type == DB_Code.UI:
+                print("Delete using User_ID")
+            elif Transaction_Type == DB_Code.UU:
+                print("Update using archive user data")
             else:
-                print("Recover using user id")
-        elif Transaction_Type == DB_Code.UI:
-            print("Delete using User_ID")
-        elif Transaction_Type == DB_Code.UU:
-            print("Update using archive user data")
-        else:
-            print("Something else")
+                print("Something else")
+        self.conn.commit()
         # print(User_ID)
         self.conn.close()
