@@ -173,7 +173,6 @@ class Log:
                 self.user = User()
                 self.UserArchive = UserArchive()
                 if Transaction_Type == DB_Code.UD:
-                    # self.UserArchive.getData("a")
                     if User_ID is None:
                         print("Recover from User archive using No of records")
                         # none
@@ -186,17 +185,20 @@ class Log:
                     else:
                         print("-------------")
                         RecoverdData = self.UserArchive.getData()
-                        self.user.insertIntoTable(RecoverdData[1], RecoverdData[2], RecoverdData[3],False)
+                        # FirstName, LastName,Money, False(Not Log)
+                        self.user.insertIntoTable(RecoverdData[1], RecoverdData[2], RecoverdData[3], False)
                         print("Recover using user id")
                         print("-------------")
 
                 elif Transaction_Type == DB_Code.UI:
                     print("Delete using User_ID")
-                    # its creating a log and because of that its causing a spiral code.
                     self.user.deleteRecord(User_ID, False)
 
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")
+                    RecoverdData = self.UserArchive.getData()
+                    print(RecoverdData)
+                    self.user.updateRecord(RecoverdData[0], RecoverdData[3], False)
                     # self.userArchive.getData()
                 else:
                     print("Something else")

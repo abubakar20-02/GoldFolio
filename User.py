@@ -111,15 +111,20 @@ class User:
         self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
         self.b.insert(id, DB_Code.UI)
 
-    def updateRecord(self, User_ID, Money):
+    def updateRecord(self, User_ID, Money, *LogChanges):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
+        self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
+        Values = self.c.fetchall()
         self.c.execute('''
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
         self.b.insert(id, DB_Code.UU)
-        self.UserLog.UpdateStatement(id, User_ID, Money)
+        if LogChanges == ():
+            self.UserLog.UpdateStatement(id, User_ID, Money)
+            #mention this was updated
+            self.a.Archive(Values)
         self.conn.close()
 
     def showTable(self):
