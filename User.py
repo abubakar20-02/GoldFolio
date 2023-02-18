@@ -48,7 +48,7 @@ class User:
         self.conn.commit()
         self.conn.close()
 
-    def deleteTable(self):
+    def deleteTable(self, *LogChanges):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
@@ -58,7 +58,8 @@ class User:
             RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            self.LogForDelete(RecordsAffected, None, Values, id)
+            if LogChanges == ():
+                self.LogForDelete(RecordsAffected, None, Values, id)
         except sqlite3.Error as error:
             print(error)
         finally:
@@ -78,7 +79,6 @@ class User:
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            print(LogChanges == ())
             if RecordsAffected > 0 and LogChanges == ():
                 self.LogForDelete(RecordsAffected, User_ID, Values, id)
         except Exception as e:
