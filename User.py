@@ -18,6 +18,7 @@ class User:
         self.conn = None
         self.a = UserArchive()
         self.b = Log()
+        self.UserLog = Log.UserLog()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -58,8 +59,8 @@ class User:
             self.c.execute("DELETE FROM User")
             self.conn.commit()
             self.b.insert(id, DB_Code.UD)
-            #------------------------------------------------------------
-            self.b.UserLogDeleteStatement(id, RecordsAffected, None)
+            # ------------------------------------------------------------
+            self.UserLog.DeleteStatement(id, RecordsAffected, None)
             # ------------------------------------------------------------
 
             self.a.Archive(Values)
@@ -83,7 +84,7 @@ class User:
             self.conn.commit()
             if RecordsAffected > 0:
                 self.b.insert(id, DB_Code.UD)
-                self.b.UserLogDeleteStatement(id, RecordsAffected, User_ID)
+                self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
                 self.a.Archive(Values)
         except Exception as e:
             self.conn.rollback()
@@ -102,7 +103,7 @@ class User:
                 (?,?,?,?)
           ''', (User_ID, FName, LName, Money))
         self.conn.commit()
-        self.b.UserLogInsertStatement(id, User_ID, FName, LName, Money)
+        self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
         self.b.insert(id, DB_Code.UI)
         self.conn.close()
 
@@ -114,7 +115,7 @@ class User:
               ''', (Money, User_ID))
         self.conn.commit()
         self.b.insert(id, DB_Code.UU)
-        self.b.UserLogUpdateStatement(id, User_ID, Money)
+        self.UserLog.UpdateStatement(id, User_ID, Money)
         self.conn.close()
 
     def showTable(self):

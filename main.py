@@ -3,7 +3,6 @@ from Investment import Investment
 from ProfitLoss import Statement
 from Log import Log
 from InvestmentLog import InvestmentLog
-from UserLog import UserLog
 
 from UserArchive import UserArchive
 from InvestmentArchive import InvestmentArchive
@@ -21,10 +20,8 @@ def ClearLog():
     global Log, InvestmentLog, UserLog
     Log = Log()
     InvestmentLog = InvestmentLog()
-    UserLog = UserLog()
     Log.dropTable()
     InvestmentLog.dropTable()
-    UserLog.dropTable()
 
 
 ClearArchive()
