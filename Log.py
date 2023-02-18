@@ -183,12 +183,10 @@ class Log:
                         #     # self.InsertStatement()
                         #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
-                        print("-------------")
                         RecoverdData = self.UserArchive.getData()
                         # FirstName, LastName,Money, False(Not Log)
                         self.user.insertIntoTable(RecoverdData[1], RecoverdData[2], RecoverdData[3], False)
                         print("Recover using user id")
-                        print("-------------")
 
                 elif Transaction_Type == DB_Code.UI:
                     print("Delete using User_ID")
@@ -197,8 +195,10 @@ class Log:
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")
                     RecoverdData = self.UserArchive.getData()
+                    print("-------------")
                     print(RecoverdData)
                     self.user.updateRecord(RecoverdData[0], RecoverdData[3], False)
+                    print("-------------")
                     # self.userArchive.getData()
                 else:
                     print("Something else")
@@ -227,13 +227,13 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        def DeleteStatement(self, id, DB_Code, RecordsAffected, User_ID):
+        def DeleteStatement(self, id, RecordsAffected, User_ID):
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
                     VALUES 
                     (?,?,?,?)
-                  ''', (id, DB_Code, RecordsAffected, User_ID))
+                  ''', (id, DB_Code.IB, RecordsAffected, User_ID))
             self.conn.commit()
             self.conn.close()
 
@@ -295,9 +295,17 @@ class Log:
                 BoughtFor = Data[8]
                 ProfitLoss = Data[9]
 
+                from Investment import Investment
+                from InvestmentArchive import InvestmentArchive
+                self.Investment = Investment()
+                self.InvestmentArchive = InvestmentArchive()
+
                 print("Investment")
                 if Transaction_Type == DB_Code.IB:
                     print("Use Investment ID to delete")
+                    # RecoverdData = self.InvestmentArchive.getData()
+                    # print(RecoverdData)
+                    # self.Investment.deleteRecord(RecoverdData[0], False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:

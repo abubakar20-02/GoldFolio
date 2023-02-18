@@ -16,7 +16,7 @@ class UserArchive:
         self.SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveUser
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+              ([User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
               ''')
         self.conn.commit()
         self.conn.close()

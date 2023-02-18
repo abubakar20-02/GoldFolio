@@ -30,57 +30,58 @@ User.deleteTable(False)
 User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 User.updateRecord("ma", 1)
+User.updateRecord("ma", 2)
 
-
-# User.insertIntoTable("Kanishka", "Jay", 10)
-# User.insertIntoTable("Kabubakar", "J", 1)
+#
+User.insertIntoTable("Kanishka", "Jay", 10)
+User.insertIntoTable("Kabubakar", "J", 1)
 # User.updateRecord("ma", 1)
-# # look into this
-# User.deleteRecord("kj1")
+# look into this
+User.deleteRecord("kj1")
+User.deleteRecord("ma")
+import time
+
+time.sleep(1)
 # User.deleteRecord("ma")
+User.showTable()
+
+Investment = Investment()
+Investment.deleteTable()
+Investment.createTable()
+
+# code to show help
+# print(Investment.insertIntoTable.__doc__)
+Investment.setProfile("ma")
+Investment.insertIntoTable(123, 21, 123)
+Investment.insertIntoTable(21, 1, 1)
+Investment.insertIntoTable(1000, 21, 20)
+Investment.insertIntoTable(1, 21, 12)
+Investment.insertIntoTable(1, 21, 21)
+Investment.setProfile("kj")
+Investment.insertIntoTable(123, 21, 21)
+Investment.insertIntoTable(1, 21, 40)
+
 # import time
-#
-# time.sleep(1)
-# # User.deleteRecord("ma")
-# User.showTable()
-#
-# Investment = Investment()
-# Investment.deleteTable()
-# Investment.createTable()
-#
-# # code to show help
-# # print(Investment.insertIntoTable.__doc__)
-# Investment.setProfile("ma")
-# Investment.insertIntoTable(123, 21, 123)
-# Investment.insertIntoTable(21, 1, 1)
-# Investment.insertIntoTable(1000, 21, 20)
-# Investment.insertIntoTable(1, 21, 12)
-# Investment.insertIntoTable(1, 21, 21)
-# Investment.setProfile("kj")
-# Investment.insertIntoTable(123, 21, 21)
-# Investment.insertIntoTable(1, 21, 40)
-#
-# # import time
-# # time.sleep(3)
-# # User.deleteRecord("ma")
-# # User.deleteRecord("ma")
-# # Investment.deleteRecord("ma")
-#
-# # User.deleteRecord("ma")
-# # User.deleteRecord("kj")
-# # Investment.showTable()
-# Investment.updateProfitLoss(12)
-# Investment.setProfile("ma")
-# User.showTable()
-#
-# Investment.setProfile("ma")
-# Investment.sellAll()
-# print("------------------")
-# # Investment.showProfit()
-# Investment.sellAll()
-# Statement.setProfile("kj")
-# Statement.showStatement()
-# print("------------------")
+# time.sleep(3)
+# User.deleteRecord("ma")
+# User.deleteRecord("ma")
+# Investment.deleteRecord("ma")
+
+# User.deleteRecord("ma")
+# User.deleteRecord("kj")
+# Investment.showTable()
+Investment.updateProfitLoss(12)
+Investment.setProfile("ma")
+User.showTable()
+
+Investment.setProfile("ma")
+Investment.sellAll()
+print("------------------")
+# Investment.showProfit()
+Investment.sellAll()
+Statement.setProfile("kj")
+Statement.showStatement()
+print("------------------")
 
 
 def previousStage(num):

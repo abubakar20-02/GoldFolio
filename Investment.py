@@ -63,19 +63,35 @@ class Investment:
             self.conn.close()
 
     # need to use investment id to delete
-    def deleteRecord(self, User_ID):
+    def deleteRecord(self, User_ID, *LogChanges):
         """Takes in the user ID to delete investment for that ID."""
+        id = str(uuid.uuid4())
+
         self.__SetUpConnection()
         try:
+            self.c.execute('''
+                  SELECT COUNT(*) FROM Investment WHERE User_Id = ?
+                  ''', (User_ID,))
+            RecordsAffected = self.c.fetchone()[0]
+            self.c.execute('''
+                  SELECT * FROM Investment WHERE User_Id = ?
+                  ''', (User_ID,))
+            Values = self.c.fetchall()
             self.c.execute('''
                   DELETE FROM Investment WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.b.insert("DeleteInvestment")
+            if LogChanges == ():
+                self.LogForDelete(id, RecordsAffected, User_ID, Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
+
+    def LogForDelete(self, id, RecordsAffected, User_ID, Values):
+        self.b.insert(id, DB_Code.IB)
+        self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
+        self.a.Archive(Values)
 
     def insertIntoTable(self, Gold, Purity, BoughtFor):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
@@ -92,13 +108,16 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?)
                       ''', (my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00))
-                self.b.insert(my_uuid, DB_Code.IB)
-                self.InvestmentLog.InsertStatement(my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00)
+                self.LogForInsert(BoughtFor, Gold, Purity, my_uuid)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
         self.conn.commit()
         self.conn.close()
+
+    def LogForInsert(self, BoughtFor, Gold, Purity, my_uuid):
+        self.b.insert(my_uuid, DB_Code.IB)
+        self.InvestmentLog.InsertStatement(my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
     # need investment id to update.
     def updateRecord(self, Money, Gold, Purity, GoldRate):
@@ -175,7 +194,7 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self):
+    def sellProfit(self, *LogChanges):
         my_uuid = str(uuid.uuid4())
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
@@ -189,14 +208,17 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
-        if RecordsAffected > 0:
-            self.b.insert(my_uuid, DB_Code.ISP)
-            self.InvestmentLog.DeleteStatement(my_uuid, DB_Code.ISP, RecordsAffected, self.Profile)
-            self.a.Archive(Values)
+        if RecordsAffected > 0 and LogChanges == ():
+            self.LogSellProfit(RecordsAffected, Values, my_uuid)
         self.conn.close()
 
+    def LogSellProfit(self, RecordsAffected, Values, my_uuid):
+        self.b.insert(my_uuid, DB_Code.ISP)
+        self.InvestmentLog.DeleteStatement(my_uuid, DB_Code.ISP, RecordsAffected, self.Profile)
+        self.a.Archive(Values)
+
     # add user here
-    def sellAll(self):
+    def sellAll(self , *LogChanges):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
@@ -212,7 +234,10 @@ class Investment:
         self.conn.commit()
         self.conn.close()
 
-        if RecordsAffected > 0:
-            self.b.insert(id, DB_Code.ISA)
-            self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, self.Profile)
-            self.a.Archive(Values)
+        if RecordsAffected > 0 and LogChanges == ():
+            self.LogSellAll(RecordsAffected, Values, id)
+
+    def LogSellAll(self, RecordsAffected, Values, id):
+        self.b.insert(id, DB_Code.ISA)
+        self.InvestmentLog.DeleteStatement(id, RecordsAffected, self.Profile)
+        self.a.Archive(Values)
