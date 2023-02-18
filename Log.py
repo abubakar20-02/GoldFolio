@@ -61,8 +61,12 @@ class Log:
         self.__SetUpConnection()
         self.generateTransactionID()
         self.c.execute('''
-            SELECT * FROM Log
+            SELECT COUNT(*) FROM Log 
               ''')
+        Records = self.c.fetchone()[0]
+        self.c.execute('''
+            SELECT * FROM Log LIMIT 1 OFFSET ?
+              ''', (Records - 1,))
         Data = self.c.fetchone()
         print(Data[1])
         self.c.execute('''
