@@ -61,7 +61,7 @@ class Log:
         self.__SetUpConnection()
         self.generateTransactionID()
         self.c.execute('''
-            SELECT * FROM Log ORDER BY TimeStamp
+            SELECT * FROM Log
               ''')
         Data = self.c.fetchone()
         print(Data[1])

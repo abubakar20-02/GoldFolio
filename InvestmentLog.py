@@ -75,7 +75,6 @@ class InvestmentLog:
         SELECT COUNT(*) FROM InvestmentLog WHERE Transaction_ID = ?
               ''', (Transaction_ID,))
         Records = self.c.fetchone()[0]
-        print(Records)
         if Records > 0:
             try:
                 self.c.execute('''
@@ -93,6 +92,7 @@ class InvestmentLog:
             BoughtFor = Data[8]
             ProfitLoss = Data[9]
 
+            print("Investment")
             if Transaction_Type == DB_Code.IB:
                 print("Use Investment ID to delete")
             elif Transaction_Type == DB_Code.IU:
@@ -103,5 +103,6 @@ class InvestmentLog:
                 print("Use User_ID to find most recent deleted investment using count")
             else:
                 print("nothing")
+            print("")
         self.conn.commit()
         self.conn.close()

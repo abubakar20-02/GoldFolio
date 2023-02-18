@@ -76,7 +76,6 @@ class UserLog:
         SELECT COUNT(*) FROM UserLog WHERE Transaction_ID = ?
               ''', (Transaction_ID,))
         Records = self.c.fetchone()[0]
-        print(Records)
         if Records > 0:
             try:
                 self.c.execute('''
@@ -92,6 +91,7 @@ class UserLog:
             LastName = Data[6]
             Money = Data[7]
 
+            print("User")
             if Transaction_Type == DB_Code.UD:
                 if User_ID is None:
                     print("Recover from User archive using No of records")
@@ -103,6 +103,7 @@ class UserLog:
                 print("Update using archive user data")
             else:
                 print("Something else")
+            print("")
         self.conn.commit()
         # print(User_ID)
         self.conn.close()

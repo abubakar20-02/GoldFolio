@@ -40,27 +40,6 @@ User = User()
 User.deleteTable()
 User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.deleteRecord("ma10")
-
-
-
-
 User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
 User.deleteRecord("kj1")
@@ -82,6 +61,9 @@ Investment.insertIntoTable(1, 21, 21)
 Investment.setProfile("kj")
 Investment.insertIntoTable(123, 21, 21)
 Investment.insertIntoTable(1, 21, 40)
+
+# import time
+# time.sleep(3)
 # User.deleteRecord("ma")
 # User.deleteRecord("ma")
 # Investment.deleteRecord("ma")
@@ -108,6 +90,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(31)
+# previousStage(31)
 
 # Investment.showLoss()
