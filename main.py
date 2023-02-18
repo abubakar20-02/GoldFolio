@@ -82,7 +82,7 @@ Investment.insertIntoTable(1, 21, 21)
 Investment.setProfile("kj")
 Investment.insertIntoTable(123, 21, 21)
 Investment.insertIntoTable(1, 21, 40)
-User.deleteRecord("ma")
+# User.deleteRecord("ma")
 # User.deleteRecord("ma")
 # Investment.deleteRecord("ma")
 
@@ -108,6 +108,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(30)
+# previousStage(30)
 
 # Investment.showLoss()

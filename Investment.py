@@ -54,10 +54,10 @@ class Investment:
             RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
-            if RecordsAffected > 0:
-                self.b.insert(id, "DeleteInvestment")
-                self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, None)
-                self.a.Archive(Values)
+            # if RecordsAffected > 0:
+            #     self.b.insert(id, "DeleteInvestment")
+            #     self.InvestmentLog.DeleteStatement(id, "DropInvestments", RecordsAffected, None)
+            #     self.a.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
@@ -211,8 +211,10 @@ class Investment:
                     DELETE FROM Investment WHERE User_ID=?
                   ''', (self.Profile,))
         self.conn.commit()
+        self.conn.close()
+
         if RecordsAffected > 0:
+            print("why")
             self.b.insert(id, DB_Code.ISA)
             self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, self.Profile)
             self.a.Archive(Values)
-        self.conn.close()
