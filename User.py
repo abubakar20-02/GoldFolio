@@ -58,18 +58,13 @@ class User:
             RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            self.b.insert(id, DB_Code.UD)
-            # ------------------------------------------------------------
-            self.UserLog.DeleteStatement(id, RecordsAffected, None)
-            # ------------------------------------------------------------
-
-            self.a.Archive(Values)
+            self.LogForDelete(RecordsAffected, None, Values, id)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def deleteRecord(self, User_ID):
+    def deleteRecord(self, User_ID, *LogChanges):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
@@ -78,21 +73,26 @@ class User:
             self.c.execute("SELECT COUNT(*) FROM User WHERE User_ID = ?", (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
             self.c.execute('''DELETE FROM Investment WHERE User_ID = ?''', (User_ID,))
+            self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            if RecordsAffected > 0:
-                self.b.insert(id, DB_Code.UD)
-                self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
-                self.a.Archive(Values)
+            print(LogChanges == ())
+            if RecordsAffected > 0 and LogChanges == ():
+                self.LogForDelete(RecordsAffected, User_ID, Values, id)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
         finally:
             self.conn.close()
 
-    def insertIntoTable(self, FName, LName, Money):
+    def LogForDelete(self, RecordsAffected, User_ID, Values, id):
+        self.b.insert(id, DB_Code.UD)
+        self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
+        self.a.Archive(Values)
+
+    def insertIntoTable(self, FName, LName, Money, *LogChanges):
         id = str(uuid.uuid4())
         self.__SetUpConnection()
         User_ID = self.generate_unique_initials(FName, LName)
@@ -103,9 +103,13 @@ class User:
                 (?,?,?,?)
           ''', (User_ID, FName, LName, Money))
         self.conn.commit()
+        if LogChanges == ():
+            self.LogForInsert(FName, LName, Money, User_ID, id)
+        self.conn.close()
+
+    def LogForInsert(self, FName, LName, Money, User_ID, id):
         self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
         self.b.insert(id, DB_Code.UI)
-        self.conn.close()
 
     def updateRecord(self, User_ID, Money):
         id = str(uuid.uuid4())

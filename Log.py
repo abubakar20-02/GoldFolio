@@ -17,7 +17,6 @@ class Log:
 
         self.UserLog = self.UserLog()
         self.InvestmentLog = self.InvestmentLog()
-
         self.createTable()
 
     def generateTransactionID(self):
@@ -40,7 +39,9 @@ class Log:
     def dropTable(self):
         self.__SetUpConnection()
         try:
-            self.c.execute("DROP TABLE Log")
+            self.c.execute("DELETE FROM Log")
+            self.c.execute("DELETE FROM InvestmentLog")
+            self.c.execute("DELETE FROM UserLog")
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -166,7 +167,7 @@ class Log:
                 FirstName = Data[5]
                 LastName = Data[6]
                 Money = Data[7]
-
+                from User import User
                 print("User")
                 if Transaction_Type == DB_Code.UD:
                     if User_ID is None:
@@ -177,7 +178,9 @@ class Log:
 
                 elif Transaction_Type == DB_Code.UI:
                     print("Delete using User_ID")
-                    # self.user.deleteRecord(User_ID)
+                    self.user = User()
+                    # its creating a log and because of that its causing a spiral code.
+                    self.user.deleteRecord(User_ID, False)
 
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")

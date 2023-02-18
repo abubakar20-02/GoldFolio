@@ -15,9 +15,8 @@ def ClearArchive():
     InvestmentArchive.dropTable()
 
 
-
-
 Log = Log()
+Log.dropTable()
 ClearArchive()
 
 # start temp db to store commands that are run. so we can backtrack if needed.
@@ -32,11 +31,13 @@ User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
-User.updateRecord("ma",1)
+User.updateRecord("ma", 1)
+# look into this
 User.deleteRecord("kj1")
 import time
+
 time.sleep(1)
-User.deleteRecord("ma")
+# User.deleteRecord("ma")
 User.showTable()
 
 Investment = Investment()
@@ -82,7 +83,7 @@ def previousStage(num):
     for i in range(0, num):
         Log.previousStage()
 
-
-previousStage(3)
+time.sleep(5)
+# previousStage(15)
 
 # Investment.showLoss()
