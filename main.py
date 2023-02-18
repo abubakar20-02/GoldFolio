@@ -17,7 +17,7 @@ def ClearArchive():
 
 
 
-
+Log = Log()
 ClearArchive()
 
 # start temp db to store commands that are run. so we can backtrack if needed.
@@ -83,6 +83,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-# previousStage(14)
+previousStage(14)
 
 # Investment.showLoss()
