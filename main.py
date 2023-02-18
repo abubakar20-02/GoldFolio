@@ -2,7 +2,6 @@ from User import User
 from Investment import Investment
 from ProfitLoss import Statement
 from Log import Log
-from InvestmentLog import InvestmentLog
 
 from UserArchive import UserArchive
 from InvestmentArchive import InvestmentArchive
@@ -16,16 +15,10 @@ def ClearArchive():
     InvestmentArchive.dropTable()
 
 
-def ClearLog():
-    global Log, InvestmentLog, UserLog
-    Log = Log()
-    InvestmentLog = InvestmentLog()
-    Log.dropTable()
-    InvestmentLog.dropTable()
+
 
 
 ClearArchive()
-ClearLog()
 
 # start temp db to store commands that are run. so we can backtrack if needed.
 Statement = Statement()

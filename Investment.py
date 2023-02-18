@@ -5,7 +5,6 @@ import uuid
 import DB_Code
 from InvestmentArchive import InvestmentArchive
 from Log import Log
-from InvestmentLog import InvestmentLog
 from xlsxwriter import Workbook
 import os
 
@@ -23,7 +22,7 @@ class Investment:
         self.Profile = None
         self.a = InvestmentArchive()
         self.b = Log()
-        self.InvestmentLog = InvestmentLog()
+        self.InvestmentLog = Log.InvestmentLog()
 
     def setProfile(self, profile):
         self.Profile = profile
@@ -94,7 +93,7 @@ class Investment:
                             (?,?,?,?,?,?)
                       ''', (my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00))
                 self.b.insert(my_uuid, DB_Code.IB)
-                self.InvestmentLog.InsertStatement(my_uuid, DB_Code.IB, self.Profile, Gold, Purity, BoughtFor, 0.00)
+                self.InvestmentLog.InsertStatement(my_uuid, self.Profile, Gold, Purity, BoughtFor, 0.00)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
@@ -214,7 +213,6 @@ class Investment:
         self.conn.close()
 
         if RecordsAffected > 0:
-            print("why")
             self.b.insert(id, DB_Code.ISA)
             self.InvestmentLog.DeleteStatement(id, DB_Code.ISA, RecordsAffected, self.Profile)
             self.a.Archive(Values)
