@@ -64,6 +64,7 @@ class UserLog:
         finally:
             self.conn.close()
 
+    # move this to user.py
     def SearchByID(self, Transaction_ID):
         self.SetUpConnection()
         self.c.execute("BEGIN TRANSACTION")
@@ -95,12 +96,17 @@ class UserLog:
             if Transaction_Type == DB_Code.UD:
                 if User_ID is None:
                     print("Recover from User archive using No of records")
+                    #reverse order
                 else:
                     print("Recover using user id")
+
             elif Transaction_Type == DB_Code.UI:
                 print("Delete using User_ID")
+                # self.user.deleteRecord(User_ID)
+
             elif Transaction_Type == DB_Code.UU:
                 print("Update using archive user data")
+                # self.userArchive.getData()
             else:
                 print("Something else")
             print("")

@@ -42,7 +42,10 @@ User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
+User.updateRecord("ma",1)
 User.deleteRecord("kj1")
+import time
+time.sleep(1)
 User.deleteRecord("ma")
 User.showTable()
 
@@ -90,6 +93,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(8)
+# previousStage(14)
 
 # Investment.showLoss()

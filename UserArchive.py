@@ -24,7 +24,6 @@ class UserArchive:
     def Archive(self, Values):
         self.SetUpConnection()
         try:
-
             self.c.executemany("INSERT INTO ArchiveUser(User_ID, FirstName, LastName, Money) VALUES(?,?,?,?)", Values)
             self.conn.commit()
         except sqlite3.Error as error:
@@ -41,3 +40,11 @@ class UserArchive:
             print(error)
         finally:
             self.conn.close()
+
+    def getData(self, User_ID):
+        self.SetUpConnection()
+        self.c.execute("SELECT * FROM USERARCHIVE WHERE User_ID = ?", User_ID)
+        Data = self.c.fetcall()
+        self.conn.commit()
+        self.conn.close()
+        return Data
