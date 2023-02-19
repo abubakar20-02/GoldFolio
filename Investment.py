@@ -65,7 +65,8 @@ class Investment:
             print(error)
         finally:
             self.conn.close()
-#dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
+
+    # dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
     # need to use investment id to delete
     def deleteRecord(self, User_ID, LogChanges=True):
         """Takes in the user ID to delete investment for that ID."""
@@ -82,10 +83,7 @@ class Investment:
                       SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
                       ''', (User_ID,))
                 Values = self.c.fetchall()
-                #dsfasjkoasdjklasdjnkasd
-                if LogChanges is True:
-                    print("Archived")
-                    self.InvestmentArchive.Archive(Values)
+                self.InvestmentArchive.Archive(Values)
                 self.c.execute('''
                       DELETE FROM Investment WHERE Investment_ID IN(SELECT Investment_ID FROM Investment WHERE User_Id = ? LIMIT 1) 
                       ''', (User_ID,))

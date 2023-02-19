@@ -50,6 +50,8 @@ Investment.insertIntoTable(123, 123, 123)
 Investment.insertIntoTable(12, 123, 23)
 Investment.insertIntoTable(123, 3, 123)
 User.deleteRecord("ma")
+User.insertIntoTable("m","s",100)
+User.deleteRecord("ms")
 
 
 def previousStage(num):
@@ -57,6 +59,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(2)
+previousStage(3)
 
 # when deleting user app crashes

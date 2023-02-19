@@ -95,7 +95,7 @@ class Log:
             self.SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS UserLog
-                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 1 , [User_ID] VARCHAR DEFAULT ""  ,[FirstName] TEXT DEFAULT "" , [LastName] TEXT DEFAULT "", [Money] REAL DEFAULT 0.0,
+                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [User_ID] VARCHAR DEFAULT ""  ,[FirstName] TEXT DEFAULT "" , [LastName] TEXT DEFAULT "", [Money] REAL DEFAULT 0.0,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
             self.conn.commit()
@@ -184,12 +184,26 @@ class Log:
                         #     # self.InsertStatement()
                         #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
+                        from Investment import Investment
+                        from Archive import InvestmentArchive
+
                         RecoverdData = self.UserArchive.getData()
                         print(RecoverdData)
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
                         self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
                         print("Recover using user id")
+                        # problem here
+                        print("Using count recover the most recent data from archive for that user")
+                        while NoOfRecordsAffected > 0:
+                            print("yo")
+                            self.Investment = Investment()
+                            self.InvestmentArchive = InvestmentArchive()
+                            self.Investment.setProfile(User_ID)
+                            RecoverdData = self.InvestmentArchive.getData(User_ID)
+                            self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
+                                                            LogChanges=False)
+                            NoOfRecordsAffected = NoOfRecordsAffected - 1
 
                 elif Transaction_Type == DB_Code.UI:
                     print("Delete using User_ID")
@@ -226,7 +240,7 @@ class Log:
             self.SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS InvestmentLog
-                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 1 , [Investment_ID] VARCHAR DEFAULT "", [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
+                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [Investment_ID] VARCHAR DEFAULT "", [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
             self.conn.commit()

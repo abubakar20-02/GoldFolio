@@ -80,9 +80,11 @@ class User:
             self.c.execute("SELECT COUNT(*) FROM Investment WHERE User_ID = ?", (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
 
+            print("checked")
+
             if RecordsAffected > 0:
-                #jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
-                self.Investment.deleteRecord(User_ID, LogChanges=True)
+                # jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
+                self.Investment.deleteRecord(User_ID, LogChanges=False)
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
@@ -90,8 +92,7 @@ class User:
             self.conn.commit()
             if LogChanges is True:
                 self.Log.insert(Transaction_ID, DB_Code.UD)
-                if RecordsAffected > 0:
-                    self.__LogForDelete(RecordsAffected, User_ID, Values, Transaction_ID)
+                self.__LogForDelete(RecordsAffected, User_ID, Values, Transaction_ID)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
