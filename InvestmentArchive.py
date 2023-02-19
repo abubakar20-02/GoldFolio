@@ -8,12 +8,12 @@ class InvestmentArchive:
         self.conn = None
         self.__createTable()
 
-    def SetUpConnection(self):
+    def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBArchiveName)
         self.c = self.conn.cursor()
 
     def __createTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveInvestment                                                         
               ([Investment_ID] VARCHAR ,[User_ID] VARCHAR, [Gold] Real , [Purity] Real, [BoughtFor] REAL,[ProfitLoss] Real,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
@@ -22,9 +22,9 @@ class InvestmentArchive:
         self.conn.close()
 
     def Archive(self, Values):
-        self.SetUpConnection()
+        """Takes value of investment to archive."""
+        self.__SetUpConnection()
         try:
-
             self.c.executemany(
                 "INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)",
                 Values)
@@ -35,9 +35,9 @@ class InvestmentArchive:
             self.conn.close()
 
     def dropTable(self):
-        self.SetUpConnection()
+        self.__SetUpConnection()
         try:
-            self.c.execute("DROP TABLE ArchiveInvestment")
+            self.c.execute("DELETE FROM ArchiveInvestment")
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -45,7 +45,9 @@ class InvestmentArchive:
             self.conn.close()
 
     def getData(self, User_ID, *Investment_ID):
-        self.SetUpConnection()
+        """Takes user id to get archive investment for the user and investment id can also be used to get specific
+        record data. """
+        self.__SetUpConnection()
         Data = None
         self.c.execute("SELECT COUNT(*) FROM ArchiveInvestment WHERE User_ID = ?", (User_ID,))
         Count = self.c.fetchone()[0]
