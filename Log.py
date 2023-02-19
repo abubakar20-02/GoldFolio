@@ -229,6 +229,17 @@ class Log:
             self.conn.close()
 
         # could be refactored
+        def SellAllProfitStatement(self, id, RecordsAffected, User_ID):
+            self.SetUpConnection()
+            self.c.execute('''
+            INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
+                    VALUES 
+                    (?,?,?,?)
+                  ''', (id, DB_Code.ISP, RecordsAffected, User_ID))
+            self.conn.commit()
+            self.conn.close()
+
+        # could be refactored
         def SellAllStatement(self, id, RecordsAffected, User_ID):
             self.SetUpConnection()
             self.c.execute('''

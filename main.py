@@ -37,7 +37,7 @@ User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
 # User.updateRecord("ma", 1)
 # look into this
-# User.deleteRecord("kj1")
+User.deleteRecord("kj1")
 # User.deleteRecord("ma")
 import time
 

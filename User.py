@@ -32,7 +32,7 @@ class User:
         return initials
 
     def generate_unique_initials(self, first_name, last_name):
-        """Generate a unique user ID using first name and last name."""
+        """Generate InvestmentArchive unique user ID using first name and last name."""
         initials = self.__generate_initials(first_name, last_name)
         i = 1
         while True:
@@ -69,7 +69,7 @@ class User:
             self.conn.close()
 
     def deleteRecord(self, User_ID, *LogChanges):
-        """Takes user id to delete record and if log change is not empty, then the code saves a log."""
+        """Takes user id to delete record and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
@@ -100,7 +100,7 @@ class User:
         self.Log.insert(id, DB_Code.UI)
 
     def insertIntoTable(self, FName, LName, Money, *LogChanges):
-        """Takes record data to insert and if log change is not empty, then the code saves a log."""
+        """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         User_ID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
@@ -116,7 +116,7 @@ class User:
 
     def updateRecord(self, User_ID, Money, *LogChanges):
         """Takes user id to locate the user, take money to change and if log change is not empty, then the code saves
-        a log. """
+        InvestmentArchive log. """
         self.__SetUpConnection()
         self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
         Values = self.c.fetchall()

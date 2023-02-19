@@ -52,24 +52,26 @@ class InvestmentArchive:
         self.c.execute("SELECT COUNT(*) FROM ArchiveInvestment WHERE User_ID = ?", (User_ID,))
         Count = self.c.fetchone()[0]
         print(Count)
-        if Count > 0:
-            if not Investment_ID:
-                self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?",
-                               (User_ID, Count - 1,))
-            else:
-                self.c.execute(
-                    "SELECT * FROM ArchiveInvestment WHERE Investment_ID = ? AND User_ID = ? LIMIT 1 OFFSET ?",
-                    (Investment_ID, User_ID, Count - 1,))
-            Data = self.c.fetchone()
-            if not Investment_ID:
-                # needs id to delete, its fine as id is primary key and unique.
-                self.c.execute(
-                    "DELETE FROM ArchiveInvestment WHERE Investment_ID IN (SELECT Investment_ID FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
-                    (User_ID, Count - 1,))
-            else:
-                self.c.execute(
-                    "DELETE FROM ArchiveUser WHERE (SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
-                    (User_ID, Count - 1,))
+
+        if not Investment_ID:
+            self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?",
+                           (User_ID, Count - 1,))
+        else:
+            self.c.execute(
+                "SELECT * FROM ArchiveInvestment WHERE Investment_ID = ? AND User_ID = ? LIMIT 1 OFFSET ?",
+                (Investment_ID, User_ID, Count - 1,))
+
+        Data = self.c.fetchone()
+
+        if not Investment_ID:
+            # needs id to delete, its fine as id is primary key and unique.
+            self.c.execute(
+                "DELETE FROM ArchiveInvestment WHERE Investment_ID IN (SELECT Investment_ID FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
+                (User_ID, Count - 1,))
+        else:
+            self.c.execute(
+                "DELETE FROM ArchiveUser WHERE (SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
+                (User_ID, Count - 1,))
 
         self.conn.commit()
         self.conn.close()
