@@ -3,8 +3,8 @@ from Investment import Investment
 from Statement import Statement
 from Log import Log
 
-from UserArchive import UserArchive
-from InvestmentArchive import InvestmentArchive
+from Archive import UserArchive
+from Archive import InvestmentArchive
 
 
 def ClearArchive():
@@ -61,8 +61,6 @@ Investment.setProfile("kj")
 Investment.insertIntoTable(123, 21, 21)
 Investment.insertIntoTable(1, 21, 40)
 
-# import time
-# time.sleep(3)
 # User.deleteRecord("ma")
 # User.deleteRecord("ma")
 # Investment.deleteRecord("ma")
@@ -76,12 +74,10 @@ User.showTable()
 
 Investment.setProfile("ma")
 Investment.sellAll()
-print("------------------")
 # Investment.showProfit()
 Investment.sellAll()
 Statement.setProfile("kj")
 Statement.showStatement()
-print("------------------")
 
 
 def previousStage(num):
@@ -89,7 +85,5 @@ def previousStage(num):
         Log.previousStage()
 
 
-# # time.sleep(5)
 previousStage(14)
 
-# Investment.showLoss()

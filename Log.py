@@ -169,7 +169,7 @@ class Log:
                 Money = Data[7]
                 print("User")
                 from User import User
-                from UserArchive import UserArchive
+                from Archive import UserArchive
                 self.user = User()
                 self.UserArchive = UserArchive()
                 if Transaction_Type == DB_Code.UD:
@@ -319,7 +319,7 @@ class Log:
                 ProfitLoss = Data[9]
 
                 from Investment import Investment
-                from InvestmentArchive import InvestmentArchive
+                from Archive import InvestmentArchive
                 from Statement import Statement
                 self.Investment = Investment()
                 self.InvestmentArchive = InvestmentArchive()

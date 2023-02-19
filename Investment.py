@@ -5,7 +5,7 @@ import pandas as pd
 
 import DB_Code
 import SetUpFile
-from InvestmentArchive import InvestmentArchive
+from Archive import InvestmentArchive
 from Log import Log
 
 
