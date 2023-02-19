@@ -185,7 +185,7 @@ class Log:
                     else:
                         RecoverdData = self.UserArchive.getData()
                         # FirstName, LastName,Money, False(Not Log)
-                        self.user.insertIntoTable(RecoverdData[1], RecoverdData[2], RecoverdData[3], False)
+                        self.user.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
                         print("Recover using user id")
 
                 elif Transaction_Type == DB_Code.UI:
@@ -198,7 +198,7 @@ class Log:
                     print("-------------")
                     print(RecoverdData)
                     if RecoverdData is not None:
-                        self.user.updateRecord(RecoverdData[0], RecoverdData[3], False)
+                        self.user.updateRecord(RecoverdData[1], RecoverdData[4], False)
                     print("-------------")
                     # self.userArchive.getData()
                 else:
@@ -342,8 +342,9 @@ class Log:
                     self.Investment.setProfile(User_ID)
                     # loop count till all values inserted
                     while NoOfRecordsAffected > 0:
-                        RecoverdData = self.Statement.getData(User_ID)
+                        RecoverdData = self.InvestmentArchive.getData(User_ID)
                         self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
+                        # code to remove record from statement.
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 else:
                     print("nothing")

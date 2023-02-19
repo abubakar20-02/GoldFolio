@@ -90,6 +90,6 @@ def previousStage(num):
 
 
 # # time.sleep(5)
-# previousStage(15)
+previousStage(14)
 
 # Investment.showLoss()

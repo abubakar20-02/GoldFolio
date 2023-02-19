@@ -90,14 +90,20 @@ class User:
         finally:
             self.conn.close()
 
-    def __LogForDelete(self, RecordsAffected, User_ID, Values, id):
-        self.Log.insert(id, DB_Code.UD)
-        self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
+    def __LogForDelete(self, RecordsAffected, User_ID, Values, Transaction_ID):
+        self.Log.insert(Transaction_ID, DB_Code.UD)
+        self.UserLog.DeleteStatement(Transaction_ID, RecordsAffected, User_ID)
         self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
-    def __LogForInsert(self, FName, LName, Money, User_ID, id):
-        self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
-        self.Log.insert(id, DB_Code.UI)
+    def __LogForInsert(self, FName, LName, Money, User_ID, Transaction_ID):
+        self.UserLog.InsertStatement(Transaction_ID, User_ID, FName, LName, Money)
+        self.Log.insert(Transaction_ID, DB_Code.UI)
+
+    def __LogForUpdate(self, Money, User_ID, Values, TransactionID):
+        self.Log.insert(TransactionID, DB_Code.UU)
+        self.UserLog.UpdateStatement(TransactionID, User_ID, Money)
+        # mention this was updated
+        self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
     def insertIntoTable(self, FName, LName, Money, *LogChanges):
         """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
@@ -118,17 +124,17 @@ class User:
         """Takes user id to locate the user, take money to change and if log change is not empty, then the code saves
         InvestmentArchive log. """
         self.__SetUpConnection()
+        self.c.execute("SELECT COUNT(*) FROM User WHERE User_ID = ?", (User_ID,))
+        RecordAffected = self.c.fetchall()
         self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
         Values = self.c.fetchall()
         self.c.execute('''
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
-        self.Log.insert(generateTransactionID(), DB_Code.UU)
         if LogChanges == ():
-            self.UserLog.UpdateStatement(generateTransactionID(), User_ID, Money)
-            # mention this was updated
-            self.a.Archive(DB_Code.UPDATECOMMAND, Values)
+            TransactionID = generateTransactionID()
+            self.__LogForUpdate(Money, User_ID, Values, TransactionID)
         self.conn.close()
 
     def showTable(self):
