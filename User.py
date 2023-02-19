@@ -68,7 +68,7 @@ class User:
         finally:
             self.conn.close()
 
-    def deleteRecord(self, User_ID, *LogChanges):
+    def deleteRecord(self, User_ID, LogChanges=True):
         """Takes user id to delete record and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         try:
@@ -82,7 +82,7 @@ class User:
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            if RecordsAffected > 0 and LogChanges == ():
+            if RecordsAffected > 0 and LogChanges is True:
                 self.__LogForDelete(RecordsAffected, User_ID, Values, generateTransactionID())
         except Exception as e:
             self.conn.rollback()
@@ -105,7 +105,7 @@ class User:
         # mention this was updated
         self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
-    def insertIntoTable(self, FName, LName, Money, *LogChanges):
+    def insertIntoTable(self, FName, LName, Money, LogChanges=True):
         """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         User_ID = self.generate_unique_initials(FName, LName)
@@ -116,23 +116,21 @@ class User:
                 (?,?,?,?)
           ''', (User_ID, FName, LName, Money))
         self.conn.commit()
-        if LogChanges == ():
+        if LogChanges is True:
             self.__LogForInsert(FName, LName, Money, User_ID, generateTransactionID())
         self.conn.close()
 
-    def updateRecord(self, User_ID, Money, *LogChanges):
+    def updateRecord(self, User_ID, Money, LogChanges=True):
         """Takes user id to locate the user, take money to change and if log change is not empty, then the code saves
         InvestmentArchive log. """
         self.__SetUpConnection()
-        self.c.execute("SELECT COUNT(*) FROM User WHERE User_ID = ?", (User_ID,))
-        RecordAffected = self.c.fetchall()
         self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
         Values = self.c.fetchall()
         self.c.execute('''
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
-        if LogChanges == ():
+        if LogChanges is True:
             TransactionID = generateTransactionID()
             self.__LogForUpdate(Money, User_ID, Values, TransactionID)
         self.conn.close()

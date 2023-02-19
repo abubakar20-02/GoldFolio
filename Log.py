@@ -185,12 +185,13 @@ class Log:
                     else:
                         RecoverdData = self.UserArchive.getData()
                         # FirstName, LastName,Money, False(Not Log)
-                        self.user.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
+                        #use same transaction id
+                        self.user.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], LogChanges=False)
                         print("Recover using user id")
 
                 elif Transaction_Type == DB_Code.UI:
                     print("Delete using User_ID")
-                    self.user.deleteRecord(User_ID, False)
+                    self.user.deleteRecord(User_ID, LogChanges=False)
 
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")
@@ -198,7 +199,7 @@ class Log:
                     print("-------------")
                     print(RecoverdData)
                     if RecoverdData is not None:
-                        self.user.updateRecord(RecoverdData[1], RecoverdData[4], False)
+                        self.user.updateRecord(RecoverdData[1], RecoverdData[4], LogChanges=False)
                     print("-------------")
                     # self.userArchive.getData()
                 else:
@@ -332,7 +333,7 @@ class Log:
                     RecoverdData = self.InvestmentArchive.getData(User_ID)
                     print(RecoverdData)
                     if RecoverdData is not None:
-                        self.Investment.deleteRecord(RecoverdData[0], False)
+                        self.Investment.deleteRecord(RecoverdData[0],False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
