@@ -54,30 +54,32 @@ Investment.createTable()
 Investment.setProfile("ma")
 Investment.insertIntoTable(123, 21, 123)
 Investment.insertIntoTable(21, 1, 1)
-Investment.insertIntoTable(1000, 21, 20)
-Investment.insertIntoTable(1, 21, 12)
-Investment.insertIntoTable(1, 21, 21)
+Investment.insertIntoTable(31, 1, 1)
+# Investment.insertIntoTable(1000, 21, 20)
+# Investment.insertIntoTable(1, 21, 12)
+# Investment.insertIntoTable(1, 21, 21)
 Investment.setProfile("kj")
 Investment.insertIntoTable(123, 21, 21)
 Investment.insertIntoTable(1, 21, 40)
+User.deleteRecord("ma")
 
-# User.deleteRecord("ma")
-# User.deleteRecord("ma")
-# Investment.deleteRecord("ma")
-
-# User.deleteRecord("ma")
-# User.deleteRecord("kj")
-# Investment.showTable()
-Investment.updateProfitLoss(12)
-Investment.setProfile("ma")
-User.showTable()
-
-Investment.setProfile("ma")
-Investment.sellAll()
-# Investment.showProfit()
-Investment.sellAll()
-Statement.setProfile("kj")
-Statement.showStatement()
+# # User.deleteRecord("ma")
+# # User.deleteRecord("ma")
+# # Investment.deleteRecord("ma")
+#
+# # User.deleteRecord("ma")
+# # User.deleteRecord("kj")
+# # Investment.showTable()
+# Investment.updateProfitLoss(12)
+# Investment.setProfile("ma")
+# User.showTable()
+#
+# Investment.setProfile("ma")
+# Investment.sellAll()
+# # Investment.showProfit()
+# Investment.sellAll()
+# Statement.setProfile("kj")
+# Statement.showStatement()
 
 
 def previousStage(num):
@@ -85,5 +87,5 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(14)
+previousStage(6)
 

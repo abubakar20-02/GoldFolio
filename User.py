@@ -9,6 +9,7 @@ from Archive import UserArchive
 from Log import Log
 import SetUpFile
 import pandas as pd
+from Investment import Investment
 
 
 def generateTransactionID():
@@ -22,6 +23,7 @@ class User:
         self.a = UserArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
+        self.Investment = Investment()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -70,20 +72,24 @@ class User:
 
     def deleteRecord(self, User_ID, LogChanges=True):
         """Takes user id to delete record and if log change is not empty, then the code saves InvestmentArchive log."""
+        Transaction_ID = generateTransactionID()
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
             Values = self.c.fetchall()
-            self.c.execute("SELECT COUNT(*) FROM User WHERE User_ID = ?", (User_ID,))
+            self.c.execute("SELECT COUNT(*) FROM Investment WHERE User_ID = ?", (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
-            self.c.execute('''DELETE FROM Investment WHERE User_ID = ?''', (User_ID,))
+
+            if RecordsAffected > 0:
+                self.Investment.deleteRecord(User_ID)
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
+            self.Log.insert(Transaction_ID, DB_Code.UD)
             if RecordsAffected > 0 and LogChanges is True:
-                self.__LogForDelete(RecordsAffected, User_ID, Values, generateTransactionID())
+                self.__LogForDelete(RecordsAffected, User_ID, Values, Transaction_ID)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
@@ -91,7 +97,6 @@ class User:
             self.conn.close()
 
     def __LogForDelete(self, RecordsAffected, User_ID, Values, Transaction_ID):
-        self.Log.insert(Transaction_ID, DB_Code.UD)
         self.UserLog.DeleteStatement(Transaction_ID, RecordsAffected, User_ID)
         self.a.Archive(DB_Code.DELETECOMMAND, Values)
 

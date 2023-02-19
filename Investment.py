@@ -74,25 +74,28 @@ class Investment:
                   SELECT COUNT(*) FROM Investment WHERE User_Id = ?
                   ''', (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
-            self.c.execute('''
-                  SELECT * FROM Investment WHERE User_Id = ?
-                  ''', (User_ID,))
-            Values = self.c.fetchall()
-            self.c.execute('''
-                  DELETE FROM Investment WHERE User_Id = ?
-                  ''', (User_ID,))
+            a= RecordsAffected
+            while a > 0:
+                self.c.execute('''
+                      SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
+                      ''', (User_ID,))
+                Values = self.c.fetchall()
+                self.InvestmentArchive.Archive(Values)
+                self.c.execute('''
+                      DELETE FROM Investment WHERE Investment_ID IN(SELECT Investment_ID FROM Investment WHERE User_Id = ? LIMIT 1) 
+                      ''', (User_ID,))
+                a = a - 1
             self.conn.commit()
             if LogChanges is True:
-                self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID, Values)
+                self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    def LogForDelete(self, id, RecordsAffected, User_ID, Values):
-        self.Log.insert(id, DB_Code.IB)
+    def LogForDelete(self, id, RecordsAffected, User_ID):
+        self.Log.insert(id, DB_Code.ID)
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
-        self.InvestmentArchive.Archive(Values)
 
     def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
