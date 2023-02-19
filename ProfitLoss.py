@@ -6,7 +6,7 @@ import os
 import SetUpFile
 
 
-# create a function that can convert excel file to db.
+# create UserArchive function that can convert excel file to db.
 class Statement:
     def __init__(self):
         super().__init__()

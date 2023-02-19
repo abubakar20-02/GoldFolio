@@ -1,4 +1,4 @@
-# create a function that can convert excel file to db.
+# create UserArchive function that can convert excel file to db.
 import sqlite3
 import uuid
 

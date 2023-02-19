@@ -7,9 +7,12 @@ from xlsxwriter import Workbook
 import DB_Code
 from UserArchive import UserArchive
 from Log import Log
-
 import SetUpFile
 import pandas as pd
+
+
+def generateTransactionID():
+    return str(uuid.uuid4())
 
 
 class User:
@@ -17,26 +20,27 @@ class User:
         self.c = None
         self.conn = None
         self.a = UserArchive()
-        self.b = Log()
+        self.Log = Log()
         self.UserLog = Log.UserLog()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
-    def generate_initials(self, first_name, last_name):
+    def __generate_initials(self, first_name, last_name):
         initials = first_name[0].lower() + last_name[0].lower()
         return initials
 
     def generate_unique_initials(self, first_name, last_name):
-        initials = self.generate_initials(first_name, last_name)
+        """Generate a unique user ID using first name and last name."""
+        initials = self.__generate_initials(first_name, last_name)
         i = 1
         while True:
             self.c.execute("SELECT COUNT(*) FROM User WHERE User_Id = ?", (initials,))
             count = self.c.fetchone()[0]
             if count == 0:
                 return initials
-            initials = self.generate_initials(first_name, last_name) + str(i)
+            initials = self.__generate_initials(first_name, last_name) + str(i)
             i += 1
 
     def createTable(self):
@@ -49,7 +53,6 @@ class User:
         self.conn.close()
 
     def deleteTable(self, *LogChanges):
-        id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User")
@@ -59,14 +62,14 @@ class User:
             self.c.execute("DELETE FROM User")
             self.conn.commit()
             if LogChanges == ():
-                self.LogForDelete(RecordsAffected, None, Values, id)
+                self.__LogForDelete(RecordsAffected, None, Values, generateTransactionID())
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
     def deleteRecord(self, User_ID, *LogChanges):
-        id = str(uuid.uuid4())
+        """Takes user id to delete record and if log change is not empty, then the code saves a log."""
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
@@ -80,20 +83,24 @@ class User:
                   ''', (User_ID,))
             self.conn.commit()
             if RecordsAffected > 0 and LogChanges == ():
-                self.LogForDelete(RecordsAffected, User_ID, Values, id)
+                self.__LogForDelete(RecordsAffected, User_ID, Values, generateTransactionID())
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
         finally:
             self.conn.close()
 
-    def LogForDelete(self, RecordsAffected, User_ID, Values, id):
-        self.b.insert(id, DB_Code.UD)
+    def __LogForDelete(self, RecordsAffected, User_ID, Values, id):
+        self.Log.insert(id, DB_Code.UD)
         self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
         self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
+    def __LogForInsert(self, FName, LName, Money, User_ID, id):
+        self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
+        self.Log.insert(id, DB_Code.UI)
+
     def insertIntoTable(self, FName, LName, Money, *LogChanges):
-        id = str(uuid.uuid4())
+        """Takes record data to insert and if log change is not empty, then the code saves a log."""
         self.__SetUpConnection()
         User_ID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
@@ -104,15 +111,12 @@ class User:
           ''', (User_ID, FName, LName, Money))
         self.conn.commit()
         if LogChanges == ():
-            self.LogForInsert(FName, LName, Money, User_ID, id)
+            self.__LogForInsert(FName, LName, Money, User_ID, generateTransactionID())
         self.conn.close()
 
-    def LogForInsert(self, FName, LName, Money, User_ID, id):
-        self.UserLog.InsertStatement(id, User_ID, FName, LName, Money)
-        self.b.insert(id, DB_Code.UI)
-
     def updateRecord(self, User_ID, Money, *LogChanges):
-        id = str(uuid.uuid4())
+        """Takes user id to locate the user, take money to change and if log change is not empty, then the code saves
+        a log. """
         self.__SetUpConnection()
         self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
         Values = self.c.fetchall()
@@ -120,9 +124,9 @@ class User:
               UPDATE User SET Money = ? WHERE User_ID = ?
               ''', (Money, User_ID))
         self.conn.commit()
-        self.b.insert(id, DB_Code.UU)
+        self.Log.insert(generateTransactionID(), DB_Code.UU)
         if LogChanges == ():
-            self.UserLog.UpdateStatement(id, User_ID, Money)
+            self.UserLog.UpdateStatement(generateTransactionID(), User_ID, Money)
             # mention this was updated
             self.a.Archive(DB_Code.UPDATECOMMAND, Values)
         self.conn.close()

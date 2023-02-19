@@ -37,8 +37,8 @@ User.insertIntoTable("Kanishka", "Jay", 10)
 User.insertIntoTable("Kabubakar", "J", 1)
 # User.updateRecord("ma", 1)
 # look into this
-User.deleteRecord("kj1")
-User.deleteRecord("ma")
+# User.deleteRecord("kj1")
+# User.deleteRecord("ma")
 import time
 
 time.sleep(1)
@@ -90,6 +90,6 @@ def previousStage(num):
 
 
 # # time.sleep(5)
-# previousStage(1)
+# previousStage(15)
 
 # Investment.showLoss()

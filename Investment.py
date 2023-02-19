@@ -13,7 +13,7 @@ import SetUpFile
 
 # give user the ability when selling to input manual gold rate too.
 
-# create a function that can convert excel file to db.
+# create UserArchive function that can convert excel file to db.
 class Investment:
     def __init__(self):
         super().__init__()
@@ -54,9 +54,9 @@ class Investment:
             self.c.execute("DROP TABLE Investment")
             self.conn.commit()
             # if RecordsAffected > 0:
-            #     self.b.insert(id, "DeleteInvestment")
+            #     self.Log.insert(id, "DeleteInvestment")
             #     self.InvestmentLog.DeleteStatement(id, "DropInvestments", RecordsAffected, None)
-            #     self.a.Archive(Values)
+            #     self.UserArchive.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
@@ -130,7 +130,7 @@ class Investment:
               ''', (Money, Gold, Purity, self.Profile, GoldRate))
         self.conn.commit()
         # _________________________________________________
-        # self.b.insert(my_uuid, DB_Code.IU)
+        # self.Log.insert(my_uuid, DB_Code.IU)
         # self.InvestmentLog.UpdateStatement(my_uuid,DB_Code.IU, User_ID,)
         # _________________________________________________
         self.conn.close()
