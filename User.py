@@ -81,7 +81,8 @@ class User:
             RecordsAffected = self.c.fetchone()[0]
 
             if RecordsAffected > 0:
-                self.Investment.deleteRecord(User_ID, LogChanges=LogChanges)
+                #jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
+                self.Investment.deleteRecord(User_ID, LogChanges=False)
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?

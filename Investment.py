@@ -49,12 +49,14 @@ class Investment:
         id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
-            self.c.execute("SELECT * FROM Investment")
-            Values = self.c.fetchall()
-            self.c.execute("SELECT COUNT(*) FROM Investment")
-            RecordsAffected = self.c.fetchone()[0]
-            self.c.execute("DROP TABLE Investment")
-            self.conn.commit()
+            self.c.execute("DELETE FROM Investment")
+            print("Delete Investment")
+            # self.c.execute("SELECT * FROM Investment")
+            # Values = self.c.fetchall()
+            # self.c.execute("SELECT COUNT(*) FROM Investment")
+            # RecordsAffected = self.c.fetchone()[0]
+            # self.c.execute("DROP TABLE Investment")
+            # self.conn.commit()
             # if RecordsAffected > 0:
             #     self.Log.insert(id, "DeleteInvestment")
             #     self.InvestmentLog.DeleteStatement(id, "DropInvestments", RecordsAffected, None)
@@ -63,7 +65,7 @@ class Investment:
             print(error)
         finally:
             self.conn.close()
-
+#dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
     # need to use investment id to delete
     def deleteRecord(self, User_ID, LogChanges=True):
         """Takes in the user ID to delete investment for that ID."""
@@ -82,6 +84,7 @@ class Investment:
                 Values = self.c.fetchall()
                 #dsfasjkoasdjklasdjnkasd
                 if LogChanges is True:
+                    print("Archived")
                     self.InvestmentArchive.Archive(Values)
                 self.c.execute('''
                       DELETE FROM Investment WHERE Investment_ID IN(SELECT Investment_ID FROM Investment WHERE User_Id = ? LIMIT 1) 

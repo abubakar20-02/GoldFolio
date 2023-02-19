@@ -19,6 +19,7 @@ class Log:
         self.InvestmentLog = self.InvestmentLog()
         self.createTable()
 
+# need refactoring
     def generateTransactionID(self):
         self.uid = str(uuid.uuid4())
 
@@ -184,9 +185,10 @@ class Log:
                         #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
                         RecoverdData = self.UserArchive.getData()
+                        print(RecoverdData)
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
-                        self.user.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], LogChanges=False)
+                        self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
                         print("Recover using user id")
 
                 elif Transaction_Type == DB_Code.UI:
@@ -199,7 +201,8 @@ class Log:
                     print("-------------")
                     print(RecoverdData)
                     if RecoverdData is not None:
-                        self.user.updateRecord(RecoverdData[1], RecoverdData[4], LogChanges=False)
+                        print(RecoverdData[2], RecoverdData[5])
+                        self.user.updateRecord(RecoverdData[2], RecoverdData[5], LogChanges=False)
                     print("-------------")
                     # self.userArchive.getData()
                 else:
@@ -338,13 +341,16 @@ class Log:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
                     print("Use User_ID to find most recent deleted investment using count")
+                    # adding archived data to User investment
                 elif Transaction_Type == DB_Code.ID:
+                    # problem here
                     print("Using count recover the most recent data from archive for that user")
                     while NoOfRecordsAffected > 0:
+                        print("yo")
+                        self.Investment.setProfile(User_ID)
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
-                        self.Investment.setProfile(RecoverdData[1])
                         self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
-                                                        LogChanges=False, Transaction_ID=RecoverdData[0])
+                                                        LogChanges=False)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 elif Transaction_Type == DB_Code.ISA:
                     print("Use User_ID to find most recent statement using count")

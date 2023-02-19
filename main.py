@@ -1,3 +1,5 @@
+import time
+
 from User import User
 from Investment import Investment
 from Statement import Statement
@@ -26,75 +28,28 @@ Statement.createTable()
 Statement.showStatement()
 
 Investment = Investment()
+Investment.deleteTable()
 Investment.createTable()
 
 User = User()
 User.deleteTable(False)
 User.createTable()
+
 User.insertIntoTable("Muhammad", "Abubakar", 100)
-User.insertIntoTable("Muhammad", "Abu", 69)
-User.updateRecord("ma", 1)
-User.updateRecord("ma", 2)
-# User.deleteRecord("ma")
-User.insertIntoTable("Mu", "Abu", 9)
+User.updateRecord("ma", 20)
+User.updateRecord("ma", 50)
 
 Investment.setProfile("ma")
-Investment.insertIntoTable(1,21,100)
-Investment.setProfile("ma1")
-Investment.insertIntoTable(2,21,100)
-Investment.setProfile("ma")
-Investment.insertIntoTable(3,21,100)
-Investment.updateProfitLoss(10)
-User.deleteRecord("ma1")
-Investment.updateProfitLoss(2400)
-#
-User.insertIntoTable("Kanishka", "Jay", 10)
-User.insertIntoTable("Kabubakar", "J", 1)
-# User.updateRecord("ma", 1)
-# look into this
-User.deleteRecord("kj1")
-User.deleteRecord("ma")
-# import time
-#
-# time.sleep(1)
-# # User.deleteRecord("ma")
-# User.showTable()
-#
-# Investment = Investment()
-# Investment.deleteTable()
-# Investment.createTable()
+Investment.insertIntoTable(123, 123, 123)
+Investment.insertIntoTable(12, 123, 23)
+Investment.insertIntoTable(123, 3, 123)
 
-# # code to show help
-# # print(Investment.insertIntoTable.__doc__)
-# Investment.setProfile("ma")
-# Investment.insertIntoTable(123, 21, 123)
-# Investment.insertIntoTable(21, 1, 1)
-# Investment.insertIntoTable(31, 1, 1)
-# # Investment.insertIntoTable(1000, 21, 20)
-# # Investment.insertIntoTable(1, 21, 12)
-# # Investment.insertIntoTable(1, 21, 21)
-# Investment.setProfile("kj")
-# Investment.insertIntoTable(123, 21, 21)
-# Investment.insertIntoTable(1, 21, 40)
+User.insertIntoTable("Ali", "Baba", 1)
+Investment.setProfile("ab")
+Investment.insertIntoTable(123, 123, 123)
+Investment.insertIntoTable(12, 123, 23)
+Investment.insertIntoTable(123, 3, 123)
 # User.deleteRecord("ma")
-
-# # User.deleteRecord("ma")
-# # User.deleteRecord("ma")
-# # Investment.deleteRecord("ma")
-#
-# # User.deleteRecord("ma")
-# # User.deleteRecord("kj")
-# # Investment.showTable()
-# Investment.updateProfitLoss(12)
-# Investment.setProfile("ma")
-# User.showTable()
-#
-# Investment.setProfile("ma")
-# Investment.sellAll()
-# # Investment.showProfit()
-# Investment.sellAll()
-# Statement.setProfile("kj")
-# Statement.showStatement()
 
 
 def previousStage(num):
@@ -102,5 +57,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(15)
+previousStage(0)
 
+# when deleting user app crashes
