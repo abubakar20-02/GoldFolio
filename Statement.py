@@ -1,12 +1,8 @@
 import sqlite3
 import pandas as pd
-from xlsxwriter import Workbook
-import os
-
 import SetUpFile
 
 
-# create UserArchive function that can convert excel file to db.
 class Statement:
     def __init__(self):
         super().__init__()
@@ -23,7 +19,6 @@ class Statement:
         self.c = self.conn.cursor()
 
     def createTable(self):
-        # date, gold rate, weight
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Statement
@@ -75,6 +70,7 @@ class Statement:
         self.conn.close()
 
     def getData(self, User_ID, *Investment_ID):
+        """Takes in user id to show statement and it can also take investment id to get record for the investment id"""
         self.__SetUpConnection()
         Data = None
         self.c.execute("SELECT COUNT(*) FROM Statement WHERE User_ID = ?", (User_ID,))

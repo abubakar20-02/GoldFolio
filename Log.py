@@ -309,7 +309,7 @@ class Log:
 
                 from Investment import Investment
                 from InvestmentArchive import InvestmentArchive
-                from ProfitLoss import Statement
+                from Statement import Statement
                 self.Investment = Investment()
                 self.InvestmentArchive = InvestmentArchive()
                 self.Statement = Statement()

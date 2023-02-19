@@ -1,6 +1,6 @@
 from User import User
 from Investment import Investment
-from ProfitLoss import Statement
+from Statement import Statement
 from Log import Log
 
 from UserArchive import UserArchive
