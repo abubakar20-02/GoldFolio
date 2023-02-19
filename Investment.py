@@ -46,10 +46,10 @@ class Investment:
         self.conn.close()
 
     def deleteTable(self):
-        id = str(uuid.uuid4())
         self.__SetUpConnection()
         try:
             self.c.execute("DELETE FROM Investment")
+            self.conn.commit()
             print("Delete Investment")
             # self.c.execute("SELECT * FROM Investment")
             # Values = self.c.fetchall()

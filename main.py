@@ -28,7 +28,6 @@ Statement.createTable()
 Statement.showStatement()
 
 Investment = Investment()
-Investment.deleteTable()
 Investment.createTable()
 
 User = User()
@@ -38,8 +37,9 @@ User.createTable()
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 User.updateRecord("ma", 20)
 User.updateRecord("ma", 50)
-
+#
 Investment.setProfile("ma")
+Investment.deleteTable()
 Investment.insertIntoTable(123, 123, 123)
 Investment.insertIntoTable(12, 123, 23)
 Investment.insertIntoTable(123, 3, 123)
@@ -49,7 +49,7 @@ Investment.setProfile("ab")
 Investment.insertIntoTable(123, 123, 123)
 Investment.insertIntoTable(12, 123, 23)
 Investment.insertIntoTable(123, 3, 123)
-# User.deleteRecord("ma")
+User.deleteRecord("ma")
 
 
 def previousStage(num):
@@ -57,6 +57,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(0)
+previousStage(11)
 
 # when deleting user app crashes
