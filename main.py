@@ -57,6 +57,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(11)
+previousStage(2)
 
 # when deleting user app crashes

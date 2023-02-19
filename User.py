@@ -82,7 +82,7 @@ class User:
 
             if RecordsAffected > 0:
                 #jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
-                self.Investment.deleteRecord(User_ID, LogChanges=False)
+                self.Investment.deleteRecord(User_ID, LogChanges=True)
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
