@@ -16,15 +16,19 @@ class UserArchive:
         self.SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveUser
-              ([User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+              ([ActionType] TEXT,[User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[time_stamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
               ''')
         self.conn.commit()
         self.conn.close()
 
-    def Archive(self, Values):
+    def Archive(self, Action, Values):
+        Values[0] = (Action,) + Values[0]
         self.SetUpConnection()
         try:
-            self.c.executemany("INSERT INTO ArchiveUser(User_ID, FirstName, LastName, Money) VALUES(?,?,?,?)", Values)
+            self.c.executemany(
+                "INSERT INTO ArchiveUser(ActionType,User_ID, FirstName, LastName, Money) VALUES(?,?,?,?,?)",
+                Values)
+
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)

@@ -330,10 +330,10 @@ class Log:
                     print("Use User_ID to find most recent statement using count")
                     self.Investment.setProfile(User_ID)
                     # loop count till all values inserted
-                    while NoOfRecordsAffected >0:
+                    while NoOfRecordsAffected > 0:
                         RecoverdData = self.Statement.getData(User_ID)
                         self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
-                        NoOfRecordsAffected = NoOfRecordsAffected-1
+                        NoOfRecordsAffected = NoOfRecordsAffected - 1
                 else:
                     print("nothing")
                 print("")

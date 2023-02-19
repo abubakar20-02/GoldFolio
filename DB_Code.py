@@ -1,10 +1,13 @@
 # User
 UI = "InsertUser"
 UU = "UpdateUser"
-UD = "DeleteUser" #
+UD = "DeleteUser"  #
 
 # Investment
 IB = "BuyInvestment"
-ISP = "SellProfitableInvestment" #
-ISA = "SellAllInvestment" #
+ISP = "SellProfitableInvestment"  #
+ISA = "SellAllInvestment"  #
 IU = "UpdateInvestment"
+
+DELETECOMMAND = "DELETE"
+UPDATECOMMAND = "UPDATE"

@@ -90,7 +90,7 @@ class User:
     def LogForDelete(self, RecordsAffected, User_ID, Values, id):
         self.b.insert(id, DB_Code.UD)
         self.UserLog.DeleteStatement(id, RecordsAffected, User_ID)
-        self.a.Archive(Values)
+        self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
     def insertIntoTable(self, FName, LName, Money, *LogChanges):
         id = str(uuid.uuid4())
@@ -123,8 +123,8 @@ class User:
         self.b.insert(id, DB_Code.UU)
         if LogChanges == ():
             self.UserLog.UpdateStatement(id, User_ID, Money)
-            #mention this was updated
-            self.a.Archive(Values)
+            # mention this was updated
+            self.a.Archive(DB_Code.UPDATECOMMAND, Values)
         self.conn.close()
 
     def showTable(self):
