@@ -345,6 +345,7 @@ class Log:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
                         self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
                         # code to remove record from statement.
+                        self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 else:
                     print("nothing")
