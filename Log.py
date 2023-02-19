@@ -333,7 +333,7 @@ class Log:
                     RecoverdData = self.InvestmentArchive.getData(User_ID)
                     print(RecoverdData)
                     if RecoverdData is not None:
-                        self.Investment.deleteRecord(RecoverdData[0],False)
+                        self.Investment.deleteRecord(RecoverdData[0],LogChanges=False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
@@ -344,7 +344,7 @@ class Log:
                     # loop count till all values inserted
                     while NoOfRecordsAffected > 0:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
-                        self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], False)
+                        self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4], LogChanges=False)
                         # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1

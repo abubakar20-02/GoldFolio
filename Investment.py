@@ -65,7 +65,7 @@ class Investment:
             self.conn.close()
 
     # need to use investment id to delete
-    def deleteRecord(self, User_ID, *LogChanges):
+    def deleteRecord(self, User_ID, LogChanges=True):
         """Takes in the user ID to delete investment for that ID."""
 
         self.__SetUpConnection()
@@ -82,7 +82,7 @@ class Investment:
                   DELETE FROM Investment WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            if LogChanges == ():
+            if LogChanges is True:
                 self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID, Values)
         except sqlite3.Error as error:
             print(error)
@@ -94,7 +94,7 @@ class Investment:
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
         self.InvestmentArchive.Archive(Values)
 
-    def insertIntoTable(self, Gold, Purity, BoughtFor, *LogChanges):
+    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         Error = True
@@ -109,7 +109,7 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?)
                       ''', (Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00))
-                if LogChanges == ():
+                if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
                 print(error)
@@ -196,7 +196,7 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self, *LogChanges):
+    def sellProfit(self, LogChanges=True):
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
         Values = self.c.fetchall()
@@ -209,7 +209,7 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
-        if RecordsAffected > 0 and LogChanges == ():
+        if RecordsAffected > 0 and LogChanges is True:
             self.__LogSellProfit(RecordsAffected, Values, generateTransactionID())
         self.conn.close()
 
@@ -219,7 +219,7 @@ class Investment:
         self.InvestmentArchive.Archive(Values)
 
     # add user here
-    def sellAll(self, *LogChanges):
+    def sellAll(self, LogChanges=True):
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
         Values = self.c.fetchall()
@@ -233,7 +233,7 @@ class Investment:
                   ''', (self.Profile,))
         self.conn.commit()
         self.conn.close()
-        if RecordsAffected > 0 and LogChanges == ():
+        if RecordsAffected > 0 and LogChanges is True:
             self.__LogSellAll(RecordsAffected, Values, generateTransactionID())
 
     def __LogSellAll(self, RecordsAffected, Values, id):
