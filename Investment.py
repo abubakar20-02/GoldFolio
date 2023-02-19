@@ -74,13 +74,15 @@ class Investment:
                   SELECT COUNT(*) FROM Investment WHERE User_Id = ?
                   ''', (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
-            a= RecordsAffected
+            a = RecordsAffected
             while a > 0:
                 self.c.execute('''
                       SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
                       ''', (User_ID,))
                 Values = self.c.fetchall()
-                self.InvestmentArchive.Archive(Values)
+                #dsfasjkoasdjklasdjnkasd
+                if LogChanges is True:
+                    self.InvestmentArchive.Archive(Values)
                 self.c.execute('''
                       DELETE FROM Investment WHERE Investment_ID IN(SELECT Investment_ID FROM Investment WHERE User_Id = ? LIMIT 1) 
                       ''', (User_ID,))
@@ -97,14 +99,15 @@ class Investment:
         self.Log.insert(id, DB_Code.ID)
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
 
-    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True):
+    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         Error = True
         # loop until there is no error.
         while Error:
             Error = False
-            Transaction_ID = generateTransactionID()
+            if Transaction_ID is None:
+                Transaction_ID = generateTransactionID()
             try:
                 self.c.execute('''
                       INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss)

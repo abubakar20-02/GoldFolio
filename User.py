@@ -81,15 +81,16 @@ class User:
             RecordsAffected = self.c.fetchone()[0]
 
             if RecordsAffected > 0:
-                self.Investment.deleteRecord(User_ID)
+                self.Investment.deleteRecord(User_ID, LogChanges=LogChanges)
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
                   ''', (User_ID,))
             self.conn.commit()
-            self.Log.insert(Transaction_ID, DB_Code.UD)
-            if RecordsAffected > 0 and LogChanges is True:
-                self.__LogForDelete(RecordsAffected, User_ID, Values, Transaction_ID)
+            if LogChanges is True:
+                self.Log.insert(Transaction_ID, DB_Code.UD)
+                if RecordsAffected > 0:
+                    self.__LogForDelete(RecordsAffected, User_ID, Values, Transaction_ID)
         except Exception as e:
             self.conn.rollback()
             print(f"Error: {e}")
@@ -97,6 +98,7 @@ class User:
             self.conn.close()
 
     def __LogForDelete(self, RecordsAffected, User_ID, Values, Transaction_ID):
+        # sadklmasdjhnklaslkedsmaklsmlskasdkaln
         self.UserLog.DeleteStatement(Transaction_ID, RecordsAffected, User_ID)
         self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
