@@ -219,7 +219,7 @@ class Investment:
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
         self.conn.commit()
-        if RecordsAffected > 0 and LogChanges is True:
+        if LogChanges is True:
             self.__LogSellProfit(RecordsAffected, Values, generateTransactionID())
         self.conn.close()
 

@@ -61,6 +61,7 @@ class Log:
         self.conn.commit()
         self.conn.close()
 
+#use timestamp here
     def previousStage(self):
         self.__SetUpConnection()
         self.generateTransactionID()
@@ -359,6 +360,15 @@ class Log:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
                     print("Use User_ID to find most recent deleted investment using count")
+                    self.Investment.setProfile(User_ID)
+                    # loop count till all values inserted
+                    while NoOfRecordsAffected > 0:
+                        RecoverdData = self.InvestmentArchive.getData(User_ID)
+                        self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
+                                                        LogChanges=False, Transaction_ID=RecoverdData[0])
+                        # code to remove record from statement.
+                        self.Statement.getData(User_ID)
+                        NoOfRecordsAffected = NoOfRecordsAffected - 1
                     # adding archived data to User investment
                 elif Transaction_Type == DB_Code.ID:
                     # problem here
