@@ -204,8 +204,9 @@ class Log:
                             self.InvestmentArchive = InvestmentArchive()
                             self.Investment.setProfile(User_ID)
                             RecoverdData = self.InvestmentArchive.getData(User_ID)
-                            self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
-                                                            LogChanges=False)
+                            if RecoverdData is not None:
+                                self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
+                                                                LogChanges=False)
                             NoOfRecordsAffected = NoOfRecordsAffected - 1
 
                 elif Transaction_Type == DB_Code.UI:
