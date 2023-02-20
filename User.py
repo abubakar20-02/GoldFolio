@@ -83,7 +83,7 @@ class User:
             print("checked")
             while a > 0:
                 # jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
-                self.Investment.deleteRecord(User_ID)
+                self.Investment.deleteRecord(User_ID , LogChanges=False)
                 a = a-1
             self.conn.commit()
             self.c.execute('''

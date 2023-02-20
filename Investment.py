@@ -83,8 +83,7 @@ class Investment:
                   SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
                   ''', (User_ID,))
             Values = self.c.fetchall()
-            if LogChanges is True:
-                self.InvestmentArchive.Archive(Values)
+            self.InvestmentArchive.Archive(Values)
             self.c.execute('''
                   DELETE FROM Investment WHERE Investment_ID = (SELECT Investment_ID FROM Investment WHERE User_Id = ?) 
                   ''', (User_ID,))
