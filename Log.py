@@ -187,8 +187,10 @@ class Log:
                         from Investment import Investment
                         from Archive import InvestmentArchive
 
-                        RecoverdData = self.UserArchive.getData()
+                        RecoverdData = self.UserArchive.getData(User_ID)
+                        print("------------------")
                         print(RecoverdData)
+                        print("------------------")
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
                         self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
@@ -211,7 +213,7 @@ class Log:
 
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")
-                    RecoverdData = self.UserArchive.getData()
+                    RecoverdData = self.UserArchive.getData(User_ID)
                     print("-------------")
                     print(RecoverdData)
                     if RecoverdData is not None:

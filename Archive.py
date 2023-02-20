@@ -23,14 +23,14 @@ class UserArchive:
         self.SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveUser
-              ([Transaction_ID] VARCHAR PRIMARY KEY,[ActionType] TEXT,[User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[time_stamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+              ([Transaction_ID] VARCHAR PRIMARY KEY,[ActionType] TEXT,[User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[time_stamp] TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP)
               ''')
         self.conn.commit()
         self.conn.close()
 
     def Archive(self, Action, Values):
         """Take the action type and the record values in the form of UserArchive tuple."""
-        Values[0] = (generateTransactionID(),Action,) + Values[0]
+        Values[0] = (generateTransactionID(), Action,) + Values[0]
         self.SetUpConnection()
         try:
             self.c.executemany(
@@ -67,22 +67,23 @@ class UserArchive:
             Count = self.c.fetchone()[0]
         print(Count)
 
-        if User_ID is None:
-            self.c.execute("SELECT * FROM ArchiveUser LIMIT 1 OFFSET ?", (Count - 1,))
-        else:
-            self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?", (User_ID, Count - 1,))
+        # if User_ID is None:
+        #     self.c.execute("SELECT * FROM ArchiveUser LIMIT 1 OFFSET ?", (Count - 1,))
+        # else:
+        #     self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?", (User_ID, Count - 1,))
+        #     print(self.c.fetchone())
 
+        # self.c.execute("SELECT * FROM ArchiveUser WHERE time_stamp = (SELECT MAX(time_stamp) FROM ArchiveUser)")
+        self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID =? ORDER BY time_stamp DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
-
-        if User_ID is None:
-            # deleting user id deletes m
-            self.c.execute(
-                "DELETE FROM ArchiveUser WHERE Transaction_ID = (SELECT Transaction_ID FROM ArchiveUser LIMIT 1 OFFSET ?)",
-                (Count - 1,))
-        else:
-            self.c.execute(
-                "DELETE FROM ArchiveUser WHERE Transaction_ID = (SELECT Transaction_ID FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?) LIMIT 1",
-                (User_ID, Count - 1,))
+        print("____________________________")
+        print(Data)
+        print("____________________________")
+        #     DESC, ROWID
+        # ASC
+        self.c.execute(
+            "DELETE FROM ArchiveUser WHERE Transaction_ID = (SELECT Transaction_ID FROM ArchiveUser WHERE User_ID =? ORDER BY time_stamp DESC LIMIT 1)",
+            (User_ID,))
 
         self.conn.commit()
         self.conn.close()
@@ -137,30 +138,21 @@ class InvestmentArchive:
         record data. """
         self.__SetUpConnection()
 
-        self.c.execute("SELECT COUNT(*) FROM ArchiveInvestment WHERE User_ID = ?", (User_ID,))
-        Count = self.c.fetchone()[0]
-        print(Count)
 
-        if Investment_ID is None:
-            self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?",
-                           (User_ID, Count - 1,))
-        else:
-            self.c.execute(
-                "SELECT * FROM ArchiveInvestment WHERE Investment_ID = ? AND User_ID = ? LIMIT 1 OFFSET ?",
-                (Investment_ID, User_ID, Count - 1,))
-
+        self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
+        print("____________________________")
+        print(Data)
+        print("____________________________")
+        #     DESC, ROWID
+        # ASC
+        self.c.execute(
+            "DELETE FROM ArchiveInvestment WHERE Investment_ID = (SELECT Investment_ID FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1)",
+            (User_ID,))
 
-        if Investment_ID is None:
-            # needs id to delete, its fine as id is primary key and unique.
-            self.c.execute(
-                "DELETE FROM ArchiveInvestment WHERE Investment_ID IN (SELECT Investment_ID FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
-                (User_ID, Count - 1,))
-        else:
-            self.c.execute(
-                "DELETE FROM ArchiveInvestment WHERE (SELECT * FROM ArchiveInvestment WHERE User_ID = ? LIMIT 1 OFFSET ?)",
-                (User_ID, Count - 1,))
 
         self.conn.commit()
         self.conn.close()
         return Data
+
+
