@@ -1,3 +1,4 @@
+import math
 import os
 import shutil
 import sqlite3
@@ -62,10 +63,14 @@ class User:
             count = count + 1
             values = tuple(row)
             print(values[0])
+
             try:
                 # self.c.execute(sql, values)
                 # dont update log again and again but add to user log
-                self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges= True)
+                if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2]):
+                    self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges= True)
+                if math.isnan(values[0]):
+                    self.insertIntoTable(values[1], values[2], values[3], LogChanges=True)
                 # insert to user log
                 # self.conn.commit()
                 SuccessfullyInserted=0
@@ -77,6 +82,24 @@ class User:
         # send number of values added to user log
         # self.conn.close()
 
+    def __generate_initials(self, first_name, last_name):
+        initials = first_name[0].lower() + last_name[0].lower()
+        return initials
+
+    def generate_unique_initials(self, first_name, last_name):
+        """Generate InvestmentArchive unique user ID using first name and last name."""
+        self.__SetUpConnection()
+        initials = self.__generate_initials(first_name, last_name)
+        i = 1
+        while True:
+            self.c.execute("SELECT COUNT(*) FROM User WHERE User_Id = ?", (initials,))
+            count = self.c.fetchone()[0]
+            if count == 0:
+                break
+            initials = self.__generate_initials(first_name, last_name) + str(i)
+            i += 1
+            self.conn.close()
+        return initials
 
     def createTable(self):
         self.__SetUpConnection()
