@@ -1,5 +1,7 @@
 import os
+import shutil
 import sqlite3
+import time
 import uuid
 
 from xlsxwriter import Workbook
@@ -23,11 +25,70 @@ class User:
         self.a = UserArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
+        self.fileLog = Log.InsertLog()
         self.Investment = Investment()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
+
+    def ImportFromExcel(self, LogChanges=True):
+        import datetime
+        time.sleep(1)
+        #Start time
+        start_time = datetime.datetime.now()
+        source = 'UserTemplate.xlsx'
+        target = 'User.xlsx'
+        # shutil.copyfile(source,target)
+        # os.system(target)
+
+        sheet_name = 'Sheet1'
+
+        path = target
+
+        # Read the Excel file into a DataFrame
+        df = pd.read_excel(path, sheet_name=sheet_name)
+
+        # Connect to the SQLite3 database
+        # self.__SetUpConnection()
+
+        # Define the SQL query to insert the data into the table
+        table_name = "User"
+        columns = ','.join(df.columns)
+        placeholders = ','.join(['?' for _ in range(len(df.columns))])
+        print(placeholders)
+        sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+        print(sql)
+
+        # Loop through the rows in the DataFrame and insert them into the table
+        count = 0
+        errorcount = 0
+        for _, row in df.iterrows():
+            count = count + 1
+            values = tuple(row)
+            print(values[0])
+            try:
+                # self.c.execute(sql, values)
+                # dont update log again and again but add to user log
+                self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges= True)
+                # insert to user log
+                # self.conn.commit()
+                SuccessfullyInserted=0
+            except sqlite3.Error as error:
+                errorcount = errorcount + 1
+                print(error)
+            finally:
+                SuccessfullyInserted = count - errorcount
+        self.Log.insert(generateTransactionID(), "UserFromExcel")
+        print(SuccessfullyInserted)
+        end_time = datetime.datetime.now()
+        #time end
+        time.sleep(1)
+        self.fileLog.insertToTable(generateTransactionID(),start_time,end_time)
+        print(start_time)
+        print(end_time)
+        # send number of values added to user log
+        # self.conn.close()
 
     def __generate_initials(self, first_name, last_name):
         initials = first_name[0].lower() + last_name[0].lower()
@@ -83,8 +144,8 @@ class User:
             print("checked")
             while a > 0:
                 # jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
-                self.Investment.deleteRecord(User_ID , LogChanges=False)
-                a = a-1
+                self.Investment.deleteRecord(User_ID, LogChanges=False)
+                a = a - 1
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
@@ -115,19 +176,20 @@ class User:
         # mention this was updated
         self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
-    def insertIntoTable(self, FName, LName, Money, LogChanges=True):
+    def insertIntoTable(self, FName, LName, Money, LogChanges=True, UserID=None):
         """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
-        User_ID = self.generate_unique_initials(FName, LName)
+        if UserID is None:
+            UserID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
           INSERT INTO User (User_ID, FirstName,LastName,Money)
 
                 VALUES
                 (?,?,?,?)
-          ''', (User_ID, FName, LName, Money))
+          ''', (UserID, FName, LName, Money))
         self.conn.commit()
         if LogChanges is True:
-            self.__LogForInsert(FName, LName, Money, User_ID, generateTransactionID())
+            self.__LogForInsert(FName, LName, Money, UserID, generateTransactionID())
         self.conn.close()
 
     def updateRecord(self, User_ID, Money, LogChanges=True):

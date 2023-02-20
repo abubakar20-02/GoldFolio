@@ -19,7 +19,7 @@ class Log:
         self.InvestmentLog = self.InvestmentLog()
         self.createTable()
 
-# need refactoring
+    # need refactoring
     def generateTransactionID(self):
         self.uid = str(uuid.uuid4())
 
@@ -43,6 +43,7 @@ class Log:
             self.c.execute("DELETE FROM Log")
             self.c.execute("DELETE FROM InvestmentLog")
             self.c.execute("DELETE FROM UserLog")
+            self.c.execute("DELETE FROM InsertLog")
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -61,7 +62,7 @@ class Log:
         self.conn.commit()
         self.conn.close()
 
-#use timestamp here
+    # use timestamp here
     def previousStage(self):
         self.__SetUpConnection()
         self.generateTransactionID()
@@ -195,7 +196,8 @@ class Log:
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
                         if RecoverdData is not None:
-                            self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
+                            self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
+                                                      LogChanges=False)
                         print("Recover using user id")
                         # problem here
                         print("Using count recover the most recent data from archive for that user")
@@ -355,7 +357,7 @@ class Log:
                     # RecoverdData = self.InvestmentArchive.getData(User_ID)
                     # print(RecoverdData)
                     # if RecoverdData is not None:
-                    self.Investment.deleteRecord(User_ID, LogChanges=False , Archive = False)
+                    self.Investment.deleteRecord(User_ID, LogChanges=False, Archive=False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
@@ -395,5 +397,45 @@ class Log:
                 else:
                     print("nothing")
                 print("")
+            self.conn.commit()
+            self.conn.close()
+
+    class InsertLog:
+        def __init__(self):
+            self.c = None
+            self.conn = None
+            self.__createTable()
+
+        def SetUpConnection(self):
+            self.conn = sqlite3.connect(SetUpFile.DBLog)
+            self.c = self.conn.cursor()
+
+        def __createTable(self):
+            self.SetUpConnection()
+            self.c.execute('''
+                  CREATE TABLE IF NOT EXISTS InsertLog
+                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY,[StartTime] TIMESTAMP,[EndTime] TIMESTAMP)
+                  ''')
+            self.conn.commit()
+            self.conn.close()
+
+        def dropTable(self):
+            self.SetUpConnection()
+            try:
+                self.c.execute("DELETE FROM InsertLog")
+                self.conn.commit()
+            except sqlite3.Error as error:
+                print(error)
+            finally:
+                self.conn.close()
+
+        def insertToTable(self, id, StartTime, EndTime):
+            self.SetUpConnection()
+
+            self.c.execute('''
+                    INSERT INTO InsertLog (Transaction_ID,StartTime, EndTime)
+                            VALUES 
+                            (?,?,?)
+                  ''', (id, StartTime.strftime("%Y-%m-%d_%H:%M:%S"), EndTime.strftime("%Y-%m-%d_%H:%M:%S")))
             self.conn.commit()
             self.conn.close()
