@@ -78,16 +78,19 @@ class Investment:
                   ''', (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
             a = RecordsAffected
-            while a > 0:
-                self.c.execute('''
-                      SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
-                      ''', (User_ID,))
-                Values = self.c.fetchall()
-                self.InvestmentArchive.Archive(Values)
-                self.c.execute('''
-                      DELETE FROM Investment WHERE Investment_ID IN(SELECT Investment_ID FROM Investment WHERE User_Id = ? LIMIT 1) 
-                      ''', (User_ID,))
-                a = a - 1
+            # while a > 0:
+            self.c.execute('''
+                  SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
+                  ''', (User_ID,))
+            Values = self.c.fetchall()
+            self.InvestmentArchive.Archive(Values)
+            self.c.execute('''
+                  DELETE FROM Investment WHERE Investment_ID = (SELECT Investment_ID FROM Investment WHERE User_Id = ?) 
+                  ''', (User_ID,))
+            print("---")
+            print(User_ID)
+            print("---")
+                # a = a - 1
             self.conn.commit()
             if LogChanges is True:
                 self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID)
