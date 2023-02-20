@@ -25,18 +25,13 @@ class User:
         self.a = UserArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
-        self.fileLog = Log.InsertLog()
         self.Investment = Investment()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
-    def ImportFromExcel(self, LogChanges=True):
-        import datetime
-        time.sleep(1)
-        #Start time
-        start_time = datetime.datetime.now()
+    def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'
         target = 'User.xlsx'
         # shutil.copyfile(source,target)
@@ -79,14 +74,6 @@ class User:
                 print(error)
             finally:
                 SuccessfullyInserted = count - errorcount
-        self.Log.insert(generateTransactionID(), "UserFromExcel")
-        print(SuccessfullyInserted)
-        end_time = datetime.datetime.now()
-        #time end
-        time.sleep(1)
-        self.fileLog.insertToTable(generateTransactionID(),start_time,end_time)
-        print(start_time)
-        print(end_time)
         # send number of values added to user log
         # self.conn.close()
 
