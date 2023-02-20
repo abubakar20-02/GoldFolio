@@ -79,12 +79,12 @@ class User:
             Values = self.c.fetchall()
             self.c.execute("SELECT COUNT(*) FROM Investment WHERE User_ID = ?", (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
-
+            a = RecordsAffected
             print("checked")
-
-            if RecordsAffected > 0:
+            while a > 0:
                 # jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
-                self.Investment.deleteRecord(User_ID, LogChanges=False)
+                self.Investment.deleteRecord(User_ID)
+                a = a-1
             self.conn.commit()
             self.c.execute('''
                   DELETE FROM User WHERE User_Id = ?
