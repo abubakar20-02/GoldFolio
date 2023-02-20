@@ -193,7 +193,8 @@ class Log:
                         print("------------------")
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
-                        self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
+                        if RecoverdData is not None:
+                            self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5], LogChanges=False)
                         print("Recover using user id")
                         # problem here
                         print("Using count recover the most recent data from archive for that user")

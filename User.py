@@ -102,7 +102,8 @@ class User:
     def __LogForDelete(self, RecordsAffected, User_ID, Values, Transaction_ID):
         # sadklmasdjhnklaslkedsmaklsmlskasdkaln
         self.UserLog.DeleteStatement(Transaction_ID, RecordsAffected, User_ID)
-        self.a.Archive(DB_Code.DELETECOMMAND, Values)
+        if RecordsAffected > 0:
+            self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
     def __LogForInsert(self, FName, LName, Money, User_ID, Transaction_ID):
         self.UserLog.InsertStatement(Transaction_ID, User_ID, FName, LName, Money)
