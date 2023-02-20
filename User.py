@@ -77,27 +77,12 @@ class User:
         # send number of values added to user log
         # self.conn.close()
 
-    def __generate_initials(self, first_name, last_name):
-        initials = first_name[0].lower() + last_name[0].lower()
-        return initials
-
-    def generate_unique_initials(self, first_name, last_name):
-        """Generate InvestmentArchive unique user ID using first name and last name."""
-        initials = self.__generate_initials(first_name, last_name)
-        i = 1
-        while True:
-            self.c.execute("SELECT COUNT(*) FROM User WHERE User_Id = ?", (initials,))
-            count = self.c.fetchone()[0]
-            if count == 0:
-                return initials
-            initials = self.__generate_initials(first_name, last_name) + str(i)
-            i += 1
 
     def createTable(self):
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName] TEXT , [LastName] TEXT, [Money] REAL)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL)
               ''')
         self.conn.commit()
         self.conn.close()
