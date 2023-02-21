@@ -22,7 +22,7 @@ class Statement:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Statement
-              ([Investment_ID] VARCHAR PRIMARY KEY, [Date_added] DATE ,[User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY, [Date_added] DATE DEFAULT CURRENT_DATE ,[User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()

@@ -261,7 +261,7 @@ class Investment:
         self.c.execute('''SELECT COUNT(*) FROM Investment WHERE User_ID= ?''', (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
         self.c.execute('''
-                    INSERT INTO Statement SELECT * FROM Investment WHERE User_ID= ?
+                    INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
                   ''', (self.Profile,))
         self.c.execute('''
                     DELETE FROM Investment WHERE User_ID=?

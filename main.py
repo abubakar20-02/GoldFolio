@@ -70,7 +70,7 @@ time.sleep(timer)
 Investment.insertIntoTable(123, 3, 123)
 time.sleep(timer)
 
-Investment.sellAll(Date="2018-01-21")
+Investment.sellAll()
 
 Investment.updateProfitLoss(1.5)
 # Investment.sellAll()
