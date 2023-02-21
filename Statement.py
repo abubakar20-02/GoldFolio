@@ -42,16 +42,16 @@ class Statement:
             self.c.execute("PRAGMA foreign_keys = ON")
             self.conn.close()
 
-    def insertIntoTable(self, InvestmentId,Date_added, UserID, Gold, Purity, BoughtFor):
+    def insertIntoTable(self, InvestmentId, Date_added, UserID, Gold, Purity, BoughtFor):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         try:
             self.c.execute('''
-                  INSERT INTO Investment (Investment_ID,,Date_added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+                  INSERT INTO Investment (Investment_ID,Date_added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
 
                         VALUES
                         (?,?,?,?,?,?)
-                  ''', (InvestmentId,Date_added, UserID, Gold, Purity, BoughtFor, 0.00))
+                  ''', (InvestmentId, Date_added, UserID, Gold, Purity, BoughtFor, 0.00))
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)

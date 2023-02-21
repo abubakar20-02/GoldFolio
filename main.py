@@ -63,30 +63,30 @@ time.sleep(timer)
 Investment.setProfile("ab")
 time.sleep(timer)
 
-Investment.insertIntoTable(123, 123, 150, Date="2020-01-21")
+Investment.insertIntoTable(1, 1, 1, Date="2020-01-21")
 time.sleep(timer)
 Investment.insertIntoTable(12, 123, 23)
 time.sleep(timer)
 Investment.insertIntoTable(123, 3, 123)
 time.sleep(timer)
 
-Investment.sellAll()
-
-Investment.updateProfitLoss(1.5)
 # Investment.sellAll()
-time.sleep(timer)
 
-# Investment.sellAll()
-time.sleep(timer)
-User.insertIntoTable("m", "s", 90)
-time.sleep(timer)
-User.deleteRecord("ms")
-time.sleep(timer)
-
-# method_name()
-User.insertIntoTable("sa", "as", 100)
-Investment.setProfile("sa")
-Investment.insertIntoTable(1, 1, 23)
+# Investment.updateProfitLoss(1.5)
+# # Investment.sellAll()
+# time.sleep(timer)
+#
+# # Investment.sellAll()
+# time.sleep(timer)
+# User.insertIntoTable("m", "s", 90)
+# time.sleep(timer)
+# User.deleteRecord("ms")
+# time.sleep(timer)
+#
+# # method_name()
+# User.insertIntoTable("sa", "as", 100)
+# Investment.setProfile("sa")
+# Investment.insertIntoTable(1, 1, 23)
 # Investment.sellAll()
 
 

@@ -356,7 +356,7 @@ class Log:
                     # RecoverdData = self.InvestmentArchive.getData(User_ID)
                     # print(RecoverdData)
                     # if RecoverdData is not None:
-                    self.Investment.deleteRecord(User_ID, LogChanges=False, Archive=False)
+                    self.Investment.deleteRecord(User_ID,TransactionID=Data[1], LogChanges=False, Archive=False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                 elif Transaction_Type == DB_Code.ISP:
