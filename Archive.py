@@ -104,7 +104,7 @@ class InvestmentArchive:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveInvestment                                                         
-              ([Investment_ID] VARCHAR ,[User_ID] VARCHAR, [Gold] Real , [Purity] Real, [BoughtFor] REAL,[ProfitLoss] Real,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+              ([Investment_ID] VARCHAR ,[Date_added] DATE,[User_ID] VARCHAR, [Gold] Real , [Purity] Real, [BoughtFor] REAL,[ProfitLoss] Real,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -114,7 +114,7 @@ class InvestmentArchive:
         self.__SetUpConnection()
         try:
             self.c.executemany(
-                "INSERT INTO ArchiveInvestment(Investment_ID,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?)",
+                "INSERT INTO ArchiveInvestment(Investment_ID,Date_added,User_ID, Gold, Purity, BoughtFor,ProfitLoss) VALUES(?,?,?,?,?,?,?)",
                 Values)
             self.conn.commit()
         except sqlite3.Error as error:

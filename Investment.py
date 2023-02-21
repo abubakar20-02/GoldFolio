@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+from datetime import datetime
 
 import pandas as pd
 
@@ -39,7 +40,7 @@ class Investment:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
-              ([Investment_ID] VARCHAR PRIMARY KEY, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY,[Date_Added] DATE, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
@@ -107,6 +108,7 @@ class Investment:
     def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
+        now = datetime.now().date()
         Error = True
         # loop until there is no error.
         while Error:
@@ -115,11 +117,11 @@ class Investment:
                 Transaction_ID = generateTransactionID()
             try:
                 self.c.execute('''
-                      INSERT INTO Investment (Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+                      INSERT INTO Investment (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
     
                             VALUES
-                            (?,?,?,?,?,?)
-                      ''', (Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00))
+                            (?,?,?,?,?,?,?)
+                      ''', (Transaction_ID,now, self.Profile, Gold, Purity, BoughtFor, 0.00))
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
@@ -182,7 +184,7 @@ class Investment:
                   ''', (GoldRate,))
         self.conn.commit()
         self.conn.close()
-        self.showTable()
+        # self.showTable()
 
     def showProfit(self):
         self.__SetUpConnection()
