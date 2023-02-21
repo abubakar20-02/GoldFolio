@@ -105,10 +105,11 @@ class Investment:
         self.Log.insert(id, DB_Code.ID)
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
 
-    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None):
+    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None, Date=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
-        now = datetime.now().date()
+        if Date is None:
+            Date = datetime.now().date()
         Error = True
         # loop until there is no error.
         while Error:
@@ -121,7 +122,7 @@ class Investment:
     
                             VALUES
                             (?,?,?,?,?,?,?)
-                      ''', (Transaction_ID,now, self.Profile, Gold, Purity, BoughtFor, 0.00))
+                      ''', (Transaction_ID,Date, self.Profile, Gold, Purity, BoughtFor, 0.00))
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
