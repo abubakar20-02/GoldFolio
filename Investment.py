@@ -237,8 +237,25 @@ class Investment:
         self.InvestmentArchive.Archive(Values)
 
     # add user here
-    def sellAll(self, LogChanges=True):
+    def sellAll(self, LogChanges=True, Date=None):
         self.__SetUpConnection()
+        if Date is None:
+            Date = datetime.now().date()
+        else:
+            self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
+            minimum_date = self.c.fetchone()[0]
+            print(minimum_date)
+            if datetime.strptime(Date, '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
+                print("------------")
+                print("invalid")
+                print("------------")
+
+        #
+        #     Values = self.c.fetchall()
+        #     if  > datetime.now().date():
+        #         print("date is in future")
+        #         return
+
         self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
         Values = self.c.fetchall()
         self.c.execute('''SELECT COUNT(*) FROM Investment WHERE User_ID= ?''', (self.Profile,))

@@ -63,14 +63,17 @@ time.sleep(timer)
 Investment.setProfile("ab")
 time.sleep(timer)
 
-Investment.insertIntoTable(123, 123, 150, Date="2029-01-21")
+Investment.insertIntoTable(123, 123, 150, Date="2020-01-21")
 time.sleep(timer)
 Investment.insertIntoTable(12, 123, 23)
 time.sleep(timer)
 Investment.insertIntoTable(123, 3, 123)
 time.sleep(timer)
 
+Investment.sellAll(Date="2018-01-21")
+
 Investment.updateProfitLoss(1.5)
+# Investment.sellAll()
 time.sleep(timer)
 
 # Investment.sellAll()
@@ -84,7 +87,7 @@ time.sleep(timer)
 User.insertIntoTable("sa", "as", 100)
 Investment.setProfile("sa")
 Investment.insertIntoTable(1, 1, 23)
-Investment.sellAll()
+# Investment.sellAll()
 
 
 def previousStage(num):
