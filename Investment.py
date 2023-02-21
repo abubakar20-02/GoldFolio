@@ -69,7 +69,7 @@ class Investment:
 
     # dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
     # need to use investment id to delete
-    def deleteRecord(self, User_ID, LogChanges=True , Archive=True):
+    def deleteRecord(self, User_ID, LogChanges=True, Archive=True):
         """Takes in the user ID to delete investment for that ID."""
 
         self.__SetUpConnection()
@@ -92,7 +92,7 @@ class Investment:
             print("---")
             print(User_ID)
             print("---")
-                # a = a - 1
+            # a = a - 1
             self.conn.commit()
             if LogChanges is True:
                 self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID)
@@ -110,6 +110,10 @@ class Investment:
         self.__SetUpConnection()
         if Date is None:
             Date = datetime.now().date()
+        else:
+            if datetime.strptime(Date, '%Y-%m-%d').date() > datetime.now().date():
+                print("date is in future")
+                return
         Error = True
         # loop until there is no error.
         while Error:
@@ -122,7 +126,7 @@ class Investment:
     
                             VALUES
                             (?,?,?,?,?,?,?)
-                      ''', (Transaction_ID,Date, self.Profile, Gold, Purity, BoughtFor, 0.00))
+                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, 0.00))
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:

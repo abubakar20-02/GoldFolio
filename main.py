@@ -63,7 +63,7 @@ time.sleep(timer)
 Investment.setProfile("ab")
 time.sleep(timer)
 
-Investment.insertIntoTable(123, 123, 150, Date="2020-01-21")
+Investment.insertIntoTable(123, 123, 150, Date="2029-01-21")
 time.sleep(timer)
 Investment.insertIntoTable(12, 123, 23)
 time.sleep(timer)
