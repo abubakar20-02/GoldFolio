@@ -4,6 +4,7 @@ import shutil
 import sqlite3
 import time
 import uuid
+import re
 
 from xlsxwriter import Workbook
 
@@ -45,9 +46,6 @@ class User:
         # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-        # Connect to the SQLite3 database
-        # self.__SetUpConnection()
-
         # Define the SQL query to insert the data into the table
         table_name = "User"
         columns = ','.join(df.columns)
@@ -57,32 +55,27 @@ class User:
         print(sql)
 
         # Loop through the rows in the DataFrame and insert them into the table
-        count = 0
-        errorcount = 0
         for _, row in df.iterrows():
-            count = count + 1
             values = tuple(row)
 
+            # self.c.execute(sql, values)
+            # dont update log again and again but add to user log
             try:
-                # self.c.execute(sql, values)
-                # dont update log again and again but add to user log
+                #if not float would go to except.
+                float(values[3])
+                if not(values[1].isalpha() and values[2].isalpha()):
+                    print('name contains invalid letters')
+                    continue
                 if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2])[:2]:
                     # close function after we finish using generate unique initials.
                     self.conn.close()
                     self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges=False)
                 if isinstance(values[0], (int, float)) and math.isnan(values[0]):
                     self.insertIntoTable(values[1], values[2], values[3], LogChanges=False)
-                    print("empty")
-                # if values[0].isnull().values.any():
-                #     self.insertIntoTable(values[1], values[2], values[3], LogChanges=True)
-                # insert to user log
-                # self.conn.commit()
-                SuccessfullyInserted = 0
-            except sqlite3.Error as error:
-                errorcount = errorcount + 1
-                print(error)
-            finally:
-                SuccessfullyInserted = count - errorcount
+                    # print("empty")
+                print("fine")
+            except:
+                print("wrong")
         # send number of values added to user log
 
     def __generate_initials(self, first_name, last_name):
