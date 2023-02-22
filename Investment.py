@@ -123,8 +123,6 @@ class Investment:
                         ProfitLoss=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
-        if ProfitLoss is None:
-            ProfitLoss = 0.0
         if Date is None:
             Date = datetime.now().date()
         else:
@@ -202,8 +200,8 @@ class Investment:
         """Run continuously to update profit/loss"""
         self.__SetUpConnection()
         self.c.execute('''
-                  UPDATE Investment SET ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2))
-                  ''', (GoldRate,))
+                  UPDATE Investment SET ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID =?)
+                  ''', (GoldRate, self.Profile))
         self.conn.commit()
         self.conn.close()
         # self.showTable()
@@ -231,7 +229,9 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self, LogChanges=True):
+    def sellProfit(self, LogChanges=True, Rate=None):
+        if Rate is not None:
+            self.updateProfitLoss(Rate)
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
         Values = self.c.fetchall()
@@ -254,18 +254,19 @@ class Investment:
         self.InvestmentArchive.Archive(Values)
 
     # add user here
-    def sellAll(self, LogChanges=True, Date=None):
+    def sellAll(self, LogChanges=True, Date=None, Rate=None):
+        if Rate is not None:
+            self.updateProfitLoss(Rate)
         self.__SetUpConnection()
         if Date is None:
             Date = datetime.now().date()
-        else:
-            self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
-            minimum_date = self.c.fetchone()[0]
-            print(minimum_date)
-            if datetime.strptime(Date, '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
-                print("------------")
-                print("invalid")
-                print("------------")
+        self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
+        minimum_date = self.c.fetchone()[0]
+        print(minimum_date)
+        if datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
+            print("------------")
+            print("invalid")
+            print("------------")
 
         #
         #     Values = self.c.fetchall()
