@@ -368,7 +368,7 @@ class Log:
                         print("Date:" + str(RecoverdData[1]))
                         self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                         LogChanges=False, Transaction_ID=RecoverdData[0],
-                                                        Date=RecoverdData[1])
+                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
                         # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
@@ -390,8 +390,9 @@ class Log:
                     # loop count till all values inserted
                     while NoOfRecordsAffected > 0:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
-                        self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
-                                                        LogChanges=False, Transaction_ID=RecoverdData[0])
+                        self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
+                                                        LogChanges=False, Transaction_ID=RecoverdData[0],
+                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
                         # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1

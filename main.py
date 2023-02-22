@@ -60,17 +60,18 @@ time.sleep(timer)
 User.insertIntoTable("Ali", "Baba", 1)
 time.sleep(timer)
 
-# Investment.setProfile("ab")
+Investment.setProfile("ab")
 time.sleep(timer)
 
-Investment.insertIntoTable(100, 1, 1, Date="2020-01-21")
+Investment.insertIntoTable(1, 1, 1, Date="2020-01-21")
 time.sleep(timer)
 Investment.insertIntoTable(12, 123, 23)
 time.sleep(timer)
 Investment.insertIntoTable(123, 3, 123)
 time.sleep(timer)
+
 Investment.updateProfitLoss(1000)
-Investment.sellProfit()
+Investment.sellAll()
 
 # Investment.updateProfitLoss(1.5)
 # # Investment.sellAll()

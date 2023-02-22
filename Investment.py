@@ -69,7 +69,7 @@ class Investment:
 
     # dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
     # need to use investment id to delete
-    def deleteRecord(self, User_ID, LogChanges=True, Archive=True,TransactionID=None):
+    def deleteRecord(self, User_ID, LogChanges=True, Archive=True, TransactionID=None):
         """Takes in the user ID to delete investment for that ID."""
         self.__SetUpConnection()
         if TransactionID is not None:
@@ -119,9 +119,12 @@ class Investment:
         self.Log.insert(id, DB_Code.ID)
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
 
-    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None, Date=None):
+    def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None, Date=None,
+                        ProfitLoss=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
+        if ProfitLoss is None:
+            ProfitLoss = 0.0
         if Date is None:
             Date = datetime.now().date()
         else:
@@ -140,7 +143,7 @@ class Investment:
     
                             VALUES
                             (?,?,?,?,?,?,?)
-                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, 0.00))
+                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
