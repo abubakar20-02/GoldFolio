@@ -62,25 +62,28 @@ class User:
         for _, row in df.iterrows():
             count = count + 1
             values = tuple(row)
-            print(values[0])
 
             try:
                 # self.c.execute(sql, values)
                 # dont update log again and again but add to user log
-                if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2]):
-                    self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges= True)
-                if math.isnan(values[0]):
-                    self.insertIntoTable(values[1], values[2], values[3], LogChanges=True)
+                if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2])[:2]:
+                    # close function after we finish using generate unique initials.
+                    self.conn.close()
+                    self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges=False)
+                if isinstance(values[0], (int, float)) and math.isnan(values[0]):
+                    self.insertIntoTable(values[1], values[2], values[3], LogChanges=False)
+                    print("empty")
+                # if values[0].isnull().values.any():
+                #     self.insertIntoTable(values[1], values[2], values[3], LogChanges=True)
                 # insert to user log
                 # self.conn.commit()
-                SuccessfullyInserted=0
+                SuccessfullyInserted = 0
             except sqlite3.Error as error:
                 errorcount = errorcount + 1
                 print(error)
             finally:
                 SuccessfullyInserted = count - errorcount
         # send number of values added to user log
-        # self.conn.close()
 
     def __generate_initials(self, first_name, last_name):
         initials = first_name[0].lower() + last_name[0].lower()
@@ -98,7 +101,6 @@ class User:
                 break
             initials = self.__generate_initials(first_name, last_name) + str(i)
             i += 1
-            self.conn.close()
         return initials
 
     def createTable(self):
