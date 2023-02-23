@@ -26,6 +26,7 @@ class User:
         self.Log = Log()
         self.UserLog = Log.UserLog()
         self.Investment = Investment()
+        self.MoneyLog = Log.Money()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
@@ -180,7 +181,9 @@ class User:
           ''', (UserID, FName, LName, Money))
         self.conn.commit()
         if LogChanges is True:
-            self.__LogForInsert(FName, LName, Money, UserID, generateTransactionID())
+            Transaction_ID = generateTransactionID()
+            self.__LogForInsert(FName, LName, Money, UserID, Transaction_ID)
+            self.MoneyLog.insertIntoTable(UserID, DB_Code.MoneyIn, Money,Transaction_ID=Transaction_ID)
         self.conn.close()
 
     def updateRecord(self, User_ID, Money, LogChanges=True):
@@ -242,10 +245,14 @@ class User:
         self.conn.commit()
         self.conn.close()
 
-    def addMoney(self, Money):
+    def addMoney(self, Money, LogChanges=None):
         print('add money')
         TotalMoney = self.getMoney() + Money
         self.updateMoney(TotalMoney)
+        if LogChanges is None:
+            Transaction_ID = generateTransactionID()
+            self.Log.insert(Transaction_ID, DB_Code.MoneyIn)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money,Transaction_ID=Transaction_ID)
 
     def cashout(self, Money):
         TotalMoney = self.getMoney()
@@ -254,6 +261,9 @@ class User:
             return
         else:
             self.updateMoney(self.getMoney() - Money)
+            Transaction_ID = generateTransactionID()
+            self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, Money,Transaction_ID=Transaction_ID)
 
         # get current money then add money for that user.
 

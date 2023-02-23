@@ -43,6 +43,7 @@ class Log:
             self.c.execute("DELETE FROM Log")
             self.c.execute("DELETE FROM InvestmentLog")
             self.c.execute("DELETE FROM UserLog")
+            self.c.execute("DELETE FROM Money")
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -399,5 +400,55 @@ class Log:
                 else:
                     print("nothing")
                 print("")
+            self.conn.commit()
+            self.conn.close()
+
+    class Money:
+
+        def __init__(self):
+            self.c = None
+            self.conn = None
+            self.createTable()
+
+        def __SetUpConnection(self):
+            self.conn = sqlite3.connect(SetUpFile.DBLog)
+            self.c = self.conn.cursor()
+
+        def createTable(self):
+            self.__SetUpConnection()
+            self.c.execute('''
+                  CREATE TABLE IF NOT EXISTS Money
+                  ([Transaction_ID]VARCHAR PRIMARY KEY,[Date_Added] DEFAULT CURRENT_DATE,[User_ID] VARCHAR, [ActionType]  TEXT NOT NULL , [Change] REAL NOT NULL)
+                  ''')
+            self.conn.commit()
+            self.conn.close()
+
+        def deleteTable(self):
+            self.__SetUpConnection()
+            try:
+                self.c.execute("DELETE FROM Money")
+                self.conn.commit()
+            except sqlite3.Error as error:
+                print(error)
+            finally:
+                self.conn.close()
+
+        def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None):
+            self.__SetUpConnection()
+            if Transaction_ID is None:
+                Transaction_ID = str(uuid.uuid4())
+            self.c.execute('''
+                  INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change)
+                        VALUES 
+                        (?,?,?,?)
+                  ''', (Transaction_ID, User_ID, ActionType, Change))
+            self.conn.commit()
+            self.conn.close()
+
+        def deletefromTable(self, Transaction_ID):
+            self.__SetUpConnection()
+            self.c.execute('''
+                  DELETE FROM Money WHERE Transaction_ID = ?
+                  ''', (Transaction_ID,))
             self.conn.commit()
             self.conn.close()

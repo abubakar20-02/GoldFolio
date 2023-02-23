@@ -3,6 +3,10 @@ UI = "InsertUser"
 UU = "UpdateUser"
 UD = "DeleteUser"  #
 
+MoneyIn = "MoneyIn"
+MoneyOut = "MoneyOut"
+ProfitLoss = "ProfitLoss"
+
 # Investment
 IB = "BuyInvestment"
 ISP = "SellProfitableInvestment"  #

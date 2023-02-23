@@ -224,7 +224,7 @@ class Investment:
                       ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
                 self.conn.commit()
                 self.conn.close()
-                User.addMoney(-BoughtFor)
+                User.addMoney(-BoughtFor,LogChanges=False)
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
@@ -359,10 +359,11 @@ class Investment:
         self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
         minimum_date = self.c.fetchone()[0]
         print(minimum_date)
-        if datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
+        if minimum_date is not None and datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
             print("------------")
             print("invalid")
             print("------------")
+            return
 
         #
         #     Values = self.c.fetchall()
@@ -391,7 +392,7 @@ class Investment:
             TotalPositiveProfit=0
         if TotalNegativeProfit is None:
             TotalNegativeProfit = 0
-        User.addMoney(TotalPositiveProfit+TotalNegativeProfit)
+        User.addMoney(TotalPositiveProfit+TotalNegativeProfit, LogChanges=False)
 
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
