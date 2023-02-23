@@ -234,6 +234,7 @@ class Investment:
 
     def __LogForInsert(self, BoughtFor, Gold, Purity, Transaction_ID):
         self.Log.insert(Transaction_ID, DB_Code.IB)
+        self.MoneyLog.insertIntoTable(self.Profile,DB_Code.BuyInvestment,-BoughtFor,Transaction_ID=Transaction_ID)
         self.InvestmentLog.InsertStatement(Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
     # need investment id to update.
@@ -348,7 +349,7 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellProfit(RecordsAffected, Values, Transaction_ID)
             print("hmmm")
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,CostOfTrade=TotalCost)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,TradeCost=TotalCost)
         self.conn.close()
 
     def __LogSellProfit(self, RecordsAffected, Values, my_uuid):
@@ -426,7 +427,7 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit),
-                                          Transaction_ID=Transaction_ID, CostOfTrade=TotalCost)
+                                          Transaction_ID=Transaction_ID,TradeCost=TotalCost)
 
     def __LogSellAll(self, RecordsAffected, Values, id):
         self.Log.insert(id, DB_Code.ISA)

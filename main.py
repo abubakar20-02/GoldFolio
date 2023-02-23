@@ -81,32 +81,16 @@ User.deleteTable(False)
 User.createTable()
 # User.ImportFromExcel()
 
-timer = 1
-User.insertIntoTable("Muhammad", "Abubakar", 201)
-User.SelectProfile("ma")
-User.addMoney(1000)
-# User.cashout(301)
-# Investment.ImportFromExcel()
-# Statement.ImportFromExcel()
-
-# time.sleep(timer)
-# User.insertIntoTable("Hamza", "Rizwan", 100)
-# time.sleep(timer)
-# User.updateRecord("ma", 20)
-# time.sleep(timer)
-# User.updateRecord("ma", 50)
-# time.sleep(timer)
-Investment.setProfile("ma")
-#
-Investment.insertIntoTable(1, 123, 100)
-Investment.insertIntoTable(1, 123, 100)
-Investment.insertIntoTable(5, 123, 20)
-Investment.sellAll(Rate=10)
-time.sleep(timer)
 User.insertIntoTable("Hamza", "Rizwan", 1000)
+
 Investment.setProfile("hr")
-Investment.insertIntoTable(10, 1, 10)
-Investment.sellAll(Rate=10)
+Investment.insertIntoTable(10, 10, 100)
+Investment.sellAll(Rate=100)
+
+
+# User.SelectProfile("hr")
+# User.cashout(500)
+
 
 # saveSnapshot()
 
@@ -116,6 +100,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(1)
+previousStage(0)
 
 # when deleting user app crashes

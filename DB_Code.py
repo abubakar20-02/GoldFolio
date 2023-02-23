@@ -6,6 +6,7 @@ UD = "DeleteUser"  #
 MoneyIn = "MoneyIn"
 MoneyOut = "MoneyOut"
 ProfitLoss = "ProfitLoss"
+BuyInvestment ="BuyInvestment"
 
 # Investment
 IB = "BuyInvestment"

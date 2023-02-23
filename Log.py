@@ -420,7 +420,7 @@ class Log:
             self.__SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS Money
-                  ([Transaction_ID]VARCHAR PRIMARY KEY,[Date_Added] DEFAULT CURRENT_DATE,[User_ID] VARCHAR, [ActionType]  TEXT NOT NULL , [Change] REAL NOT NULL,[CostOfTrade] REAL)
+                  ([Transaction_ID]VARCHAR PRIMARY KEY,[Date_Added] DEFAULT CURRENT_DATE,[User_ID] VARCHAR, [ActionType]  TEXT NOT NULL , [Change] REAL NOT NULL,[TradeCost] REAL)
                   ''')
             self.conn.commit()
             self.conn.close()
@@ -435,15 +435,15 @@ class Log:
             finally:
                 self.conn.close()
 
-        def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None, CostOfTrade=None):
+        def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None, TradeCost=None):
             self.__SetUpConnection()
             if Transaction_ID is None:
                 Transaction_ID = str(uuid.uuid4())
             self.c.execute('''
-                  INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change,CostOfTrade)
+                  INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change,TradeCost)
                         VALUES 
                         (?,?,?,?,?)
-                  ''', (Transaction_ID, User_ID, ActionType, Change, CostOfTrade))
+                  ''', (Transaction_ID, User_ID, ActionType, Change,TradeCost))
             self.conn.commit()
             self.conn.close()
 
@@ -489,5 +489,7 @@ class Log:
                 User.addMoney(-Data[4], LogChanges=False)
             elif ActionType == DB_Code.ProfitLoss:
                 # using investment get bought price too.
-                User.addMoney((Data[5]-Data[4]), LogChanges=False)
+                User.addMoney((-Data[4]), LogChanges=False)
+            elif ActionType == DB_Code.BuyInvestment:
+                User.addMoney(-Data[4])
             self.conn.close()
