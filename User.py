@@ -263,7 +263,7 @@ class User:
             self.updateMoney(self.getMoney() - Money)
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, Money,Transaction_ID=Transaction_ID)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money,Transaction_ID=Transaction_ID)
 
         # get current money then add money for that user.
 

@@ -27,6 +27,7 @@ class Investment:
         self.InvestmentArchive = InvestmentArchive()
         self.Log = Log()
         self.InvestmentLog = Log.InvestmentLog()
+        self.MoneyLog = Log.Money()
 
     def ImportFromExcel(self):
         # source = 'UserTemplate.xlsx'
@@ -224,7 +225,7 @@ class Investment:
                       ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
                 self.conn.commit()
                 self.conn.close()
-                User.addMoney(-BoughtFor,LogChanges=False)
+                User.addMoney(-BoughtFor, LogChanges=False)
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
@@ -328,10 +329,13 @@ class Investment:
         TotalProfit = self.c.fetchone()[0]
         if TotalProfit is None:
             return
+        self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+                       (self.Profile,))
+        TotalCost = self.c.fetchone()[0]
         from User import User
         User = User()
         User.SelectProfile(self.Profile)
-        User.addMoney(TotalProfit)
+        User.addMoney(TotalProfit + TotalCost, LogChanges=False)
         print("Total Profit:" + str(TotalProfit))
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
@@ -341,7 +345,10 @@ class Investment:
                   ''', (self.Profile,))
         self.conn.commit()
         if LogChanges is True:
-            self.__LogSellProfit(RecordsAffected, Values, generateTransactionID())
+            Transaction_ID = generateTransactionID()
+            self.__LogSellProfit(RecordsAffected, Values, Transaction_ID)
+            print("hmmm")
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID)
         self.conn.close()
 
     def __LogSellProfit(self, RecordsAffected, Values, my_uuid):
@@ -359,7 +366,8 @@ class Investment:
         self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
         minimum_date = self.c.fetchone()[0]
         print(minimum_date)
-        if minimum_date is not None and datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(minimum_date, '%Y-%m-%d').date():
+        if minimum_date is not None and datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(
+                minimum_date, '%Y-%m-%d').date():
             print("------------")
             print("invalid")
             print("------------")
@@ -381,18 +389,28 @@ class Investment:
         self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss>=0)''',
                        (self.Profile,))
         TotalPositiveProfit = self.c.fetchone()[0]
-        self.c.execute('''SELECT SUM((1+ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
-                       (self.Profile,))
+        self.c.execute(
+            '''SELECT SUM((1+ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
+            (self.Profile,))
         TotalNegativeProfit = self.c.fetchone()[0]
         print(TotalPositiveProfit)
+
+        self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (User_ID=?)''',
+                       (self.Profile,))
+        TotalCost = self.c.fetchone()[0]
+        if TotalCost is None:
+            TotalCost = 0
+
+        print(TotalCost)
+
         from User import User
         User = User()
         User.SelectProfile(self.Profile)
         if TotalPositiveProfit is None:
-            TotalPositiveProfit=0
+            TotalPositiveProfit = 0
         if TotalNegativeProfit is None:
             TotalNegativeProfit = 0
-        User.addMoney(TotalPositiveProfit+TotalNegativeProfit, LogChanges=False)
+        User.addMoney((TotalPositiveProfit + TotalNegativeProfit), LogChanges=False)
 
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
@@ -403,7 +421,10 @@ class Investment:
         self.conn.commit()
         self.conn.close()
         if RecordsAffected > 0 and LogChanges is True:
-            self.__LogSellAll(RecordsAffected, Values, generateTransactionID())
+            Transaction_ID = generateTransactionID()
+            self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit)- TotalCost,
+                                          Transaction_ID=Transaction_ID)
 
     def __LogSellAll(self, RecordsAffected, Values, id):
         self.Log.insert(id, DB_Code.ISA)

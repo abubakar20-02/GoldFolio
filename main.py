@@ -85,7 +85,7 @@ timer = 1
 User.insertIntoTable("Muhammad", "Abubakar", 201)
 User.SelectProfile("ma")
 User.addMoney(100)
-User.cashout(301)
+# User.cashout(301)
 # Investment.ImportFromExcel()
 # Statement.ImportFromExcel()
 
@@ -100,7 +100,8 @@ Investment.setProfile("ma")
 #
 Investment.insertIntoTable(1, 123, 100)
 Investment.insertIntoTable(1, 123, 100)
-Investment.insertIntoTable(100, 0, 1)
+# Investment.insertIntoTable(100, 0, 1)
+Investment.sellAll(Rate=0)
 time.sleep(timer)
 # Investment.setProfile("ma")
 # Investment.insertIntoTable(2, 123, 98)
