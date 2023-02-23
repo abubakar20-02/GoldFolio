@@ -78,9 +78,9 @@ class Investment:
             else:
                 if isinstance(values[0], datetime):
                     # if date is in the future then don't add it.
-                    if datetime.strptime(values[0].strftime("%Y-%m-%d"), '%Y-%m-%d').date() > datetime.now().date():
-                        print("future")
-                        continue
+                    # if datetime.strptime(values[0].strftime("%Y-%m-%d"), '%Y-%m-%d').date() > datetime.now().date():
+                    #     print("future")
+                    #     continue
                     # convert date to Y-m-d format
                     self.insertIntoTable(values[2], values[3], values[4], Date=values[0].strftime("%Y-%m-%d"),
                                          ProfitLoss=values[5], LogChanges=False)

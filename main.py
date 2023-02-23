@@ -43,6 +43,7 @@ User.ImportFromExcel()
 timer = 1
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 Investment.ImportFromExcel()
+Statement.ImportFromExcel()
 # time.sleep(timer)
 # User.insertIntoTable("Hamza", "Rizwan",100)
 # time.sleep(timer)
