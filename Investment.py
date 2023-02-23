@@ -195,6 +195,14 @@ class Investment:
                         ProfitLoss=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
+        from User import User
+        User = User()
+        User.SelectProfile(self.Profile)
+        TotalMoney = User.getMoney()
+        if TotalMoney < BoughtFor:
+            print("not enough cash")
+            return
+
         if Date is None:
             Date = datetime.now().date()
         else:
@@ -214,13 +222,14 @@ class Investment:
                             VALUES
                             (?,?,?,?,?,?,?)
                       ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
+                self.conn.commit()
+                self.conn.close()
+                User.addMoney(-BoughtFor)
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
                 print(error)
                 Error = True
-        self.conn.commit()
-        self.conn.close()
 
     def __LogForInsert(self, BoughtFor, Gold, Purity, Transaction_ID):
         self.Log.insert(Transaction_ID, DB_Code.IB)
@@ -368,13 +377,21 @@ class Investment:
 
         # calculate total profit
         # profitloss/100 * bought for
-        self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=?)''',
+        self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss>=0)''',
                        (self.Profile,))
-        TotalProfit = self.c.fetchone()[0]
+        TotalPositiveProfit = self.c.fetchone()[0]
+        self.c.execute('''SELECT SUM((1+ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
+                       (self.Profile,))
+        TotalNegativeProfit = self.c.fetchone()[0]
+        print(TotalPositiveProfit)
         from User import User
         User = User()
         User.SelectProfile(self.Profile)
-        User.addMoney(TotalProfit)
+        if TotalPositiveProfit is None:
+            TotalPositiveProfit=0
+        if TotalNegativeProfit is None:
+            TotalNegativeProfit = 0
+        User.addMoney(TotalPositiveProfit+TotalNegativeProfit)
 
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
