@@ -1,19 +1,16 @@
 import math
 import os
-import shutil
 import sqlite3
-import time
 import uuid
-import re
 
+import pandas as pd
 from xlsxwriter import Workbook
 
 import DB_Code
-from Archive import UserArchive
-from Log import Log
 import SetUpFile
-import pandas as pd
+from Archive import UserArchive
 from Investment import Investment
+from Log import Log
 
 
 def generateTransactionID():
@@ -61,9 +58,9 @@ class User:
             # self.c.execute(sql, values)
             # dont update log again and again but add to user log
             try:
-                #if not float would go to except.
+                # if not float would go to except.
                 float(values[3])
-                if not(values[1].isalpha() and values[2].isalpha()):
+                if not (values[1].isalpha() and values[2].isalpha()):
                     print('name contains invalid letters')
                     continue
                 if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2])[:2]:
@@ -211,6 +208,18 @@ class User:
         finally:
             self.conn.close()
         # self.convertToExcel()
+
+    def isUserExist(self, User_ID):
+        self.__SetUpConnection()
+        self.c.execute('''
+                  SELECT COUNT(*) FROM User WHERE User_ID = ?
+                  ''', (User_ID,))
+        Count = self.c.fetchone()[0]
+        self.conn.close()
+        if Count > 0:
+            return True
+        else:
+            return False
 
     def convertToExcel(self):
         self.__SetUpConnection()

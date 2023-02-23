@@ -1,3 +1,4 @@
+import math
 import sqlite3
 import uuid
 from datetime import datetime
@@ -26,6 +27,77 @@ class Investment:
         self.InvestmentArchive = InvestmentArchive()
         self.Log = Log()
         self.InvestmentLog = Log.InvestmentLog()
+
+    def ImportFromExcel(self):
+        # source = 'UserTemplate.xlsx'
+        target = 'Investment.xlsx'
+        # shutil.copyfile(source,target)
+        # os.system(target)
+
+        sheet_name = 'Sheet1'
+
+        path = target
+
+        # Read the Excel file into a DataFrame
+        df = pd.read_excel(path, sheet_name=sheet_name)
+
+        from User import User
+        User = User()
+
+        # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
+        # date_added to be a date.
+
+        # Define the SQL query to insert the data into the table
+        table_name = "Investment"
+        columns = ','.join(df.columns)
+        placeholders = ','.join(['?' for _ in range(len(df.columns))])
+        print(placeholders)
+        sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+        print(sql)
+
+        # Loop through the rows in the DataFrame and insert them into the table
+        for _, row in df.iterrows():
+            values = tuple(row)
+            # check if user id exists in user db.
+            if not User.isUserExist(values[1]):
+                # if user doesnt exist in profile then dont add them.
+                continue
+
+            # check if the data is correct. Gold, Purity and Bought for have to be numbers and not empty whereas
+            # profit loss only needs to be a number, but it can be None.
+            if not (self.CorrectNumberFormat(values[2]) and self.CorrectNumberFormat(
+                    values[3]) and self.CorrectNumberFormat(values[4]) and isinstance(values[5], (float, int))):
+                continue
+
+            # if it reaches here, then user is in the list, so we can set profile.
+            self.setProfile(values[1])
+
+            # checks if time is none or date is empty.
+            if isinstance(values[0], datetime) and values[0] is pd.NaT or self.isEmpty(values[0]):
+                self.insertIntoTable(values[2], values[3], values[4], ProfitLoss=values[5], LogChanges=False)
+            else:
+                if isinstance(values[0], datetime):
+                    # if date is in the future then don't add it.
+                    if datetime.strptime(values[0].strftime("%Y-%m-%d"), '%Y-%m-%d').date() > datetime.now().date():
+                        print("future")
+                        continue
+                    # convert date to Y-m-d format
+                    self.insertIntoTable(values[2], values[3], values[4], Date=values[0].strftime("%Y-%m-%d"),
+                                         ProfitLoss=values[5], LogChanges=False)
+
+    def isEmpty(self, value):
+        # value is a number and it is not none.
+        if isinstance(value, (float, int)) and (math.isnan(value)):
+            return True
+        else:
+            return False
+
+    def CorrectNumberFormat(self, value):
+        # value is a number and it is not none.
+        if isinstance(value, (float, int)) and not (math.isnan(value)):
+            return True
+        else:
+            return False
 
     def setProfile(self, profile):
         self.Profile = profile
@@ -231,6 +303,7 @@ class Investment:
     # add user here
     def sellProfit(self, LogChanges=True, Rate=None):
         if Rate is not None:
+            # if connected to a thread this might not work all the time.
             self.updateProfitLoss(Rate)
         self.__SetUpConnection()
         self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
