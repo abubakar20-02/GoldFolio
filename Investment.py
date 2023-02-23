@@ -390,10 +390,11 @@ class Investment:
                        (self.Profile,))
         TotalPositiveProfit = self.c.fetchone()[0]
         self.c.execute(
-            '''SELECT SUM((1+ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
+            '''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
             (self.Profile,))
         TotalNegativeProfit = self.c.fetchone()[0]
-        print(TotalPositiveProfit)
+        print("-" + str(TotalNegativeProfit))
+        print("+" + str(TotalPositiveProfit))
 
         self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (User_ID=?)''',
                        (self.Profile,))
@@ -410,7 +411,8 @@ class Investment:
             TotalPositiveProfit = 0
         if TotalNegativeProfit is None:
             TotalNegativeProfit = 0
-        User.addMoney((TotalPositiveProfit + TotalNegativeProfit), LogChanges=False)
+            print(TotalPositiveProfit+TotalNegativeProfit)
+        User.addMoney((TotalPositiveProfit + TotalNegativeProfit+TotalCost), LogChanges=False)
 
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
@@ -423,7 +425,7 @@ class Investment:
         if RecordsAffected > 0 and LogChanges is True:
             Transaction_ID = generateTransactionID()
             self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit)- TotalCost,
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit),
                                           Transaction_ID=Transaction_ID)
 
     def __LogSellAll(self, RecordsAffected, Values, id):

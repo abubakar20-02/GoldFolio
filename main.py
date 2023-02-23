@@ -84,7 +84,7 @@ User.createTable()
 timer = 1
 User.insertIntoTable("Muhammad", "Abubakar", 201)
 User.SelectProfile("ma")
-User.addMoney(100)
+User.addMoney(1000)
 # User.cashout(301)
 # Investment.ImportFromExcel()
 # Statement.ImportFromExcel()
@@ -100,15 +100,16 @@ Investment.setProfile("ma")
 #
 Investment.insertIntoTable(1, 123, 100)
 Investment.insertIntoTable(1, 123, 100)
+Investment.insertIntoTable(5, 123, 20)
 # Investment.insertIntoTable(100, 0, 1)
-Investment.sellAll(Rate=0)
+Investment.sellAll(Rate=10)
 time.sleep(timer)
 # Investment.setProfile("ma")
 # Investment.insertIntoTable(2, 123, 98)
 # time.sleep(timer)
 # Investment.insertIntoTable(3, 3, 50)
 # its giving negative rn because we are not adding investment based on total money.
-Investment.sellAll(Rate=1)
+# Investment.sellAll(Rate=1)
 
 
 # a = 10
