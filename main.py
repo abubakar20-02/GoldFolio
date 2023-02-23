@@ -84,8 +84,8 @@ User.ImportFromExcel()
 timer = 1
 User.insertIntoTable("Muhammad", "Abubakar", 100)
 User.SelectProfile("ma")
-User.addMoney(100)
-User.cashout(301)
+# User.addMoney(100)
+# User.cashout(301)
 Investment.ImportFromExcel()
 Statement.ImportFromExcel()
 
@@ -96,15 +96,15 @@ Statement.ImportFromExcel()
 # time.sleep(timer)
 # User.updateRecord("ma", 50)
 # time.sleep(timer)
-# Investment.setProfile("ma")
-# #
-# Investment.insertIntoTable(1, 123, 101)
-# time.sleep(timer)
-# Investment.setProfile("hr")
-# Investment.insertIntoTable(2, 123, 98)
-# time.sleep(timer)
-# Investment.insertIntoTable(3, 3, 50)
-# Investment.sellAll(Rate=50)
+Investment.setProfile("ma")
+#
+Investment.insertIntoTable(1, 123, 101)
+time.sleep(timer)
+Investment.setProfile("ma")
+Investment.insertIntoTable(2, 123, 98)
+time.sleep(timer)
+Investment.insertIntoTable(3, 3, 50)
+Investment.sellAll(Rate=1)
 
 # a = 10
 # while True:

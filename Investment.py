@@ -302,6 +302,7 @@ class Investment:
 
     # add user here
     def sellProfit(self, LogChanges=True, Rate=None):
+        # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
             self.updateProfitLoss(Rate)
@@ -310,6 +311,19 @@ class Investment:
         Values = self.c.fetchall()
         self.c.execute('''SELECT COUNT(*) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
+        print(RecordsAffected)
+        # calculate total profit
+        # profitloss/100 * bought for
+        self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+                       (self.Profile,))
+        TotalProfit = self.c.fetchone()[0]
+        if TotalProfit is None:
+            return
+        from User import User
+        User = User()
+        User.SelectProfile(self.Profile)
+        User.addMoney(TotalProfit)
+        print("Total Profit:" + str(TotalProfit))
         self.c.execute('''
                     INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))
@@ -351,6 +365,17 @@ class Investment:
         Values = self.c.fetchall()
         self.c.execute('''SELECT COUNT(*) FROM Investment WHERE User_ID= ?''', (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
+
+        # calculate total profit
+        # profitloss/100 * bought for
+        self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=?)''',
+                       (self.Profile,))
+        TotalProfit = self.c.fetchone()[0]
+        from User import User
+        User = User()
+        User.SelectProfile(self.Profile)
+        User.addMoney(TotalProfit)
+
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
                   ''', (self.Profile,))
