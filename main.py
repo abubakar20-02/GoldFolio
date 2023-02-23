@@ -101,67 +101,13 @@ Investment.setProfile("ma")
 Investment.insertIntoTable(1, 123, 100)
 Investment.insertIntoTable(1, 123, 100)
 Investment.insertIntoTable(5, 123, 20)
-# Investment.insertIntoTable(100, 0, 1)
 Investment.sellAll(Rate=10)
 time.sleep(timer)
-# Investment.setProfile("ma")
-# Investment.insertIntoTable(2, 123, 98)
-# time.sleep(timer)
-# Investment.insertIntoTable(3, 3, 50)
-# its giving negative rn because we are not adding investment based on total money.
-# Investment.sellAll(Rate=1)
+User.insertIntoTable("Hamza", "Rizwan", 1000)
+Investment.setProfile("hr")
+Investment.insertIntoTable(10, 1, 10)
+Investment.sellAll(Rate=10)
 
-
-# a = 10
-# while True:
-#     a = a + 1
-#     time.sleep(timer)
-#     Investment.updateProfitLoss(a)
-
-
-# Investment.setProfile("hr")
-# Investment.insertIntoTable(123, 123, 123)
-# Investment.setProfile("ma")
-# Investment.sellAll(Rate=50)
-# Investment.setProfile("hr")
-# time.sleep(timer)
-# Investment.sellAll(Rate=20)
-# time.sleep(timer)
-# # User.deleteRecord("ma")
-# time.sleep(timer)
-# User.insertIntoTable("Ali", "Baba", 1)
-# time.sleep(timer)
-#
-# Investment.setProfile("ab")
-# time.sleep(timer)
-#
-# Investment.insertIntoTable(1, 1, 1, Date="2020-01-21")
-# time.sleep(timer)
-# Investment.insertIntoTable(12, 123, 23)
-# time.sleep(timer)
-# Investment.insertIntoTable(123, 3, 123)
-# time.sleep(timer)
-#
-# Investment.updateProfitLoss(1000)
-# Investment.sellAll()
-#
-# Investment.updateProfitLoss(1.5)
-# # Investment.sellAll()
-# time.sleep(timer)
-#
-# # Investment.sellAll()
-# time.sleep(timer)
-# User.insertIntoTable("m", "s", 90)
-# time.sleep(timer)
-# User.deleteRecord("ms")
-# time.sleep(timer)
-#
-# # method_name()
-# User.insertIntoTable("sa", "as", 100)
-# Investment.setProfile("sa")
-# Investment.insertIntoTable(1, 1, 23)
-# Investment.sellAll()
-#
 # saveSnapshot()
 
 
@@ -170,6 +116,6 @@ def previousStage(num):
         Log.previousStage()
 
 
-previousStage(0)
+previousStage(1)
 
 # when deleting user app crashes

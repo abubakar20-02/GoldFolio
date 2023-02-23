@@ -17,6 +17,7 @@ class Log:
 
         self.UserLog = self.UserLog()
         self.InvestmentLog = self.InvestmentLog()
+        self.MoneyLog = self.Money()
         self.createTable()
 
     # need refactoring
@@ -82,6 +83,7 @@ class Log:
         self.conn.close()
         self.UserLog.SearchByID(Data[1])
         self.InvestmentLog.SearchByID(Data[1])
+        self.MoneyLog.SearchByID(Data[1])
 
     class UserLog:
         def __init__(self):
@@ -418,7 +420,7 @@ class Log:
             self.__SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS Money
-                  ([Transaction_ID]VARCHAR PRIMARY KEY,[Date_Added] DEFAULT CURRENT_DATE,[User_ID] VARCHAR, [ActionType]  TEXT NOT NULL , [Change] REAL NOT NULL)
+                  ([Transaction_ID]VARCHAR PRIMARY KEY,[Date_Added] DEFAULT CURRENT_DATE,[User_ID] VARCHAR, [ActionType]  TEXT NOT NULL , [Change] REAL NOT NULL,[CostOfTrade] REAL)
                   ''')
             self.conn.commit()
             self.conn.close()
@@ -433,15 +435,15 @@ class Log:
             finally:
                 self.conn.close()
 
-        def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None):
+        def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None, CostOfTrade=None):
             self.__SetUpConnection()
             if Transaction_ID is None:
                 Transaction_ID = str(uuid.uuid4())
             self.c.execute('''
-                  INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change)
+                  INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change,CostOfTrade)
                         VALUES 
-                        (?,?,?,?)
-                  ''', (Transaction_ID, User_ID, ActionType, Change))
+                        (?,?,?,?,?)
+                  ''', (Transaction_ID, User_ID, ActionType, Change, CostOfTrade))
             self.conn.commit()
             self.conn.close()
 
@@ -451,4 +453,41 @@ class Log:
                   DELETE FROM Money WHERE Transaction_ID = ?
                   ''', (Transaction_ID,))
             self.conn.commit()
+            self.conn.close()
+
+        # move this to user.py
+        def SearchByID(self, Transaction_ID):
+            self.__SetUpConnection()
+            self.c.execute("BEGIN TRANSACTION")
+            self.c.execute('''
+            SELECT * FROM Money WHERE Transaction_ID = ?
+                  ''', (Transaction_ID,))
+            Data = self.c.fetchone()
+
+            self.c.execute('''
+            SELECT COUNT(*) FROM Money WHERE Transaction_ID = ?
+                  ''', (Transaction_ID,))
+            Records = self.c.fetchone()[0]
+            if Records == 0:
+                self.conn.close()
+                return
+            try:
+                self.c.execute('''
+                DELETE FROM Money WHERE Transaction_ID = ?
+                      ''', (Transaction_ID,))
+                self.conn.commit()
+            except sqlite3.Error as Error:
+                print(Error)
+            ActionType = Data[3]
+            print(ActionType)
+            from User import User
+            from Investment import Investment
+            User = User()
+            Investment = Investment()
+            User.SelectProfile(Data[2])
+            if ActionType == DB_Code.MoneyOut:
+                User.addMoney(-Data[4], LogChanges=False)
+            elif ActionType == DB_Code.ProfitLoss:
+                # using investment get bought price too.
+                User.addMoney((Data[5]-Data[4]), LogChanges=False)
             self.conn.close()

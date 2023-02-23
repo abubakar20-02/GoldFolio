@@ -348,7 +348,7 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellProfit(RecordsAffected, Values, Transaction_ID)
             print("hmmm")
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,CostOfTrade=TotalCost)
         self.conn.close()
 
     def __LogSellProfit(self, RecordsAffected, Values, my_uuid):
@@ -411,8 +411,8 @@ class Investment:
             TotalPositiveProfit = 0
         if TotalNegativeProfit is None:
             TotalNegativeProfit = 0
-            print(TotalPositiveProfit+TotalNegativeProfit)
-        User.addMoney((TotalPositiveProfit + TotalNegativeProfit+TotalCost), LogChanges=False)
+            print(TotalPositiveProfit + TotalNegativeProfit)
+        User.addMoney((TotalPositiveProfit + TotalNegativeProfit + TotalCost), LogChanges=False)
 
         self.c.execute('''
                     INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
@@ -426,7 +426,7 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit),
-                                          Transaction_ID=Transaction_ID)
+                                          Transaction_ID=Transaction_ID, CostOfTrade=TotalCost)
 
     def __LogSellAll(self, RecordsAffected, Values, id):
         self.Log.insert(id, DB_Code.ISA)
