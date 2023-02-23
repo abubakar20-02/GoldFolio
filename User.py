@@ -21,6 +21,7 @@ class User:
     def __init__(self):
         self.c = None
         self.conn = None
+        self.Profile = None
         self.a = UserArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
@@ -29,6 +30,9 @@ class User:
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
+
+    def SelectProfile(self, Profile):
+        self.Profile = Profile
 
     def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'
@@ -220,6 +224,38 @@ class User:
             return True
         else:
             return False
+
+    def getMoney(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+                  SELECT Money FROM User WHERE User_ID = ?
+                  ''', (self.Profile,))
+        Money = self.c.fetchone()[0]
+        self.conn.close()
+        return Money
+
+    def updateMoney(self, Money):
+        self.__SetUpConnection()
+        self.c.execute('''
+                  UPDATE User SET Money=? WHERE User_ID = ?
+                  ''', (Money, self.Profile))
+        self.conn.commit()
+        self.conn.close()
+
+    def addMoney(self, Money):
+        print('add money')
+        TotalMoney = self.getMoney() + Money
+        self.updateMoney(TotalMoney)
+
+    def cashout(self, Money):
+        TotalMoney = self.getMoney()
+        if Money > TotalMoney:
+            print("not enough cash")
+            return
+        else:
+            self.updateMoney(self.getMoney() - Money)
+
+        # get current money then add money for that user.
 
     def convertToExcel(self):
         self.__SetUpConnection()
