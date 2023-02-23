@@ -2,12 +2,12 @@ DBName = 'Database.db'
 
 ExcelFileName = "Excel.xlsx"
 
-DBArchiveName = 'Archive.db'
+DBArchiveName = 'DBSupportFiles/Archive.db'
 
-DBLog = 'Log.db'
+DBLog = 'DBSupportFiles/Log.db'
 
-Snap_DB = 'SnapDatabase.db'
+Snap_DB = 'DBSnapshot/SnapDatabase.db'
 
-Snap_Archive = 'SnapArchive.db'
+Snap_Archive = 'DBSnapshot/SnapArchive.db'
 
-Snap_DBLog = 'SnapDB.db'
+Snap_DBLog = 'DBSnapshot/SnapDBLog.db'

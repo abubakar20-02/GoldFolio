@@ -61,11 +61,11 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="SnapDB" uuid="d8f0c9d3-eba4-4eff-865d-62ca773a6c55">
+    <data-source source="LOCAL" name="SnapDBLog" uuid="ed941712-facd-41dd-b94b-efb5c17fb40f">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\abuba\PycharmProjects\FYP\SnapDB.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\abuba\PycharmProjects\FYP\DBSnapshot\SnapDBLog.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>
