@@ -5,6 +5,7 @@ from datetime import datetime
 
 import pandas as pd
 
+import DBFunctions
 import DB_Code
 import SetUpFile
 from Archive import InvestmentArchive
@@ -434,4 +435,4 @@ class Investment:
         self.InvestmentArchive.Archive(Values)
 
     def convertToExcel(self):
-        SetUpFile.convertToExcel("Investment", SetUpFile.DBName)
+        DBFunctions.convertToExcel("Investment", SetUpFile.DBName)

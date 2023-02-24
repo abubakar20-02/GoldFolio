@@ -2,6 +2,7 @@
 import sqlite3
 import uuid
 
+import DBFunctions
 import DB_Code
 import SetUpFile
 
@@ -495,4 +496,4 @@ class Log:
             self.conn.close()
 
         def convertToExcel(self):
-            SetUpFile.convertToExcel("Money", SetUpFile.DBLog)
+            DBFunctions.convertToExcel("Money", SetUpFile.DBLog)

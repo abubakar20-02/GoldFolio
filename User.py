@@ -6,6 +6,7 @@ import uuid
 import pandas as pd
 from xlsxwriter import Workbook
 
+import DBFunctions
 import DB_Code
 import SetUpFile
 from Archive import UserArchive
@@ -268,4 +269,4 @@ class User:
         # get current money then add money for that user.
 
     def convertToExcel(self):
-        SetUpFile.convertToExcel("User", SetUpFile.DBName, RemoveFirstColumn=False)
+        DBFunctions.convertToExcel("User", SetUpFile.DBName, RemoveFirstColumn=False)

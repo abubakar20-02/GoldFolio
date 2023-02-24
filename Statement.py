@@ -4,6 +4,8 @@ import uuid
 from datetime import datetime
 
 import pandas as pd
+
+import DBFunctions
 import SetUpFile
 
 
@@ -204,4 +206,4 @@ class Statement:
         return Data
 
     def convertToExcel(self):
-        SetUpFile.convertToExcel("Statement", SetUpFile.DBName)
+        DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
