@@ -5,6 +5,19 @@ import sys
 # importing pyqtgraph as pg
 import pyqtgraph as pg
 
+class MyPlotWidget(pg.PlotWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def mouseMoveEvent(self, event):
+        pos = event.pos()
+        if self.plotItem.sceneBoundingRect().contains(pos):
+            mousePoint = self.plotItem.vb.mapSceneToView(pos)
+            x = round(mousePoint.x())
+            y = round(mousePoint.y(),1)
+            QToolTip.showText(self.mapToGlobal(pos), f"x={x}, y={y}")
+        else:
+            QToolTip.hideText()
 
 class Window(QMainWindow):
 
@@ -39,7 +52,7 @@ class Window(QMainWindow):
         check = QCheckBox("Check Box")
 
         # creating a plot window
-        self.plot = pg.plot()
+        self.plot = MyPlotWidget()
 
         # create list for y-axis
         y1 = [5, 5, 7, 10, 3, 8, 9, 1, 6, 2]
