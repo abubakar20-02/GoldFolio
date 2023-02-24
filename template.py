@@ -1,87 +1,49 @@
-# importing various libraries
 import sys
 import matplotlib
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
 
 matplotlib.use('Qt5Agg')
-from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QLabel
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib.pyplot as plt
-import random
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
 
 
-# main window
-# which inherits QDialog
-class Window(QDialog):
+# https://www.pythonguis.com/tutorials/plotting-matplotlib/
+class MplCanvas(FigureCanvasQTAgg):
 
-    # constructor
-    def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
-
-        # a figure instance to plot on
-        self.figure = plt.figure()
-
-        # this is the Canvas Widget that
-        # displays the 'figure'it takes the
-        # 'figure' instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
-
-        # this is the Navigation widget
-        # it takes the Canvas widget and a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
-
-        # Just some button connected to 'plot' method
-        self.button = QPushButton('Plot')
-
-        # adding action to the button
-        self.button.clicked.connect(self.plot)
-
-        # creating a Vertical Box layout
-        layout = QVBoxLayout()
-
-        # adding tool bar to the layout
-        layout.addWidget(self.toolbar)
-
-        # adding canvas to the layout
-        layout.addWidget(self.canvas)
-
-        # adding push button to the layout
-        layout.addWidget(self.button)
-
-        # setting layout to the main window
-        self.setLayout(layout)
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
 
 
-    # action called by the push button
-    def plot(self):
-        # random data
-        data = [random.random() for i in range(10)]
+class MainWindow(QtWidgets.QMainWindow):
 
-        # clearing old figure
-        self.figure.clear()
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
 
-        # create an axis
-        ax = self.figure.add_subplot(111)
+        sc = MplCanvas(self, width=5, height=4, dpi=100)
+        sc.axes.plot(["a", "b", "c", "d", "e"], [10, 1, 20, 3, 40])
 
-        # plot data
-        ax.plot(data, '*-')
+        # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
+        toolbar = NavigationToolbar(sc, self)
 
-        # refresh canvas
-        self.canvas.draw()
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(toolbar)
+        layout.addWidget(sc)
+
+        # Create a placeholder widget to hold our toolbar and canvas.
+        widget = QtWidgets.QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+        self.show()
 
 
-# driver code
-if __name__ == '__main__':
-    # creating apyqt5 application
-    app = QApplication(sys.argv)
+if __name__ == "__main__":
+    import sys
 
-    # creating a window object
-    main = Window()
-
-    # showing the window
-    main.show()
-
-    # loop
-    sys.exit(app.exec_())
+    app = QtWidgets.QApplication(sys.argv)
+    w = MainWindow()
+    app.exec_()
