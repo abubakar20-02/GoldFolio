@@ -79,13 +79,19 @@ Investment.createTable()
 User = User()
 User.deleteTable(False)
 User.createTable()
-# User.ImportFromExcel()
+User.ImportFromExcel()
+User.convertToExcel()
+# Investment.ImportFromExcel()
+#
+# Investment.setProfile("ma")
+# Investment.sellAll(Rate=1000)
+# User.convertToExcel()
 
-User.insertIntoTable("Hamza", "Rizwan", 1000)
-
-Investment.setProfile("hr")
-Investment.insertIntoTable(10, 10, 100)
-Investment.sellAll(Rate=100)
+# User.insertIntoTable("Hamza", "Rizwan", 1000)
+#
+# Investment.setProfile("hr")
+# Investment.insertIntoTable(10, 10, 100)
+# Investment.sellAll(Rate=100)
 
 
 # User.SelectProfile("hr")

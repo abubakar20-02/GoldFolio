@@ -55,7 +55,6 @@ class Investment:
         print(placeholders)
         sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
         print(sql)
-
         # Loop through the rows in the DataFrame and insert them into the table
         for _, row in df.iterrows():
             values = tuple(row)

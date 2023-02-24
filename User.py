@@ -183,7 +183,7 @@ class User:
         if LogChanges is True:
             Transaction_ID = generateTransactionID()
             self.__LogForInsert(FName, LName, Money, UserID, Transaction_ID)
-            self.MoneyLog.insertIntoTable(UserID, DB_Code.MoneyIn, Money,Transaction_ID=Transaction_ID)
+            self.MoneyLog.insertIntoTable(UserID, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)
         self.conn.close()
 
     def updateRecord(self, User_ID, Money, LogChanges=True):
@@ -252,7 +252,7 @@ class User:
         if LogChanges is None:
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyIn)
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money,Transaction_ID=Transaction_ID)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)
 
     def cashout(self, Money):
         TotalMoney = self.getMoney()
@@ -263,20 +263,9 @@ class User:
             self.updateMoney(self.getMoney() - Money)
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money,Transaction_ID=Transaction_ID)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
         # get current money then add money for that user.
 
     def convertToExcel(self):
-        self.__SetUpConnection()
-        workbook = Workbook(SetUpFile.ExcelFileName)
-        worksheet = workbook.add_worksheet()
-        self.c.execute("select * from User")
-        mysel = self.c.execute("select * from User")
-        for i, row in enumerate(mysel):
-            for j, value in enumerate(row):
-                worksheet.write(i + 1, j, value)
-        workbook.close()
-        self.conn.commit()
-        self.conn.close()
-        os.system(SetUpFile.ExcelFileName)
+        SetUpFile.convertToExcel("User", SetUpFile.DBName)
