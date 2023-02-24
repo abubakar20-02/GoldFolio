@@ -14,8 +14,12 @@ class MyPlotWidget(pg.PlotWidget):
         if self.plotItem.sceneBoundingRect().contains(pos):
             mousePoint = self.plotItem.vb.mapSceneToView(pos)
             x = round(mousePoint.x())
+            if x == 1:
+                Result = "Jan"
+            else:
+                Result = x
             y = round(mousePoint.y(),1)
-            QToolTip.showText(self.mapToGlobal(pos), f"x={x}, y={y}")
+            QToolTip.showText(self.mapToGlobal(pos), f"x={Result}, y={y}")
         else:
             QToolTip.hideText()
 
