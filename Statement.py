@@ -202,3 +202,6 @@ class Statement:
         self.conn.commit()
         self.conn.close()
         return Data
+
+    def convertToExcel(self):
+        SetUpFile.convertToExcel("Statement", SetUpFile.DBName)

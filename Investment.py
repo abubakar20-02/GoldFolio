@@ -432,3 +432,6 @@ class Investment:
         self.Log.insert(id, DB_Code.ISA)
         self.InvestmentLog.SellAllStatement(id, RecordsAffected, self.Profile)
         self.InvestmentArchive.Archive(Values)
+
+    def convertToExcel(self):
+        SetUpFile.convertToExcel("Investment", SetUpFile.DBName)

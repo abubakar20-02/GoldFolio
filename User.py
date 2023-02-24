@@ -268,4 +268,4 @@ class User:
         # get current money then add money for that user.
 
     def convertToExcel(self):
-        SetUpFile.convertToExcel("User", SetUpFile.DBName)
+        SetUpFile.convertToExcel("User", SetUpFile.DBName, RemoveFirstColumn=False)

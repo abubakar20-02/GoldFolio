@@ -493,3 +493,6 @@ class Log:
             elif ActionType == DB_Code.BuyInvestment:
                 User.addMoney(-Data[4])
             self.conn.close()
+
+        def convertToExcel(self):
+            SetUpFile.convertToExcel("Money", SetUpFile.DBLog)

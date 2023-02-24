@@ -82,6 +82,7 @@ User.createTable()
 User.ImportFromExcel()
 User.convertToExcel()
 # Investment.ImportFromExcel()
+# Investment.convertToExcel()
 #
 # Investment.setProfile("ma")
 # Investment.sellAll(Rate=1000)
