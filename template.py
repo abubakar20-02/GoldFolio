@@ -2,6 +2,7 @@ import datetime
 import sys
 import random
 import matplotlib
+import mplcursors
 from PyQt5.QtCore import QPointF
 from PyQt5.QtWidgets import QToolTip, QLabel
 from mplcursors import cursor
@@ -12,6 +13,7 @@ import Log
 from PyQt5 import QtCore, QtWidgets
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 import yfinance as yf
 
@@ -37,9 +39,31 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.pie()
+        self.line()
 
         self.show()
+
+    def line(self):
+        self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
+        self.cursor.connect("add", lambda sel: sel.annotation.set_text(
+            f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
+        x = [datetime.datetime(2022, 1, 1, 0, 0),
+             datetime.datetime(2022, 1, 2, 0, 0),
+             datetime.datetime(2022, 1, 3, 0, 0),
+             datetime.datetime(2022, 1, 4, 0, 0),
+             datetime.datetime(2022, 1, 5, 0, 0)]
+        self.canvas.axes.set_xticks(x)
+        self.canvas.axes.set_xticklabels(x, rotation=90)
+        # x = [1, 2, 3, 4, 5]
+        y = [1, 4, 2, 3, 5]
+        self.canvas.axes.plot(x, y, '-o')
+        self.canvas.axes.set_xlabel('X-axis')
+        self.canvas.axes.set_ylabel('Y-axis')
+
+        # # Format the x-axis ticks as dates
+        date_format = mdates.DateFormatter('%Y-%m-%d')
+        self.canvas.axes.xaxis.set_major_formatter(date_format)
+        self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
 
     def pie(self):
         Money = Log.Log.Money()
@@ -55,7 +79,8 @@ class MainWindow(QtWidgets.QMainWindow):
         cursor(hover=True)
         explode = (0.1, 0.1, 0.1, 0.1)
         wp = {'linewidth': 1, 'edgecolor': "black"}
-        bars = self.canvas.axes.pie(values, labels=type1, shadow=True,autopct='%1.0f%%', pctdistance=1.1, labeldistance=1.2,explode=explode,wedgeprops = wp)
+        bars = self.canvas.axes.pie(values, labels=type1, shadow=True, autopct='%1.0f%%', pctdistance=1.1,
+                                    labeldistance=1.2, explode=explode, wedgeprops=wp)
 
     def bargraph(self):
         Money = Log.Log.Money()

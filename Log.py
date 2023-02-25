@@ -510,10 +510,19 @@ class Log:
             return Sum
 
         def dataforgraph(self):
+            b=0
             a = self.__getSum(DB_Code.MoneyIn, "Change")
-            b = (0 - self.__getSum(DB_Code.MoneyOut, "Change"))
+            if self.__getSum(DB_Code.MoneyOut, "Change") is not None:
+                b = (0 - self.__getSum(DB_Code.MoneyOut, "Change"))
             c = self.__getSum(DB_Code.ProfitLoss, "Change")
             d = self.__getSum(DB_Code.ProfitLoss, "TradeCost")
+
+            if a is None:
+                a=0
+            if c is None:
+                c=0
+            if d is None:
+                d=0
 
             dict1 = dict([(DB_Code.MoneyIn, a), (DB_Code.MoneyOut, b), (DB_Code.ProfitLoss, c), ("TradeCost", d)])
             print(dict1)
