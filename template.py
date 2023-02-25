@@ -16,6 +16,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 import yfinance as yf
+from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import FixedLocator
 
 
 class MplCanvas(FigureCanvas):
@@ -32,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
+
         self.setCentralWidget(self.canvas)
         self.tooltip = QLabel(self)
         self.tooltip.hide()
@@ -44,19 +47,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show()
 
     def line(self):
-        self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
-        self.cursor.connect("add", lambda sel: sel.annotation.set_text(
-            f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        x = [datetime.datetime(2022, 1, 1, 0, 0),
-             datetime.datetime(2022, 1, 2, 0, 0),
-             datetime.datetime(2022, 1, 3, 0, 0),
-             datetime.datetime(2022, 1, 4, 0, 0),
-             datetime.datetime(2022, 1, 5, 0, 0)]
+        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
+        from Investment import Investment
+        Investment = Investment()
+        # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
+        # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
+        #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
+        data = Investment.traverse_all_dates("BoughtFor")
+        # Define the format of the date string
+        # format_str = '%Y-%m-%d'
+        # # Convert each dictionary key to a datetime object
+        # for key in data:
+        #     datetime_obj = datetime.datetime.strptime(key, format_str)
+        #     data[datetime_obj] = data.pop(key)
+        # print(data)
+        x = list(data.keys())
+        y = list(data.values())
+        print(y)
+        # x = [datetime.datetime(2022, 1, 1, 0, 0),
+        #      datetime.datetime(2022, 1, 2, 0, 0),
+        #      datetime.datetime(2022, 1, 3, 0, 0),
+        #      datetime.datetime(2022, 1, 4, 0, 0),
+        #      datetime.datetime(2022, 1, 5, 0, 0)]
         self.canvas.axes.set_xticks(x)
         self.canvas.axes.set_xticklabels(x, rotation=90)
         # x = [1, 2, 3, 4, 5]
-        y = [1, 4, 2, 3, 5]
+        # y = [1850, 1800, 1900, 1950, 1750]
         self.canvas.axes.plot(x, y, '-o')
+        self.canvas.axes.grid(True)
         self.canvas.axes.set_xlabel('X-axis')
         self.canvas.axes.set_ylabel('Y-axis')
 

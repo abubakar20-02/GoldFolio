@@ -234,7 +234,7 @@ class Investment:
 
     def __LogForInsert(self, BoughtFor, Gold, Purity, Transaction_ID):
         self.Log.insert(Transaction_ID, DB_Code.IB)
-        self.MoneyLog.insertIntoTable(self.Profile,DB_Code.BuyInvestment,-BoughtFor,Transaction_ID=Transaction_ID)
+        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.BuyInvestment, -BoughtFor, Transaction_ID=Transaction_ID)
         self.InvestmentLog.InsertStatement(Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
     # need investment id to update.
@@ -349,7 +349,8 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellProfit(RecordsAffected, Values, Transaction_ID)
             print("hmmm")
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,TradeCost=TotalCost)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,
+                                          TradeCost=TotalCost)
         self.conn.close()
 
     def __LogSellProfit(self, RecordsAffected, Values, my_uuid):
@@ -427,12 +428,44 @@ class Investment:
             Transaction_ID = generateTransactionID()
             self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit),
-                                          Transaction_ID=Transaction_ID,TradeCost=TotalCost)
+                                          Transaction_ID=Transaction_ID, TradeCost=TotalCost)
 
     def __LogSellAll(self, RecordsAffected, Values, id):
         self.Log.insert(id, DB_Code.ISA)
         self.InvestmentLog.SellAllStatement(id, RecordsAffected, self.Profile)
         self.InvestmentArchive.Archive(Values)
+
+    import sqlite3
+
+    def traverse_all_dates(self, ColumnName):
+        # connect to database
+        dictionary = {}
+        self.__SetUpConnection()
+
+        sql = "SELECT SUM({0}) FROM Investment WHERE Date_Added = ?".format(ColumnName)
+
+        # execute SQL query to get all dates
+        self.c.execute("SELECT DISTINCT Date_Added FROM Investment ORDER BY Date_Added ASC")
+
+        # loop through dates and print the sum of values for each date
+        for row in self.c.fetchall():
+            date = row[0]
+            self.c.execute(sql, (date,))
+            format_str = '%Y-%m-%d'
+            date=datetime.strptime(date, format_str)
+            print(type(date))
+            sum_of_values = self.c.fetchone()[0]
+            dictionary[date] = sum_of_values
+            print(f"{date}: {sum_of_values}")
+        print(dictionary)
+
+        # close database connection
+        self.conn.close()
+        return dictionary
+
+    def add_to_dict(self, dictionary, key, value):
+        dictionary[key] = value
+        return dictionary
 
     def convertToExcel(self):
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
