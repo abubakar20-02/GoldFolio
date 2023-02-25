@@ -2,6 +2,8 @@ import datetime
 import sys
 import random
 import matplotlib
+from PyQt5.QtCore import QPointF
+from PyQt5.QtWidgets import QToolTip, QLabel
 
 matplotlib.use('Qt5Agg')
 import Log
@@ -28,6 +30,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.setCentralWidget(self.canvas)
+        self.tooltip = QLabel(self)
+        self.tooltip.hide()
 
         # n_data = 50
         # self.xdata = list(range(n_data))
@@ -51,6 +55,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.axes.set_title('Bar Graph Example')
         self.canvas.axes.set_xlabel('X-axis')
         self.canvas.axes.set_ylabel('Y-axis')
+        self.plotarea = self.canvas.figure.subplotpars.left, self.canvas.figure.subplotpars.top
+        self.plotarea = self.canvas.figure.transFigure.transform(self.plotarea)
+
+        self.canvas.mpl_connect('motion_notify_event', self.on_move)
 
     #     # Setup a timer to trigger the redraw by calling update_plot.
     #     self.timer = QtCore.QTimer()
@@ -65,6 +73,15 @@ class MainWindow(QtWidgets.QMainWindow):
     #     self.canvas.axes.plot(self.xdata, self.ydata, 'r')
     #     # Trigger the canvas to update and redraw.
     #     self.canvas.draw()
+
+    def on_move(self, event):
+        if event.inaxes == self.canvas.axes:
+            x, y = event.xdata, event.ydata
+            self.tooltip.setText(f'x={round(x)}, y={round(y)}')
+            self.tooltip.move(event.x, self.canvas.height()-event.y)
+            self.tooltip.show()
+        else:
+            self.tooltip.hide()
 
 
 if __name__ == "__main__":

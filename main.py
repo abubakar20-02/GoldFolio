@@ -28,6 +28,8 @@ if __name__ == "__main__":
     User.addMoney(5000)
     User.cashout(100)
     User.cashout(500)
+    User.cashout(1000)
+    User.cashout(1000)
     User.cashout(100)
     Investment.setProfile("ma")
     Investment.insertIntoTable(123, 123, 123)
