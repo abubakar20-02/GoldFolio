@@ -25,6 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         sc = MplCanvas(self, width=5, height=4, dpi=100)
         sc.axes.plot(["a", "b", "c", "d", "e"], [10, 1, 20, 3, 40])
+        self.clearGraph(sc)
 
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         toolbar = NavigationToolbar(sc, self)
@@ -39,6 +40,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(widget)
 
         self.show()
+
+    def clearGraph(self, sc):
+        sc.axes.cla()
 
 
 if __name__ == "__main__":
