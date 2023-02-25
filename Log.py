@@ -412,6 +412,10 @@ class Log:
             self.c = None
             self.conn = None
             self.createTable()
+            self.Profile = None
+
+        def setProfile(self, Profile):
+            self.Profile = Profile
 
         def __SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
@@ -444,7 +448,7 @@ class Log:
                   INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change,TradeCost)
                         VALUES 
                         (?,?,?,?,?)
-                  ''', (Transaction_ID, User_ID, ActionType, Change,TradeCost))
+                  ''', (Transaction_ID, User_ID, ActionType, Change, TradeCost))
             self.conn.commit()
             self.conn.close()
 
@@ -494,6 +498,26 @@ class Log:
             elif ActionType == DB_Code.BuyInvestment:
                 User.addMoney(-Data[4])
             self.conn.close()
+
+        def __getSum(self, ActionType, ColumnName, DateStart=None, DateEnd=None):
+            # add date as parameter too.
+            self.__SetUpConnection()
+            sql = "SELECT SUM({0}) FROM Money WHERE ActionType = ? AND User_ID = ?".format(ColumnName)
+            self.c.execute(sql, (ActionType, self.Profile,))
+            Sum = self.c.fetchone()[0]
+            self.conn.close()
+            print(Sum)
+            return Sum
+
+        def dataforgraph(self):
+            a = self.__getSum(DB_Code.MoneyIn, "Change")
+            b = (0 - self.__getSum(DB_Code.MoneyOut, "Change"))
+            c = self.__getSum(DB_Code.ProfitLoss, "Change")
+            d = self.__getSum(DB_Code.ProfitLoss, "TradeCost")
+
+            dict1 = dict([(DB_Code.MoneyIn, a), (DB_Code.MoneyOut, b), (DB_Code.ProfitLoss, c), ("TradeCost", d)])
+            print(dict1)
+            return dict1
 
         def convertToExcel(self):
             DBFunctions.convertToExcel("Money", SetUpFile.DBLog)

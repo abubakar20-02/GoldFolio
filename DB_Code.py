@@ -3,8 +3,8 @@ UI = "InsertUser"
 UU = "UpdateUser"
 UD = "DeleteUser"  #
 
-MoneyIn = "MoneyIn"
-MoneyOut = "MoneyOut"
+MoneyIn = 'MoneyIn'
+MoneyOut = 'MoneyOut'
 ProfitLoss = "ProfitLoss"
 BuyInvestment ="BuyInvestment"
 
