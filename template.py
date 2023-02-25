@@ -53,7 +53,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # courses = list(data.keys())
         # values = list(data.values())
         cursor(hover=True)
-        bars = self.canvas.axes.pie(values, labels= type1)
+        explode = (0.1, 0.1, 0.1, 0.1)
+        wp = {'linewidth': 1, 'edgecolor': "black"}
+        bars = self.canvas.axes.pie(values, labels=type1, shadow=True,autopct='%1.0f%%', pctdistance=1.1, labeldistance=1.2,explode=explode,wedgeprops = wp)
 
     def bargraph(self):
         Money = Log.Log.Money()
@@ -68,6 +70,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # values = list(data.values())
         cursor(hover=True)
         bars = self.canvas.axes.bar(type1, values)
+        for bars in self.canvas.axes.containers:
+            self.canvas.axes.bar_label(bars)
         self.canvas.axes.set_title('Bar Graph Example')
         self.canvas.axes.set_xlabel('X-axis')
         self.canvas.axes.set_ylabel('Y-axis')
