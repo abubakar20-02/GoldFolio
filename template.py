@@ -42,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.line()
+        self.pie()
 
         self.show()
 
@@ -96,10 +96,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # courses = list(data.keys())
         # values = list(data.values())
         cursor(hover=True)
-        explode = (0.1, 0.1, 0.1, 0.1)
+        data_without_zero = {k: v for k, v in data.items() if v > 0}
+        names = list(data_without_zero.keys())
+        values = list(data_without_zero.values())
+        # explode = (0.1,0.1)
         wp = {'linewidth': 1, 'edgecolor': "black"}
-        bars = self.canvas.axes.pie(values, labels=type1, shadow=True, autopct='%1.0f%%', pctdistance=1.1,
-                                    labeldistance=1.2, explode=explode, wedgeprops=wp)
+        bars = self.canvas.axes.pie(values, labels=names, shadow=True, autopct='%1.0f%%', pctdistance=1.1,
+                                    labeldistance=1.2, wedgeprops=wp)
 
     def bargraph(self):
         Money = Log.Log.Money()

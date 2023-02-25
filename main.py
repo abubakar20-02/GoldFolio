@@ -22,9 +22,9 @@ if __name__ == "__main__":
     User.deleteTable(False)
     User.createTable()
 
-    User.insertIntoTable("Muhammad", "Abubakar", 100000000)
+    User.insertIntoTable("Muhammad", "Abubakar", 0)
     User.SelectProfile("ma")
-    User.addMoney(1000)
+    User.addMoney(0)
     Investment.setProfile("ma")
     # Investment.insertIntoTable(123, 123, 15)
     # Investment.sellAll(Rate=10)

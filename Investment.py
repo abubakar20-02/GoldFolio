@@ -84,7 +84,7 @@ class Investment:
                     #     continue
                     # convert date to Y-m-d format
                     self.insertIntoTable(values[2], values[3], values[4], Date=values[0].strftime("%Y-%m-%d"),
-                                         ProfitLoss=values[5], LogChanges=False)
+                                         ProfitLoss=values[5], LogChanges=False,IgnoreMoney=True)
 
     def isEmpty(self, value):
         # value is a number and it is not none.
@@ -193,16 +193,17 @@ class Investment:
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
 
     def insertIntoTable(self, Gold, Purity, BoughtFor, LogChanges=True, Transaction_ID=None, Date=None,
-                        ProfitLoss=None):
+                        ProfitLoss=None, IgnoreMoney=False):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
-        from User import User
-        User = User()
-        User.SelectProfile(self.Profile)
-        TotalMoney = User.getMoney()
-        if TotalMoney < BoughtFor:
-            print("not enough cash")
-            return
+        if IgnoreMoney is False:
+            from User import User
+            User = User()
+            User.SelectProfile(self.Profile)
+            TotalMoney = User.getMoney()
+            if TotalMoney < BoughtFor:
+                print("not enough cash")
+                return
 
         if Date is None:
             Date = datetime.now().date()
@@ -225,7 +226,8 @@ class Investment:
                       ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
                 self.conn.commit()
                 self.conn.close()
-                User.addMoney(-BoughtFor, LogChanges=False)
+                if IgnoreMoney is False:
+                    User.addMoney(-BoughtFor, LogChanges=False)
                 if LogChanges is True:
                     self.__LogForInsert(BoughtFor, Gold, Purity, Transaction_ID)
             except sqlite3.Error as error:
