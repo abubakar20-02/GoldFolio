@@ -5,6 +5,7 @@ import matplotlib
 import mplcursors
 from PyQt5.QtCore import QPointF
 from PyQt5.QtWidgets import QToolTip, QLabel
+from matplotlib import pyplot as plt
 from mplcursors import cursor
 
 matplotlib.use('Qt5Agg')
@@ -50,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.line()
+        self.pie()
 
         self.show()
 
@@ -62,8 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        data = Statement.traverse_all_dates("BoughtFor", StartDate=strToDate("2022-01-03"),
-                                            EndDate=strToDate("2022-01-20"))
+        data = Statement.traverse_all_dates("BoughtFor")
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object
@@ -93,6 +93,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.axes.xaxis.set_major_formatter(date_format)
         self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
 
+    def hist(self):
+        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
+        from Statement import Statement
+        Statement = Statement()
+        # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
+        # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
+        #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
+        data = Statement.traverse_all_dates("BoughtFor", StartDate=strToDate("2022-01-01"),
+                                            EndDate=strToDate("2023-03-31"))
+        # Define the format of the date string
+        # format_str = '%Y-%m-%d'
+        # # Convert each dictionary key to a datetime object
+        # for key in data:
+        #     datetime_obj = datetime.datetime.strptime(key, format_str)
+        #     data[datetime_obj] = data.pop(key)
+        # print(data)
+        x = list(data.keys())
+        y = list(data.values())
+        self.canvas.axes.hist(x, bins=12, edgecolor="k")
+
     def pie(self):
         Money = Log.Log.Money()
         Money.setProfile("ma")
@@ -110,8 +131,11 @@ class MainWindow(QtWidgets.QMainWindow):
         values = list(data_without_zero.values())
         # explode = (0.1,0.1)
         wp = {'linewidth': 1, 'edgecolor': "black"}
-        bars = self.canvas.axes.pie(values, labels=names, shadow=True, autopct='%1.0f%%', pctdistance=1.1,
-                                    labeldistance=1.2, wedgeprops=wp)
+        _, _, autotexts = self.canvas.axes.pie(values, labels=['']*len(values), shadow=True, autopct='%1.1f%%', wedgeprops=wp,pctdistance=1.3)
+        # create legend labels with percentages
+        legend_labels = [f'{label} ({values[i]:.1f})' for i, label in enumerate(names)]
+        self.canvas.axes.legend(legend_labels,  loc='best')
+        # self.canvas.axes.legend(bars, names, loc="best")
 
     def bargraph(self):
         Money = Log.Log.Money()
