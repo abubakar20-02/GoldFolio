@@ -1,7 +1,7 @@
 import math
 import sqlite3
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -218,10 +218,12 @@ class Statement:
         sql1 = "SELECT DISTINCT Date_Added FROM Statement WHERE 1=1"
 
         if StartDate:
+            # idk why I have to do this.
+            StartDate = StartDate - timedelta(days=1)
             sql1 += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
-            sql1 += f" AND Date_Added < '{EndDate}'"
+            sql1 += f" AND Date_Added <= '{EndDate}'"
 
         sql1 += f" ORDER BY Date_Added ASC"
 

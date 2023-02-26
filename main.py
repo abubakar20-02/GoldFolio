@@ -45,12 +45,13 @@ if __name__ == "__main__":
     # User.ImportFromExcel()
     # User.convertToExcel()
     Investment.ImportFromExcel()
-    Investment.sellAll(Rate=10000)
+    # Investment.sellAll(Rate=10000)
     # Investment.convertToExcel()
     # MoneyLog.convertToExcel()
     MoneyLog.setProfile("ma")
-    MoneyLog.dataforgraph()
+    MoneyLog.convertToExcel()
+    MoneyLog.dataforgraph(StartDate=strToDate("2023-01-01"))
     Statement.ImportFromExcel()
-    Statement.traverse_all_dates("BoughtFor", EndDate=strToDate("2022-01-15"))
+    # Statement.traverse_all_dates("BoughtFor", StartDate=strToDate("2022-01-01"),EndDate=strToDate("2022-01-15"))
 
 # when deleting user app crashes

@@ -1,6 +1,7 @@
 # create UserArchive function that can convert excel file to db.
 import sqlite3
 import uuid
+from datetime import timedelta
 
 import DBFunctions
 import DB_Code
@@ -499,23 +500,30 @@ class Log:
                 User.addMoney(-Data[4])
             self.conn.close()
 
-        def __getSum(self, ActionType, ColumnName, DateStart=None, DateEnd=None):
+        def __getSum(self, ActionType, ColumnName, StartDate=None, EndDate=None):
             # add date as parameter too.
             self.__SetUpConnection()
             sql = "SELECT SUM({0}) FROM Money WHERE ActionType = ? AND User_ID = ?".format(ColumnName)
+            if StartDate:
+                # idk why I have to do this.
+                StartDate = StartDate - timedelta(days=1)
+                sql += f" AND Date_Added >= '{StartDate}'"
+
+            if EndDate:
+                sql += f" AND Date_Added <= '{EndDate}'"
             self.c.execute(sql, (ActionType, self.Profile,))
             Sum = self.c.fetchone()[0]
             self.conn.close()
             print(Sum)
             return Sum
 
-        def dataforgraph(self):
+        def dataforgraph(self, StartDate=None, EndDate=None):
             b = 0
-            a = self.__getSum(DB_Code.MoneyIn, "Change")
-            if self.__getSum(DB_Code.MoneyOut, "Change") is not None:
-                b = (0 - self.__getSum(DB_Code.MoneyOut, "Change"))
-            c = self.__getSum(DB_Code.ProfitLoss, "Change")
-            d = self.__getSum(DB_Code.ProfitLoss, "TradeCost")
+            a = self.__getSum(DB_Code.MoneyIn, "Change", StartDate=StartDate, EndDate=EndDate)
+            if self.__getSum(DB_Code.MoneyOut, "Change", StartDate=StartDate, EndDate=EndDate) is not None:
+                b = (0 - self.__getSum(DB_Code.MoneyOut, "Change", StartDate=StartDate, EndDate=EndDate))
+            c = self.__getSum(DB_Code.ProfitLoss, "Change", StartDate=StartDate, EndDate=EndDate)
+            d = self.__getSum(DB_Code.ProfitLoss, "TradeCost", StartDate=StartDate, EndDate=EndDate)
 
             if a is None:
                 a = 0
