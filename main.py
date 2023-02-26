@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import DBFunctions
 import DB_Code
 
@@ -5,6 +7,14 @@ from Investment import Investment
 from Log import Log
 from Statement import Statement
 from User import User
+
+
+def strToDate(date_string):
+    # date_string = "2022-03-05"
+    date_format = "%Y-%m-%d"
+    date_object = datetime.strptime(date_string, date_format)
+    return date_object
+
 
 if __name__ == "__main__":
     MoneyLog = Log.Money()
@@ -22,20 +32,25 @@ if __name__ == "__main__":
     User.deleteTable(False)
     User.createTable()
 
-    User.insertIntoTable("Muhammad", "Abubakar", 0)
+    User.insertIntoTable("Muhammad", "Abubakar", 1000)
     User.SelectProfile("ma")
-    User.addMoney(0)
+    User.addMoney(1000)
     Investment.setProfile("ma")
+    # Investment.insertIntoTable(100,1,100)
+    # Investment.insertIntoTable(1000,1,1000)
+    # Investment.sellAll(Rate=10)
     # Investment.insertIntoTable(123, 123, 15)
     # Investment.sellAll(Rate=10)
     # User.cashout(2760)
     # User.ImportFromExcel()
     # User.convertToExcel()
     Investment.ImportFromExcel()
+    Investment.sellAll(Rate=10000)
     # Investment.convertToExcel()
     # MoneyLog.convertToExcel()
     MoneyLog.setProfile("ma")
     MoneyLog.dataforgraph()
-    Investment.traverse_all_dates("BoughtFor")
+    Statement.ImportFromExcel()
+    Statement.traverse_all_dates("BoughtFor", EndDate=strToDate("2022-01-15"))
 
 # when deleting user app crashes

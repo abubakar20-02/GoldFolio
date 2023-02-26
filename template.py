@@ -11,6 +11,7 @@ matplotlib.use('Qt5Agg')
 import Log
 
 from PyQt5 import QtCore, QtWidgets
+from datetime import datetime
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
@@ -18,6 +19,13 @@ from matplotlib.figure import Figure
 import yfinance as yf
 from matplotlib.ticker import MaxNLocator
 from matplotlib.ticker import FixedLocator
+
+
+def strToDate(date_string):
+    # date_string = "2022-03-05"
+    date_format = "%Y-%m-%d"
+    date_object = datetime.strptime(date_string, date_format)
+    return date_object
 
 
 class MplCanvas(FigureCanvas):
@@ -42,19 +50,20 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.pie()
+        self.line()
 
         self.show()
 
     def line(self):
         # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
         # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-        from Investment import Investment
-        Investment = Investment()
+        from Statement import Statement
+        Statement = Statement()
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        data = Investment.traverse_all_dates("BoughtFor")
+        data = Statement.traverse_all_dates("BoughtFor", StartDate=strToDate("2022-01-03"),
+                                            EndDate=strToDate("2022-01-20"))
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object

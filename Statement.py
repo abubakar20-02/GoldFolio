@@ -207,3 +207,45 @@ class Statement:
 
     def convertToExcel(self):
         DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
+
+    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None):
+        # connect to database
+        dictionary = {}
+        self.__SetUpConnection()
+
+        sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ?".format(ColumnName)
+
+        sql1 = "SELECT DISTINCT Date_Added FROM Statement WHERE 1=1"
+
+        if StartDate:
+            sql1 += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql1 += f" AND Date_Added < '{EndDate}'"
+
+        sql1 += f" ORDER BY Date_Added ASC"
+
+        print(sql1)
+
+        # execute SQL query to get all dates
+        self.c.execute(sql1)
+
+        # loop through dates and print the sum of values for each date
+        for row in self.c.fetchall():
+            date = row[0]
+            self.c.execute(sql, (date,))
+            format_str = '%Y-%m-%d'
+            date = datetime.strptime(date, format_str)
+            print(type(date))
+            sum_of_values = self.c.fetchone()[0]
+            dictionary[date] = sum_of_values
+            print(f"{date}: {sum_of_values}")
+        print(dictionary)
+
+        # close database connection
+        self.conn.close()
+        return dictionary
+
+    def add_to_dict(self, dictionary, key, value):
+        dictionary[key] = value
+        return dictionary
