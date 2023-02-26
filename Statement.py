@@ -210,14 +210,22 @@ class Statement:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
 
-    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None):
+    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None,Mode=None):
         # connect to database
         dictionary = {}
         self.__SetUpConnection()
+        # idk why substract 2
 
         if Preset == "Month":
             EndDate = datetime.now().date()
-            StartDate = EndDate - timedelta(days=calendar.monthrange(datetime.now().year, datetime.now().month)[1])
+            StartDate = EndDate - timedelta(
+                days=(calendar.monthrange(datetime.now().year, datetime.now().month)[1]) - 2)
+        if Preset == "Week":
+            EndDate = datetime.now().date()
+            StartDate = EndDate - timedelta(days=5)
+        if Preset == "2Week":
+            EndDate = datetime.now().date()
+            StartDate = EndDate - timedelta(days=12)
 
         sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ?".format(ColumnName)
 
@@ -237,21 +245,26 @@ class Statement:
 
         # execute SQL query to get all dates
         self.c.execute(sql1)
-
-        if StartDate and EndDate:
-            date = StartDate
-            while date <= EndDate:
-                dictionary[date] = 0
-                date += timedelta(days=1)
+        if Mode is None:
+            if StartDate and EndDate:
+                date = StartDate
+                while date <= EndDate:
+                    dictionary[date] = 0
+                    date += timedelta(days=1)
 
         # loop through dates and print the sum of values for each date
+        sum = 0
         for row in self.c.fetchall():
             date = row[0]
             self.c.execute(sql, (date,))
             format_str = '%Y-%m-%d'
             date = datetime.strptime(date, format_str)
             sum_of_values = self.c.fetchone()[0]
-            dictionary[date.date()] = sum_of_values
+            sum += sum_of_values
+            if Mode is None:
+                dictionary[date.date()] = sum_of_values
+            else:
+                dictionary[date.date()] = sum
 
         # close database connection
         self.conn.close()

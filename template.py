@@ -64,7 +64,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        data = Statement.traverse_all_dates("BoughtFor", Preset="Month")
+        ValueSelect = "Gold"
+        data = Statement.traverse_all_dates(ValueSelect, Preset="Month", Mode=1)
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object
@@ -87,8 +88,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # y = [1850, 1800, 1900, 1950, 1750]
         self.canvas.axes.plot(x, y, '-o')
         self.canvas.axes.grid(True)
-        self.canvas.axes.set_xlabel('X-axis')
-        self.canvas.axes.set_ylabel('Y-axis')
+        self.canvas.axes.set_xlabel('Date')
+        self.canvas.axes.set_ylabel(ValueSelect)
 
         # # Format the x-axis ticks as dates
         date_format = mdates.DateFormatter('%Y-%m-%d')
