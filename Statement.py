@@ -2,6 +2,7 @@ import math
 import sqlite3
 import uuid
 from datetime import datetime, timedelta
+import calendar
 
 import pandas as pd
 
@@ -19,6 +20,7 @@ class Statement:
     def setProfile(self, user):
         self.Profile = user
 
+    # can't handle empty lines at the moment
     def ImportFromExcel(self):
         # source = 'UserTemplate.xlsx'
         target = 'Statement.xlsx'
@@ -208,10 +210,14 @@ class Statement:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
 
-    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None):
+    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None):
         # connect to database
         dictionary = {}
         self.__SetUpConnection()
+
+        if Preset == "Month":
+            EndDate = datetime.now().date()
+            StartDate = EndDate - timedelta(days=calendar.monthrange(datetime.now().year, datetime.now().month)[1])
 
         sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ?".format(ColumnName)
 
@@ -232,17 +238,20 @@ class Statement:
         # execute SQL query to get all dates
         self.c.execute(sql1)
 
+        if StartDate and EndDate:
+            date = StartDate
+            while date <= EndDate:
+                dictionary[date] = 0
+                date += timedelta(days=1)
+
         # loop through dates and print the sum of values for each date
         for row in self.c.fetchall():
             date = row[0]
             self.c.execute(sql, (date,))
             format_str = '%Y-%m-%d'
             date = datetime.strptime(date, format_str)
-            print(type(date))
             sum_of_values = self.c.fetchone()[0]
-            dictionary[date] = sum_of_values
-            print(f"{date}: {sum_of_values}")
-        print(dictionary)
+            dictionary[date.date()] = sum_of_values
 
         # close database connection
         self.conn.close()

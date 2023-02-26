@@ -3,6 +3,7 @@ import sys
 import random
 import matplotlib
 import mplcursors
+import numpy as np
 from PyQt5.QtCore import QPointF
 from PyQt5.QtWidgets import QToolTip, QLabel
 from matplotlib import pyplot as plt
@@ -51,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.pie()
+        self.line()
 
         self.show()
 
@@ -63,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        data = Statement.traverse_all_dates("BoughtFor")
+        data = Statement.traverse_all_dates("BoughtFor", Preset="Month")
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object
@@ -73,6 +74,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # print(data)
         x = list(data.keys())
         y = list(data.values())
+        print(x)
         print(y)
         # x = [datetime.datetime(2022, 1, 1, 0, 0),
         #      datetime.datetime(2022, 1, 2, 0, 0),
@@ -118,8 +120,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Money = Log.Log.Money()
         Money.setProfile("ma")
         data = Money.dataforgraph()
-        type1 = list(data.keys())
-        values = list(data.values())
         # print(data)
         # data = {'C': 20, 'C++': 15, 'Java': 30,
         #         'Python': 35}
@@ -131,10 +131,11 @@ class MainWindow(QtWidgets.QMainWindow):
         values = list(data_without_zero.values())
         # explode = (0.1,0.1)
         wp = {'linewidth': 1, 'edgecolor': "black"}
-        _, _, autotexts = self.canvas.axes.pie(values, labels=['']*len(values), shadow=True, autopct='%1.1f%%', wedgeprops=wp,pctdistance=1.3)
+        _, _, autotexts = self.canvas.axes.pie(values, labels=[''] * len(values), shadow=True, autopct='%1.1f%%',
+                                               wedgeprops=wp, pctdistance=1.3)
         # create legend labels with percentages
         legend_labels = [f'{label} ({values[i]:.1f})' for i, label in enumerate(names)]
-        self.canvas.axes.legend(legend_labels,  loc='best')
+        self.canvas.axes.legend(legend_labels, loc='best')
         # self.canvas.axes.legend(bars, names, loc="best")
 
     def bargraph(self):
