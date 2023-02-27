@@ -36,6 +36,8 @@ if __name__ == "__main__":
     User.SelectProfile("ma")
     User.addMoney(1000)
     Investment.setProfile("ma")
+    Investment.ImportFromExcel()
+    Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)
     # Investment.sellAll(Rate=10)
@@ -44,8 +46,6 @@ if __name__ == "__main__":
     # User.cashout(2760)
     # User.ImportFromExcel()
     # User.convertToExcel()
-    Investment.ImportFromExcel()
-    Investment.sellAll(Rate=0)
     # Investment.sellAll(Rate=10000)
     # Investment.convertToExcel()
     # MoneyLog.convertToExcel()
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     # MoneyLog.convertToExcel()
     # MoneyLog.dataforgraph(EndDate=strToDate("2023-02-24"))
     Statement.ImportFromExcel()
-    Statement.traverse_all_dates("BoughtFor", Preset="Month")
+    Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
+    # Statement.traverse_all_dates("BoughtFor", Preset="Month")
 
 # when deleting user app crashes

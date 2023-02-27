@@ -3,6 +3,7 @@ import sqlite3
 import uuid
 from datetime import datetime, timedelta
 import calendar
+from time import strftime
 
 import pandas as pd
 
@@ -210,7 +211,7 @@ class Statement:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
 
-    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None,Mode=None):
+    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None, Mode=None):
         # connect to database
         dictionary = {}
         self.__SetUpConnection()
@@ -258,7 +259,7 @@ class Statement:
             dates.append(date)
             date += timedelta(days=1)
 
-        print (dates)
+        print(dates)
         # loop through dates and print the sum of values for each date
         sum = 0
         for date in dates:
@@ -277,6 +278,50 @@ class Statement:
         # close database connection
         self.conn.close()
         return dictionary
+
+    def trial(self, ColumnName, Start=None, End=None):
+        self.__SetUpConnection()
+        sql = (
+            "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Statement WHERE 1=1").format(
+            ColumnName)
+        if Start:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m')}'"
+
+        if End:
+            sql += f" AND Date_Added <= '{End.strftime('%Y-%m')}'"
+
+        sql += f"GROUP BY month"
+
+        if Start and End:
+            monthlydict = self.generate_monthly_dict(Start, End)
+
+        print(sql)
+
+        self.c.execute(sql)
+
+        for rows in self.c.fetchall():
+            month, sum = rows
+            monthlydict[month] = sum
+
+        print("----")
+        print(monthlydict)
+        print("----")
+
+        return monthlydict
+
+        print(self.c.fetchall())
+        self.conn.close()
+
+    def generate_monthly_dict(self, start_date, end_date):
+        result = {}
+        current_date = start_date.replace(day=1)
+        while current_date <= end_date:
+            result[current_date.strftime('%Y-%m')] = 0
+            current_date += timedelta(days=32)
+            current_date = current_date.replace(day=1)
+        print(result)
+        return result
 
     def add_to_dict(self, dictionary, key, value):
         dictionary[key] = value
