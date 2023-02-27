@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # MoneyLog.convertToExcel()
     # MoneyLog.dataforgraph(EndDate=strToDate("2023-02-24"))
     Statement.ImportFromExcel()
-    Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
+    Statement.trial1("Gold", Start=strToDate("2020-01-01"), End=strToDate("2025-12-12"))
     # Statement.traverse_all_dates("BoughtFor", Preset="Month")
 
 # when deleting user app crashes

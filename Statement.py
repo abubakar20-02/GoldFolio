@@ -308,10 +308,41 @@ class Statement:
         print(monthlydict)
         print("----")
 
+        self.conn.close()
         return monthlydict
 
-        print(self.c.fetchall())
+    def trial1(self, ColumnName, Start=None, End=None):
+        self.__SetUpConnection()
+        sql = (
+            "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Statement WHERE 1=1").format(
+            ColumnName)
+        if Start:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
+
+        if End:
+            sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
+
+        sql += f"GROUP BY year"
+
+        if Start and End:
+            yearlydict = self.generate_yearly_dict(Start, End)
+
+        print(sql)
+
+        self.c.execute(sql)
+
+        for rows in self.c.fetchall():
+            year, sum = rows
+            print(type(year))
+            yearlydict[datetime.strptime(year, '%Y').year] = sum
+
+        print("----")
+        print(yearlydict)
+        print("----")
+
         self.conn.close()
+        return yearlydict
 
     def generate_monthly_dict(self, start_date, end_date):
         result = {}
@@ -320,6 +351,13 @@ class Statement:
             result[current_date.strftime('%Y-%m')] = 0
             current_date += timedelta(days=32)
             current_date = current_date.replace(day=1)
+        print(result)
+        return result
+
+    def generate_yearly_dict(self, start_date, end_date):
+        result = {}
+        for year in range(start_date.year, end_date.year + 1):
+            result[year] = 0
         print(result)
         return result
 
