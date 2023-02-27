@@ -65,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
         ValueSelect = "Gold"
-        data = Statement.traverse_all_dates(ValueSelect, Preset="Month", Mode=1)
+        data = Statement.traverse_all_dates(ValueSelect, Preset="Month", Mode=None)
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object

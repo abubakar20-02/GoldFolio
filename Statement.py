@@ -252,19 +252,27 @@ class Statement:
                     dictionary[date] = 0
                     date += timedelta(days=1)
 
+        dates = []
+        date = StartDate
+        while date <= EndDate:
+            dates.append(date)
+            date += timedelta(days=1)
+
+        print (dates)
         # loop through dates and print the sum of values for each date
         sum = 0
-        for row in self.c.fetchall():
-            date = row[0]
+        for date in dates:
+            # format_str = '%Y-%m-%d'
+            # date = datetime.strptime(date, format_str)
             self.c.execute(sql, (date,))
-            format_str = '%Y-%m-%d'
-            date = datetime.strptime(date, format_str)
             sum_of_values = self.c.fetchone()[0]
+            if sum_of_values is None:
+                sum_of_values = 0
             sum += sum_of_values
             if Mode is None:
-                dictionary[date.date()] = sum_of_values
+                dictionary[date] = sum_of_values
             else:
-                dictionary[date.date()] = sum
+                dictionary[date] = sum
 
         # close database connection
         self.conn.close()
