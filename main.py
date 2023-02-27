@@ -45,6 +45,7 @@ if __name__ == "__main__":
     # User.ImportFromExcel()
     # User.convertToExcel()
     Investment.ImportFromExcel()
+    Investment.sellAll(Rate=0)
     # Investment.sellAll(Rate=10000)
     # Investment.convertToExcel()
     # MoneyLog.convertToExcel()

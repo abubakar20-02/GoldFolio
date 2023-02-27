@@ -52,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # n_data = 50
         # self.xdata = list(range(n_data))
         # self.ydata = [random.randint(0, 10) for i in range(n_data)]
-        self.line()
+        self.bargraph()
 
         self.show()
 
@@ -140,6 +140,16 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.canvas.axes.legend(bars, names, loc="best")
 
     def bargraph(self):
+        from Statement import Statement
+        Statement = Statement()
+        # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
+        # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
+        #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
+        ValueSelect = "Gold"
+        data = Statement.traverse_all_dates(ValueSelect, Preset="Month", Mode=None)
+        x = list(data.keys())
+        y = list(data.values())
+
         Money = Log.Log.Money()
         Money.setProfile("ma")
         data = Money.dataforgraph()
@@ -157,6 +167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.axes.set_title('Bar Graph Example')
         self.canvas.axes.set_xlabel('X-axis')
         self.canvas.axes.set_ylabel('Y-axis')
+        self.canvas.axes.axhline(y=0, color='black', linestyle='-')
         self.plotarea = self.canvas.figure.subplotpars.left, self.canvas.figure.subplotpars.top
         self.plotarea = self.canvas.figure.transFigure.transform(self.plotarea)
 
