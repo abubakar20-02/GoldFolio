@@ -84,7 +84,7 @@ class Investment:
                     #     continue
                     # convert date to Y-m-d format
                     self.insertIntoTable(values[2], values[3], values[4], Date=values[0].strftime("%Y-%m-%d"),
-                                         ProfitLoss=values[5], LogChanges=False,IgnoreMoney=True)
+                                         ProfitLoss=values[5], LogChanges=False, IgnoreMoney=True)
 
     def isEmpty(self, value):
         # value is a number and it is not none.
@@ -254,20 +254,19 @@ class Investment:
         # _________________________________________________
         self.conn.close()
 
-    def showTable(self):
+    def getTable(self):
         self.__SetUpConnection()
         try:
-            self.c.execute('''
-                      SELECT * FROM Investment
-                      ''')
-            self.conn.commit()
-            df = pd.DataFrame(self.c.fetchall(),
-                              columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
+            sql = "SELECT * FROM Investment"
+            df = pd.read_sql(sql, self.conn)
+            df = df.drop('User_ID', axis=1)
+            df = df.drop('Purity', axis=1)
             print(df)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
+            return df
 
     def showInvestmentForUser(self):
         """Show the investment of the given user id"""
@@ -454,7 +453,7 @@ class Investment:
             date = row[0]
             self.c.execute(sql, (date,))
             format_str = '%Y-%m-%d'
-            date=datetime.strptime(date, format_str)
+            date = datetime.strptime(date, format_str)
             print(type(date))
             sum_of_values = self.c.fetchone()[0]
             dictionary[date] = sum_of_values
