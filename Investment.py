@@ -470,3 +470,19 @@ class Investment:
 
     def convertToExcel(self):
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
+
+    def sell(self, uniqueID):
+        for id in uniqueID:
+            print(id)
+            self.sellIndividual(id)
+
+    def sellIndividual(self, id):
+        self.__SetUpConnection()
+        try:
+            sql = "DELETE FROM Investment WHERE Investment_ID =?"
+            self.c.execute(sql, (id,))
+            self.conn.commit()
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()

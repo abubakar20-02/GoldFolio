@@ -169,6 +169,10 @@ class Ui_MainWindow(object):
             id.append(data)
         uniqueID= list(set(id))
         print(uniqueID)
+        self.Investment.sell(uniqueID)
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+        self.load_dataframe_to_table(self.Investment.getTable(), self.tableWidget)
 
 
 
