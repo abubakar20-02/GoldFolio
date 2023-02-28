@@ -473,12 +473,20 @@ class Investment:
 
     def sell(self, uniqueID):
         for id in uniqueID:
-            print(id)
             self.sellIndividual(id)
+        self.LogForDelete(generateTransactionID(), len(uniqueID), self.Profile)
 
     def sellIndividual(self, id):
         self.__SetUpConnection()
         try:
+            self.c.execute('''
+                  SELECT * FROM Investment WHERE Investment_ID = ?
+                  ''', (id,))
+            Values = self.c.fetchall()
+            print("---")
+            print(Values)
+            print("---")
+            self.InvestmentArchive.Archive(Values)
             sql = "DELETE FROM Investment WHERE Investment_ID =?"
             self.c.execute(sql, (id,))
             self.conn.commit()

@@ -12,11 +12,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView
 from Investment import Investment
+import pickle
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        # Retrieve the variable from the file
+        with open("my_variable.pickle", "rb") as f:
+            UserID = pickle.load(f)
         self.Investment = Investment()
+        self.Investment.setProfile(UserID)
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1170, 661)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
