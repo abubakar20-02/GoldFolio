@@ -230,7 +230,6 @@ class Ui_MainWindow(QObject):
             cell_data = self.tableWidget.item(row, column).text()
             # append the cell data to the list of data
             data.append(cell_data)
-        print(data)
         # return the list of data
         return data
 
@@ -249,7 +248,6 @@ class Ui_MainWindow(QObject):
             data = item.data(Qt.DisplayRole)
             id.append(data)
         uniqueID = list(set(id))
-        print(uniqueID)
         self.Investment.sell(uniqueID)
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)

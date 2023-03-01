@@ -389,6 +389,8 @@ class Log:
                             self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                         LogChanges=False, Transaction_ID=RecoverdData[0],
                                                         Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
+                            # code to remove record from statement.
+                            self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 elif Transaction_Type == DB_Code.ISA:
                     print("Use User_ID to find most recent statement using count")

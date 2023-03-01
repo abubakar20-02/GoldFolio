@@ -4,6 +4,8 @@ from Database import DBFunctions
 # when selling indv inv doesnt add money.
 # selling one then sell multiple then try to reverse.
 
+# when deleting data sometimes it went to 29 data instead of 33
+
 from Database.Investment import Investment
 from Database.Log import Log
 from Database.Statement import Statement
@@ -38,7 +40,7 @@ if __name__ == "__main__":
     User.SelectProfile("ma")
     User.addMoney(1000)
     Investment.setProfile("ma")
-    Investment.insertIntoTable(123,123,123)
+    Investment.insertIntoTable(123, 123, 123)
     Investment.ImportFromExcel()
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
@@ -58,6 +60,7 @@ if __name__ == "__main__":
     Statement.ImportFromExcel()
     Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
     # Statement.traverse_all_dates("BoughtFor", Preset="Month")
-    # DBFunctions.previousStage(4)
+    # DBFunctions.previousStage(5)
+    # Investment.insertIntoTable(123,123,123,ProfitLoss=123)
 
 # when deleting user app crashes

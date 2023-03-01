@@ -8,6 +8,7 @@ import pandas as pd
 from Database import DB_Code, DBFunctions, SetUpFile
 from Database import Archive
 from Database import Log
+from Database import Statement
 
 
 def generateTransactionID():
@@ -27,6 +28,7 @@ class Investment:
         self.Log = Log.Log()
         self.InvestmentLog = Log.Log.InvestmentLog()
         self.MoneyLog = Log.Log.Money()
+        self.Statement = Statement.Statement()
 
     def ImportFromExcel(self):
         # source = 'UserTemplate.xlsx'
@@ -111,7 +113,7 @@ class Investment:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
-              ([Investment_ID] VARCHAR PRIMARY KEY,[Date_Added] DATE, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY,[Date_Added] DATE, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL DEFAULT 0.0,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
@@ -499,12 +501,12 @@ class Investment:
             self.TotalProfitLoss += ProfitLoss
             self.TotalSum += BoughtFor
             print("---")
-            print(Values)
             print("---")
             self.InvestmentArchive.Archive(Values)
             sql = "DELETE FROM Investment WHERE Investment_ID =?"
             self.c.execute(sql, (id,))
             self.conn.commit()
+            self.Statement.addtoTable(Values)
         except sqlite3.Error as error:
             print(error)
         finally:

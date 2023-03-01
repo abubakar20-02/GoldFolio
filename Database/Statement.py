@@ -362,3 +362,15 @@ class Statement:
     def add_to_dict(self, dictionary, key, value):
         dictionary[key] = value
         return dictionary
+
+    def addtoTable(self, Values):
+        print(Values)
+        self.__SetUpConnection()
+        self.c.executemany('''
+              INSERT INTO Statement (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+
+                    VALUES
+                    (?,?,?,?,?,?,?)
+              ''', Values)
+        self.conn.commit()
+        self.conn.close()
