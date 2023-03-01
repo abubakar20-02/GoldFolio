@@ -471,17 +471,26 @@ class Investment:
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
 
     def sell(self, uniqueID):
+        # instead of total sum, use profit
+        self.TotalSum = 0
+        from Database import User
+        User = User.User()
         for id in uniqueID:
             self.sellIndividual(id)
         self.LogForDelete(generateTransactionID(), len(uniqueID), self.Profile)
+        print(self.TotalSum)
+        User.SelectProfile(self.Profile)
+        User.addMoney(self.TotalSum, LogChanges=False)
 
     def sellIndividual(self, id):
         self.__SetUpConnection()
         try:
-            self.c.execute('''
-                  SELECT * FROM Investment WHERE Investment_ID = ?
-                  ''', (id,))
+            self.c.execute("SELECT * FROM Investment WHERE Investment_ID = ?", (id,))
             Values = self.c.fetchall()
+            self.c.execute("SELECT BoughtFor FROM Investment WHERE Investment_ID = ?", (id,))
+            BoughtFor = self.c.fetchone()[0]
+            print(BoughtFor)
+            self.TotalSum += BoughtFor
             print("---")
             print(Values)
             print("---")

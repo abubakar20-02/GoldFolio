@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from Database import DBFunctions
+# when selling indv inv doesnt add money.
+# selling one then sell multiple then try to reverse.
 
 from Database.Investment import Investment
 from Database.Log import Log
@@ -55,6 +57,6 @@ if __name__ == "__main__":
     Statement.ImportFromExcel()
     Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
     # Statement.traverse_all_dates("BoughtFor", Preset="Month")
-    DBFunctions.previousStage(4)
+    # DBFunctions.previousStage(4)
 
 # when deleting user app crashes
