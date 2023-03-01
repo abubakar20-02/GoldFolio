@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
 
+import Add
 import UserSelect
 from Database.Investment import Investment
 import pickle
@@ -53,10 +54,10 @@ class Ui_MainWindow(QObject):
         self.horizontalLayout_2.addWidget(self.tableWidget)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setMinimumSize(QtCore.QSize(500, 500))
-        self.widget.setObjectName("widget")
-        self.horizontalLayout.addWidget(self.widget)
+        # self.widget = QtWidgets.QWidget(self.centralwidget)
+        # self.widget.setMinimumSize(QtCore.QSize(500, 500))
+        # self.widget.setObjectName("widget")
+        # self.horizontalLayout.addWidget(self.widget)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setContentsMargins(10, -1, -1, -1)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -66,10 +67,10 @@ class Ui_MainWindow(QObject):
         self.Sell.setObjectName("Sell")
         self.verticalLayout.addWidget(self.Sell)
         self.Sell.clicked.connect(self.getTransactionID)
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout.addWidget(self.pushButton_2)
-        self.pushButton_2.clicked.connect(lambda: self.openWindow())
+        self.AddButton = QtWidgets.QPushButton(self.centralwidget)
+        self.AddButton.setObjectName("AddButton")
+        self.verticalLayout.addWidget(self.AddButton)
+        self.AddButton.clicked.connect(self.addInvestment)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -164,6 +165,14 @@ class Ui_MainWindow(QObject):
         self.window.show()
         self.window.SelectButton.clicked.connect(self.loadDataFromTable)
         self.window.SelectButton.clicked.connect(self.window.close)
+
+    def addInvestment(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = Add.MyWindow()
+        self.window.show()
+        self.window.AddButton.clicked.connect(self.loadDataFromTable)
+        self.window.AddButton.clicked.connect(self.window.close)
+
     def get_selected_data(self):
         selected_rows = self.tableWidget.selectedItems()
         data = []
@@ -207,7 +216,7 @@ class Ui_MainWindow(QObject):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Sell.setText(_translate("MainWindow", "Sell"))
-        self.pushButton_2.setText(_translate("MainWindow", "PushButton"))
+        self.AddButton.setText(_translate("MainWindow", "Buy"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table

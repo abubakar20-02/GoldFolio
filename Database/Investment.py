@@ -195,8 +195,8 @@ class Investment:
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
         if IgnoreMoney is False:
-            from User import User
-            User = User()
+            from Database import User
+            User = User.User()
             User.SelectProfile(self.Profile)
             TotalMoney = User.getMoney()
             if TotalMoney < BoughtFor:
