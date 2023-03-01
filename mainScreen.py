@@ -53,10 +53,10 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
-        self.pushButton.clicked.connect(self.getTransactionID)
+        self.Sell = QtWidgets.QPushButton(self.centralwidget)
+        self.Sell.setObjectName("Sell")
+        self.verticalLayout.addWidget(self.Sell)
+        self.Sell.clicked.connect(self.getTransactionID)
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setObjectName("pushButton_2")
         self.verticalLayout.addWidget(self.pushButton_2)
@@ -184,7 +184,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "PushButton"))
+        self.Sell.setText(_translate("MainWindow", "Sell"))
         self.pushButton_2.setText(_translate("MainWindow", "PushButton"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):

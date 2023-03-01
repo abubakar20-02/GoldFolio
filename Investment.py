@@ -257,8 +257,9 @@ class Investment:
     def getTable(self):
         self.__SetUpConnection()
         try:
-            sql = "SELECT * FROM Investment"
-            df = pd.read_sql(sql, self.conn)
+            sql = "SELECT * FROM Investment WHERE User_ID = ?"
+            values = (self.Profile,)
+            df = pd.read_sql(sql, self.conn,params=values)
             df = df.drop('User_ID', axis=1)
             df = df.drop('Purity', axis=1)
             print(df)
