@@ -13,6 +13,7 @@ from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
 
 import Add
+import AddUser
 import UserSelect
 from Database.Investment import Investment
 import pickle
@@ -78,12 +79,26 @@ class Ui_MainWindow(QObject):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1170, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1170, 36))
         self.menubar.setObjectName("menubar")
+        self.menuOptions = QtWidgets.QMenu(self.menubar)
+        self.menuOptions.setObjectName("menuOptions")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionChange_User = QtWidgets.QAction(MainWindow)
+        self.actionChange_User.setObjectName("actionChange_User")
+        self.actionChange_User.triggered.connect(self.openWindow)
+        self.actionAdd_User = QtWidgets.QAction(MainWindow)
+        self.actionAdd_User.setObjectName("actionAdd_User")
+        self.actionAdd_User.triggered.connect(self.openAddUser)
+        self.actionGraphs = QtWidgets.QAction(MainWindow)
+        self.actionGraphs.setObjectName("actionGraphs")
+        self.menuOptions.addAction(self.actionChange_User)
+        self.menuOptions.addAction(self.actionAdd_User)
+        self.menuOptions.addAction(self.actionGraphs)
+        self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -159,6 +174,13 @@ class Ui_MainWindow(QObject):
         self.Investment.setProfile(UserID)
         self.load_dataframe_to_table(self.Investment.getTable(), self.tableWidget)
 
+    def openAddUser(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = AddUser.MyWindow()
+        self.window.show()
+        # self.window.AddButton.clicked.connect(self.loadDataFromTable)
+        self.window.AddButton.clicked.connect(self.window.close)
+
     def openWindow(self):
         self.window = QtWidgets.QMainWindow()
         self.window = UserSelect.MyWindow()
@@ -217,6 +239,10 @@ class Ui_MainWindow(QObject):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Sell.setText(_translate("MainWindow", "Sell"))
         self.AddButton.setText(_translate("MainWindow", "Buy"))
+        self.menuOptions.setTitle(_translate("MainWindow", "Options"))
+        self.actionChange_User.setText(_translate("MainWindow", "Change User"))
+        self.actionAdd_User.setText(_translate("MainWindow", "Add User"))
+        self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table

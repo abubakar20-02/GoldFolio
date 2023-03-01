@@ -194,6 +194,8 @@ class Investment:
                         ProfitLoss=None, IgnoreMoney=False):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
         self.__SetUpConnection()
+        if ProfitLoss is None:
+            ProfitLoss = 0.0
         if IgnoreMoney is False:
             from Database import User
             User = User.User()
