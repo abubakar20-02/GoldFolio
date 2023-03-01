@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QObject, QTimer
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
 
 import Add
@@ -109,7 +110,7 @@ class Ui_MainWindow(QObject):
         self.menuOptions.addAction(self.actionSave)
         self.menubar.addAction(self.menuOptions.menuAction())
         self.timer.timeout.connect(self.updateTable)
-        # self.timer.start(3000)
+        self.timer.start(3000)
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -180,10 +181,9 @@ class Ui_MainWindow(QObject):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def updateTable(self):
-        self.val +=1
+        self.val += 1
         self.Investment.updateProfitLoss(self.val)
         self.loadDataFromTable()
-
 
     def Save(self):
         DBFunctions.ClearTables()
@@ -278,6 +278,14 @@ class Ui_MainWindow(QObject):
         for row in range(len(dataframe)):
             for column in range(len(dataframe.columns)):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
+                # Set the color based on the value
+                if column == len(dataframe.columns) - 1:
+                    if dataframe.iloc[row, column] == 0:
+                        item.setForeground(QColor('black'))
+                    if dataframe.iloc[row, column] > 0:
+                        item.setForeground(QColor('green'))
+                    if dataframe.iloc[row, column] < 0:
+                        item.setForeground(QColor('red'))
                 table_widget.setItem(row, column, item)
 
 
