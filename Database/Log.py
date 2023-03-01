@@ -387,7 +387,8 @@ class Log:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
                         if RecoverdData is not None:
                             self.Investment.insertIntoTable(RecoverdData[2], RecoverdData[3], RecoverdData[4],
-                                                            LogChanges=False)
+                                                            LogChanges=False, Transaction_ID=RecoverdData[0],
+                                                            Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 elif Transaction_Type == DB_Code.ISA:
                     print("Use User_ID to find most recent statement using count")
