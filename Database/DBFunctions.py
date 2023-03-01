@@ -105,8 +105,11 @@ def ClearTables():
     __ClearArchive()
 
 
-def previousStage(num):
+def previousStage(num=None):
     from Database import Log
     Log = Log.Log()
-    for i in range(0, num):
+    if num is not None:
+        for i in range(0, num):
+            Log.previousStage()
+    else:
         Log.previousStage()

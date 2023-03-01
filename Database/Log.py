@@ -71,6 +71,8 @@ class Log:
             SELECT COUNT(*) FROM Log 
               ''')
         Records = self.c.fetchone()[0]
+        if Records == 0:
+            return
         self.c.execute('''
             SELECT * FROM Log LIMIT 1 OFFSET ?
               ''', (Records - 1,))
@@ -173,10 +175,10 @@ class Log:
                 LastName = Data[6]
                 Money = Data[7]
                 print("User")
-                from User import User
-                from Archive import UserArchive
-                self.user = User()
-                self.UserArchive = UserArchive()
+                from Database import User
+                from Database import Archive
+                self.user = User.User()
+                self.UserArchive = Archive.UserArchive()
                 if Transaction_Type == DB_Code.UD:
                     if User_ID is None:
                         print("Recover from User archive using No of records")
@@ -189,7 +191,7 @@ class Log:
                         #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
                         from Database.Investment import Investment
-                        from Archive import InvestmentArchive
+                        from Database import Archive
 
                         RecoverdData = self.UserArchive.getData(User_ID)
                         print("------------------")
@@ -206,7 +208,7 @@ class Log:
                         while NoOfRecordsAffected > 0:
                             print("yo")
                             self.Investment = Investment()
-                            self.InvestmentArchive = InvestmentArchive()
+                            self.InvestmentArchive = Archive.InvestmentArchive()
                             self.Investment.setProfile(User_ID)
                             RecoverdData = self.InvestmentArchive.getData(User_ID)
                             if RecoverdData is not None:
@@ -346,11 +348,11 @@ class Log:
                 ProfitLoss = Data[9]
 
                 from Database.Investment import Investment
-                from Archive import InvestmentArchive
-                from Statement import Statement
+                from Database import Archive
+                from Database import Statement
                 self.Investment = Investment()
-                self.InvestmentArchive = InvestmentArchive()
-                self.Statement = Statement()
+                self.InvestmentArchive = Archive.InvestmentArchive()
+                self.Statement = Statement.Statement()
 
                 print("Investment")
                 print(Transaction_Type)
@@ -484,9 +486,9 @@ class Log:
                 print(Error)
             ActionType = Data[3]
             print(ActionType)
-            from User import User
+            from Database import User
             from Database.Investment import Investment
-            User = User()
+            User = User.User()
             Investment = Investment()
             User.SelectProfile(Data[2])
             if ActionType == DB_Code.MoneyOut:

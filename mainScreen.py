@@ -16,6 +16,7 @@ import Add
 import AddUser
 import UserSelect
 from Database.Investment import Investment
+from Database import DBFunctions
 import pickle
 
 
@@ -93,11 +94,12 @@ class Ui_MainWindow(QObject):
         self.actionAdd_User = QtWidgets.QAction(MainWindow)
         self.actionAdd_User.setObjectName("actionAdd_User")
         self.actionAdd_User.triggered.connect(self.openAddUser)
-        self.actionGraphs = QtWidgets.QAction(MainWindow)
-        self.actionGraphs.setObjectName("actionGraphs")
+        self.actionPrevious = QtWidgets.QAction(MainWindow)
+        self.actionPrevious.setObjectName("actionPrevious")
+        self.actionPrevious.triggered.connect(self.prevStage)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
-        self.menuOptions.addAction(self.actionGraphs)
+        self.menuOptions.addAction(self.actionPrevious)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -168,6 +170,10 @@ class Ui_MainWindow(QObject):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def prevStage(self):
+        DBFunctions.previousStage()
+        self.loadDataFromTable()
+
     def loadDataFromTable(self):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
@@ -199,7 +205,6 @@ class Ui_MainWindow(QObject):
         selected_rows = self.tableWidget.selectedItems()
         data = []
         for item in selected_rows:
-
             # get the row and column indexes of the selected cell
             row = item.row()
             column = item.column()
@@ -225,14 +230,12 @@ class Ui_MainWindow(QObject):
             # Retrieve the data from the QTableWidgetItem
             data = item.data(Qt.DisplayRole)
             id.append(data)
-        uniqueID= list(set(id))
+        uniqueID = list(set(id))
         print(uniqueID)
         self.Investment.sell(uniqueID)
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         self.loadDataFromTable()
-
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -242,7 +245,7 @@ class Ui_MainWindow(QObject):
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.actionChange_User.setText(_translate("MainWindow", "Change User"))
         self.actionAdd_User.setText(_translate("MainWindow", "Add User"))
-        self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
+        self.actionPrevious.setText(_translate("MainWindow", "Undo"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table

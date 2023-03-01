@@ -6,6 +6,7 @@ from Database.Investment import Investment
 from Database.Log import Log
 from Database.Statement import Statement
 from Database.User import User
+from Database import DBFunctions
 
 
 def strToDate(date_string):
@@ -54,5 +55,6 @@ if __name__ == "__main__":
     Statement.ImportFromExcel()
     Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
     # Statement.traverse_all_dates("BoughtFor", Preset="Month")
+    DBFunctions.previousStage()
 
 # when deleting user app crashes
