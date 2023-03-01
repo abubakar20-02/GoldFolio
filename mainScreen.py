@@ -97,9 +97,13 @@ class Ui_MainWindow(QObject):
         self.actionPrevious = QtWidgets.QAction(MainWindow)
         self.actionPrevious.setObjectName("actionPrevious")
         self.actionPrevious.triggered.connect(self.prevStage)
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionSave.triggered.connect(self.Save)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
+        self.menuOptions.addAction(self.actionSave)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -169,6 +173,9 @@ class Ui_MainWindow(QObject):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def Save(self):
+        DBFunctions.ClearTables()
 
     def prevStage(self):
         DBFunctions.previousStage()
@@ -246,6 +253,7 @@ class Ui_MainWindow(QObject):
         self.actionChange_User.setText(_translate("MainWindow", "Change User"))
         self.actionAdd_User.setText(_translate("MainWindow", "Add User"))
         self.actionPrevious.setText(_translate("MainWindow", "Undo"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
