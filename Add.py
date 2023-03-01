@@ -99,7 +99,7 @@ class Ui_MainWindow(QObject):
         BoughtFor = float(self.BoughtFor.text())
         print(UserID)
         self.Investment.setProfile(UserID)
-        self.Investment.insertIntoTable(Gold, Purity, BoughtFor,Date=date)
+        self.Investment.insertIntoTable(Gold, Purity, BoughtFor, Date=date)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

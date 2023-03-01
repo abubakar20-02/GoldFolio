@@ -38,6 +38,7 @@ if __name__ == "__main__":
     User.SelectProfile("ma")
     User.addMoney(1000)
     Investment.setProfile("ma")
+    Investment.insertIntoTable(123,123,123)
     Investment.ImportFromExcel()
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
