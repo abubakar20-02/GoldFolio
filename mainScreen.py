@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstra
 import Add
 import AddUser
 import UserSelect
+import graph
 from Database.Investment import Investment
 from Database import DBFunctions
 import pickle
@@ -104,10 +105,14 @@ class Ui_MainWindow(QObject):
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
         self.actionSave.triggered.connect(self.Save)
+        self.actionGraph = QtWidgets.QAction(MainWindow)
+        self.actionGraph.setObjectName("actionGraph")
+        self.actionGraph.triggered.connect(self.Graph)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
         self.menuOptions.addAction(self.actionSave)
+        self.menuOptions.addAction(self.actionGraph)
         self.menubar.addAction(self.menuOptions.menuAction())
         self.timer.timeout.connect(self.updateTable)
         self.timer.start(3000)
@@ -179,6 +184,11 @@ class Ui_MainWindow(QObject):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def Graph(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = graph.MyWindow()
+        self.window.show()
 
     def updateTable(self):
         self.val += 1
@@ -263,6 +273,7 @@ class Ui_MainWindow(QObject):
         self.actionAdd_User.setText(_translate("MainWindow", "Add User"))
         self.actionPrevious.setText(_translate("MainWindow", "Undo"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionGraph.setText(_translate("MainWindow", "Graph"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
