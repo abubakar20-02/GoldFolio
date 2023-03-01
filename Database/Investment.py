@@ -472,15 +472,20 @@ class Investment:
 
     def sell(self, uniqueID):
         # instead of total sum, use profit
+        self.TotalProfitLoss = 0
         self.TotalSum = 0
         from Database import User
         User = User.User()
         for id in uniqueID:
             self.sellIndividual(id)
-        self.LogForDelete(generateTransactionID(), len(uniqueID), self.Profile)
+        Transaction_ID = generateTransactionID()
+        self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
         print(self.TotalSum)
         User.SelectProfile(self.Profile)
-        User.addMoney(self.TotalSum, LogChanges=False)
+        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, self.TotalProfitLoss, Transaction_ID=Transaction_ID,
+                                      TradeCost=self.TotalSum)
+        User.addMoney(self.TotalSum+self.TotalProfitLoss, LogChanges=False)
+
 
     def sellIndividual(self, id):
         self.__SetUpConnection()
@@ -489,7 +494,9 @@ class Investment:
             Values = self.c.fetchall()
             self.c.execute("SELECT BoughtFor FROM Investment WHERE Investment_ID = ?", (id,))
             BoughtFor = self.c.fetchone()[0]
-            print(BoughtFor)
+            self.c.execute("SELECT ((ProfitLoss/100)*BoughtFor) FROM Investment WHERE Investment_ID = ?", (id,))
+            ProfitLoss = self.c.fetchone()[0]
+            self.TotalProfitLoss += ProfitLoss
             self.TotalSum += BoughtFor
             print("---")
             print(Values)

@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QObject
+from PyQt5.QtCore import Qt, QObject, QTimer
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
 
 import Add
@@ -25,6 +25,9 @@ class Ui_MainWindow(QObject):
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
+
+        self.timer = QTimer()
+        self.val = 0
         self.Investment = Investment()
         self.Investment.setProfile(UserID)
         MainWindow.setObjectName("MainWindow")
@@ -105,6 +108,8 @@ class Ui_MainWindow(QObject):
         self.menuOptions.addAction(self.actionPrevious)
         self.menuOptions.addAction(self.actionSave)
         self.menubar.addAction(self.menuOptions.menuAction())
+        self.timer.timeout.connect(self.updateTable)
+        # self.timer.start(3000)
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -173,6 +178,12 @@ class Ui_MainWindow(QObject):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def updateTable(self):
+        self.val +=1
+        self.Investment.updateProfitLoss(self.val)
+        self.loadDataFromTable()
+
 
     def Save(self):
         DBFunctions.ClearTables()
