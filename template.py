@@ -1,26 +1,17 @@
 import datetime
-import sys
-import random
 import matplotlib
-import mplcursors
-import numpy as np
-from PyQt5.QtCore import QPointF
-from PyQt5.QtWidgets import QToolTip, QLabel
-from matplotlib import pyplot as plt
+from PyQt5.QtWidgets import QLabel
 from mplcursors import cursor
 
 matplotlib.use('Qt5Agg')
-import Log
+from Database import Log
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
 from datetime import datetime
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
-import yfinance as yf
-from matplotlib.ticker import MaxNLocator
-from matplotlib.ticker import FixedLocator
 
 
 def strToDate(date_string):
@@ -59,7 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def line(self):
         # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
         # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-        from Statement import Statement
+        from Database.Statement import Statement
         Statement = Statement()
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
@@ -99,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def hist(self):
         # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
         # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-        from Statement import Statement
+        from Database.Statement import Statement
         Statement = Statement()
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
@@ -140,7 +131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.canvas.axes.legend(bars, names, loc="best")
 
     def bargraph(self):
-        from Statement import Statement
+        from Database.Statement import Statement
         Statement = Statement()
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(

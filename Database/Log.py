@@ -3,9 +3,7 @@ import sqlite3
 import uuid
 from datetime import timedelta
 
-import DBFunctions
-import DB_Code
-import SetUpFile
+from Database import DB_Code, DBFunctions, SetUpFile
 
 
 class Log:
@@ -190,7 +188,7 @@ class Log:
                         #     # self.InsertStatement()
                         #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
-                        from Investment import Investment
+                        from Database.Investment import Investment
                         from Archive import InvestmentArchive
 
                         RecoverdData = self.UserArchive.getData(User_ID)
@@ -347,7 +345,7 @@ class Log:
                 BoughtFor = Data[8]
                 ProfitLoss = Data[9]
 
-                from Investment import Investment
+                from Database.Investment import Investment
                 from Archive import InvestmentArchive
                 from Statement import Statement
                 self.Investment = Investment()
@@ -487,7 +485,7 @@ class Log:
             ActionType = Data[3]
             print(ActionType)
             from User import User
-            from Investment import Investment
+            from Database.Investment import Investment
             User = User()
             Investment = Investment()
             User.SelectProfile(Data[2])

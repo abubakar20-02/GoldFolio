@@ -3,12 +3,10 @@ import sqlite3
 import uuid
 from datetime import datetime, timedelta
 import calendar
-from time import strftime
 
 import pandas as pd
 
-import DBFunctions
-import SetUpFile
+from Database import DBFunctions, SetUpFile
 
 
 class Statement:
@@ -35,8 +33,8 @@ class Statement:
         # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-        from User import User
-        User = User()
+        from Database import User
+        User = User.User()
 
         # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
         # date_added to be a date.

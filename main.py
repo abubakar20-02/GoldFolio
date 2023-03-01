@@ -1,12 +1,11 @@
 from datetime import datetime
 
-import DBFunctions
-import DB_Code
+from Database import DBFunctions
 
-from Investment import Investment
-from Log import Log
-from Statement import Statement
-from User import User
+from Database.Investment import Investment
+from Database.Log import Log
+from Database.Statement import Statement
+from Database.User import User
 
 
 def strToDate(date_string):

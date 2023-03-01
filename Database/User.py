@@ -1,17 +1,12 @@
 import math
-import os
 import sqlite3
 import uuid
 
 import pandas as pd
-from xlsxwriter import Workbook
 
-import DBFunctions
-import DB_Code
-import SetUpFile
-from Archive import UserArchive
-from Investment import Investment
-from Log import Log
+from Database import DB_Code, DBFunctions, SetUpFile, Archive
+from Database.Investment import Investment
+from Database.Log import Log
 
 
 def generateTransactionID():
@@ -23,7 +18,7 @@ class User:
         self.c = None
         self.conn = None
         self.Profile = None
-        self.a = UserArchive()
+        self.a = Archive.UserArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
         self.Investment = Investment()

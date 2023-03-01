@@ -11,8 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pickle
 
+from PyQt5.QtCore import QObject
 
-class Ui_MainWindow(object):
+import mainScreen
+
+
+class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(397, 112)
@@ -55,8 +59,15 @@ class Ui_MainWindow(object):
             pickle.dump(UserID, f)
 
 
+class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

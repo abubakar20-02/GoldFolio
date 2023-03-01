@@ -5,11 +5,9 @@ from datetime import datetime
 
 import pandas as pd
 
-import DBFunctions
-import DB_Code
-import SetUpFile
-from Archive import InvestmentArchive
-from Log import Log
+from Database import DB_Code, DBFunctions, SetUpFile
+from Database import Archive
+from Database import Log
 
 
 def generateTransactionID():
@@ -25,10 +23,10 @@ class Investment:
         self.c = None
         self.conn = None
         self.Profile = None
-        self.InvestmentArchive = InvestmentArchive()
-        self.Log = Log()
-        self.InvestmentLog = Log.InvestmentLog()
-        self.MoneyLog = Log.Money()
+        self.InvestmentArchive = Archive.InvestmentArchive()
+        self.Log = Log.Log()
+        self.InvestmentLog = Log.Log.InvestmentLog()
+        self.MoneyLog = Log.Log.Money()
 
     def ImportFromExcel(self):
         # source = 'UserTemplate.xlsx'
@@ -43,8 +41,8 @@ class Investment:
         # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-        from User import User
-        User = User()
+        from Database import User
+        User = User.User()
 
         # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
         # date_added to be a date.
@@ -259,7 +257,7 @@ class Investment:
         try:
             sql = "SELECT * FROM Investment WHERE User_ID = ?"
             values = (self.Profile,)
-            df = pd.read_sql(sql, self.conn,params=values)
+            df = pd.read_sql(sql, self.conn, params=values)
             df = df.drop('User_ID', axis=1)
             df = df.drop('Purity', axis=1)
             print(df)
@@ -436,8 +434,6 @@ class Investment:
         self.Log.insert(id, DB_Code.ISA)
         self.InvestmentLog.SellAllStatement(id, RecordsAffected, self.Profile)
         self.InvestmentArchive.Archive(Values)
-
-    import sqlite3
 
     def traverse_all_dates(self, ColumnName):
         # connect to database

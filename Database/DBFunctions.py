@@ -2,8 +2,7 @@ import os
 import sqlite3
 
 from xlsxwriter import Workbook
-
-import SetUpFile
+from Database import SetUpFile
 
 
 def saveSnapshot():
@@ -92,22 +91,22 @@ def __getData(tableName, Database, RemoveFirstColumn=True):
 
 
 def __ClearArchive():
-    from Archive import UserArchive, InvestmentArchive
-    UserArchive = UserArchive()
-    InvestmentArchive = InvestmentArchive()
+    from Database import Archive
+    UserArchive = Archive.UserArchive()
+    InvestmentArchive = Archive.InvestmentArchive()
     UserArchive.dropTable()
     InvestmentArchive.dropTable()
 
 
 def ClearTables():
-    from Log import Log
-    Log = Log()
+    from Database import Log
+    Log = Log.Log()
     Log.dropTable()
     __ClearArchive()
 
 
 def previousStage(num):
-    from Log import Log
-    Log = Log()
+    from Database import Log
+    Log = Log.Log()
     for i in range(0, num):
         Log.previousStage()

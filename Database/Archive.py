@@ -1,7 +1,7 @@
 import sqlite3
 import uuid
 
-import SetUpFile
+from Database import SetUpFile
 
 
 def generateTransactionID():
