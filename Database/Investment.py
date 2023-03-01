@@ -151,7 +151,6 @@ class Investment:
                   SELECT * FROM Investment WHERE Investment_ID = ? LIMIT 1
                   ''', (TransactionID,))
             Values = self.c.fetchone()
-            print(Values)
             if Archive:
                 self.InvestmentArchive.Archive(Values)
             self.c.execute('''
@@ -264,7 +263,6 @@ class Investment:
             df = pd.read_sql(sql, self.conn, params=values)
             df = df.drop('User_ID', axis=1)
             df = df.drop('Purity', axis=1)
-            print(df)
         except sqlite3.Error as error:
             print(error)
         finally:
@@ -281,7 +279,6 @@ class Investment:
         df = pd.DataFrame(self.c.fetchall(),
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
         self.conn.close()
-        print(df)
 
     def updateProfitLoss(self, GoldRate):
         """Run continuously to update profit/loss"""
@@ -326,7 +323,6 @@ class Investment:
         Values = self.c.fetchall()
         self.c.execute('''SELECT COUNT(*) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
-        print(RecordsAffected)
         # calculate total profit
         # profitloss/100 * bought for
         self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
@@ -455,10 +451,8 @@ class Investment:
             self.c.execute(sql, (date,))
             format_str = '%Y-%m-%d'
             date = datetime.strptime(date, format_str)
-            print(type(date))
             sum_of_values = self.c.fetchone()[0]
             dictionary[date] = sum_of_values
-            print(f"{date}: {sum_of_values}")
         print(dictionary)
 
         # close database connection
@@ -476,13 +470,14 @@ class Investment:
         # instead of total sum, use profit
         self.TotalProfitLoss = 0
         self.TotalSum = 0
+        print(len(uniqueID))
         from Database import User
         User = User.User()
         for id in uniqueID:
             self.sellIndividual(id)
         Transaction_ID = generateTransactionID()
         self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
-        print(self.TotalSum)
+        # print(self.TotalSum)
         User.SelectProfile(self.Profile)
         self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, self.TotalProfitLoss, Transaction_ID=Transaction_ID,
                                       TradeCost=self.TotalSum)

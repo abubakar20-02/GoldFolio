@@ -76,9 +76,9 @@ class UserArchive:
         # self.c.execute("SELECT * FROM ArchiveUser WHERE time_stamp = (SELECT MAX(time_stamp) FROM ArchiveUser)")
         self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID =? ORDER BY time_stamp DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
-        print("____________________________")
-        print(Data)
-        print("____________________________")
+        # print("____________________________")
+        # print(Data)
+        # print("____________________________")
         #     DESC, ROWID
         # ASC
         self.c.execute(
@@ -141,14 +141,14 @@ class InvestmentArchive:
 
         self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
-        print("____________________________")
-        print(Data)
-        print("____________________________")
+        # print("____________________________")
+        # # print(Data)
+        # print("____________________________")
         #     DESC, ROWID
         # ASC
         self.c.execute(
-            "DELETE FROM ArchiveInvestment WHERE Investment_ID = (SELECT Investment_ID FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1)",
-            (User_ID,))
+            "DELETE FROM ArchiveInvestment WHERE Investment_ID = ?",
+            (Data[0],))
 
 
         self.conn.commit()

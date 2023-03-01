@@ -10,6 +10,7 @@
 
 import datetime
 import matplotlib
+from PyQt5.QtCore import QObject
 
 matplotlib.use('Qt5Agg')
 
@@ -36,7 +37,7 @@ class MplCanvas(FigureCanvas):
         super(MplCanvas, self).__init__(fig)
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(520, 649)
@@ -177,6 +178,12 @@ class Ui_MainWindow(object):
         self.canvas.axes.xaxis.set_major_formatter(date_format)
         self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
         self.canvas.draw()
+
+
+class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
 
 
 if __name__ == "__main__":

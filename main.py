@@ -5,6 +5,7 @@ from Database import DBFunctions
 # selling one then sell multiple then try to reverse.
 
 # when deleting data sometimes it went to 29 data instead of 33
+# start ui and delete in first cycle.
 
 from Database.Investment import Investment
 from Database.Log import Log

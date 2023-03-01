@@ -43,6 +43,9 @@ class Ui_MainWindow(QObject):
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setMinimumSize(QtCore.QSize(550, 600))
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.updateTable()
+        self.timer.timeout.connect(self.updateTable)
+        self.timer.start(3000)
 
         # set the last column to stretch to fill any remaining space
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -114,8 +117,6 @@ class Ui_MainWindow(QObject):
         self.menuOptions.addAction(self.actionSave)
         self.menuOptions.addAction(self.actionGraph)
         self.menubar.addAction(self.menuOptions.menuAction())
-        self.timer.timeout.connect(self.updateTable)
-        self.timer.start(3000)
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -191,7 +192,7 @@ class Ui_MainWindow(QObject):
         self.window.show()
 
     def updateTable(self):
-        self.val += 1
+        self.val = 0
         self.Investment.updateProfitLoss(self.val)
         self.loadDataFromTable()
 

@@ -77,7 +77,7 @@ class Log:
             SELECT * FROM Log LIMIT 1 OFFSET ?
               ''', (Records - 1,))
         Data = self.c.fetchone()
-        print(Data[1])
+        # print(Data[1])
         self.c.execute('''
             DELETE FROM Log WHERE Transaction_ID = ?
               ''', (Data[1],))
@@ -195,7 +195,7 @@ class Log:
 
                         RecoverdData = self.UserArchive.getData(User_ID)
                         print("------------------")
-                        print(RecoverdData)
+                        # print(RecoverdData)
                         print("------------------")
                         # FirstName, LastName,Money, False(Not Log)
                         # use same transaction id
@@ -224,7 +224,7 @@ class Log:
                     print("Update using archive user data")
                     RecoverdData = self.UserArchive.getData(User_ID)
                     print("-------------")
-                    print(RecoverdData)
+                    # print(RecoverdData)
                     if RecoverdData is not None:
                         print(RecoverdData[2], RecoverdData[5])
                         self.user.updateRecord(RecoverdData[2], RecoverdData[5], LogChanges=False)
@@ -373,7 +373,8 @@ class Log:
                         print("Date:" + str(RecoverdData[1]))
                         self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                         LogChanges=False, Transaction_ID=RecoverdData[0],
-                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
+                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6],
+                                                        IgnoreMoney=True)
                         # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
@@ -387,10 +388,11 @@ class Log:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
                         if RecoverdData is not None:
                             self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
-                                                        LogChanges=False, Transaction_ID=RecoverdData[0],
-                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
+                                                            LogChanges=False, Transaction_ID=RecoverdData[0],
+                                                            Date=RecoverdData[1], ProfitLoss=RecoverdData[6],
+                                                            IgnoreMoney=True)
                             # code to remove record from statement.
-                            self.Statement.getData(User_ID)
+                        self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 elif Transaction_Type == DB_Code.ISA:
                     print("Use User_ID to find most recent statement using count")
@@ -400,7 +402,8 @@ class Log:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
                         self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                         LogChanges=False, Transaction_ID=RecoverdData[0],
-                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6])
+                                                        Date=RecoverdData[1], ProfitLoss=RecoverdData[6],
+                                                        IgnoreMoney=True)
                         # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
