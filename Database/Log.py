@@ -498,7 +498,7 @@ class Log:
                 # using investment get bought price too.
                 User.addMoney((-Data[4]), LogChanges=False)
             elif ActionType == DB_Code.BuyInvestment:
-                User.addMoney(-Data[4])
+                User.addMoney(-Data[4],LogChanges=False)
             self.conn.close()
 
         def __getSum(self, ActionType, ColumnName, StartDate=None, EndDate=None):
