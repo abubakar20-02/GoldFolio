@@ -192,7 +192,7 @@ class Ui_MainWindow(QObject):
         self.window.show()
 
     def updateTable(self):
-        self.val = 0
+        self.val += 1
         self.Investment.updateProfitLoss(self.val)
         self.loadDataFromTable()
 

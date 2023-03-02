@@ -479,16 +479,16 @@ class Investment:
         self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
         # print(self.TotalSum)
         User.SelectProfile(self.Profile)
-        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, self.TotalProfitLoss, Transaction_ID=Transaction_ID,
+        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, self.TotalProfitLoss,
+                                      Transaction_ID=Transaction_ID,
                                       TradeCost=self.TotalSum)
-        User.addMoney(self.TotalSum+self.TotalProfitLoss, LogChanges=False)
-
+        User.addMoney(self.TotalSum + self.TotalProfitLoss, LogChanges=False)
 
     def sellIndividual(self, id):
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM Investment WHERE Investment_ID = ?", (id,))
-            Values = self.c.fetchall()
+            Values = self.c.fetchone()
             self.c.execute("SELECT BoughtFor FROM Investment WHERE Investment_ID = ?", (id,))
             BoughtFor = self.c.fetchone()[0]
             self.c.execute("SELECT ((ProfitLoss/100)*BoughtFor) FROM Investment WHERE Investment_ID = ?", (id,))
@@ -497,11 +497,13 @@ class Investment:
             self.TotalSum += BoughtFor
             print("---")
             print("---")
-            self.InvestmentArchive.Archive(Values)
+            a = [Values]
+            self.InvestmentArchive.Archive(a)
             sql = "DELETE FROM Investment WHERE Investment_ID =?"
             self.c.execute(sql, (id,))
             self.conn.commit()
-            self.Statement.addtoTable(Values)
+            self.Statement.setProfile(Values[2])
+            self.Statement.addIntoTable(Values[3], Values[4], Values[5], Values[6], Transaction_ID=Values[0])
         except sqlite3.Error as error:
             print(error)
         finally:
