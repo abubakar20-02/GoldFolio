@@ -3,6 +3,8 @@ import sqlite3
 import uuid
 from datetime import timedelta
 
+import pandas as pd
+
 from Database import DB_Code, DBFunctions, SetUpFile
 
 
@@ -541,6 +543,24 @@ class Log:
             dict1 = dict([(DB_Code.MoneyIn, a), (DB_Code.MoneyOut, b), (DB_Code.ProfitLoss, c), ("TradeCost", d)])
             print(dict1)
             return dict1
+
+        def getTable(self, StartDate=None, EndDate=None):
+            self.__SetUpConnection()
+            try:
+                sql = "SELECT * FROM Money WHERE User_ID = ?"
+                if StartDate is not None:
+                    sql += f" AND Date_Added >= '{StartDate.strftime('%Y-%m-%d')}'"
+                if EndDate is not None:
+                    sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
+                values = (self.Profile,)
+                df = pd.read_sql(sql, self.conn, params=values)
+                df = df.drop('User_ID', axis=1)
+                df = df.drop('Transaction_ID', axis=1)
+            except sqlite3.Error as error:
+                print(error)
+            finally:
+                self.conn.close()
+                return df
 
         def convertToExcel(self):
             DBFunctions.convertToExcel("Money", SetUpFile.DBLog)

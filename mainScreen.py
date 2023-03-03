@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstra
 
 import Add
 import AddUser
+import MoneyLogScreen
 import StatementScreen
 import UserSelect
 import graph
@@ -115,12 +116,16 @@ class Ui_MainWindow(QObject):
         self.actionStatement = QtWidgets.QAction(MainWindow)
         self.actionStatement.setObjectName("actionStatement")
         self.actionStatement.triggered.connect(self.Statement)
+        self.actionMoneyLog = QtWidgets.QAction(MainWindow)
+        self.actionMoneyLog.setObjectName("actionMoneyLog")
+        self.actionMoneyLog.triggered.connect(self.MoneyLog)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
         self.menuOptions.addAction(self.actionSave)
         self.menuOptions.addAction(self.actionGraph)
         self.menuOptions.addAction(self.actionStatement)
+        self.menuOptions.addAction(self.actionMoneyLog)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -191,6 +196,10 @@ class Ui_MainWindow(QObject):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def MoneyLog(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = MoneyLogScreen.MyWindow()
+        self.window.show()
     def Statement(self):
         self.window = QtWidgets.QMainWindow()
         self.window = StatementScreen.MyWindow()
@@ -286,6 +295,7 @@ class Ui_MainWindow(QObject):
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionGraph.setText(_translate("MainWindow", "Graph"))
         self.actionStatement.setText(_translate("MainWindow", "Statement"))
+        self.actionMoneyLog.setText(_translate("MainWindow", "MoneyLog"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
