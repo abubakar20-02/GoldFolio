@@ -374,3 +374,21 @@ class Statement:
               ''', Values)
         self.conn.commit()
         self.conn.close()
+
+    def getTable(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        try:
+            sql = "SELECT * FROM Statement WHERE User_ID = ?"
+            if StartDate is not None:
+                sql += f" AND Date_Added >= '{StartDate.strftime('%Y-%m-%d')}'"
+            if EndDate is not None:
+                sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
+            values = (self.Profile,)
+            df = pd.read_sql(sql, self.conn, params=values)
+            df = df.drop('User_ID', axis=1)
+            df = df.drop('Purity', axis=1)
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()
+            return df

@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstra
 
 import Add
 import AddUser
+import StatementScreen
 import UserSelect
 import graph
 from Database.Investment import Investment
@@ -111,11 +112,15 @@ class Ui_MainWindow(QObject):
         self.actionGraph = QtWidgets.QAction(MainWindow)
         self.actionGraph.setObjectName("actionGraph")
         self.actionGraph.triggered.connect(self.Graph)
+        self.actionStatement = QtWidgets.QAction(MainWindow)
+        self.actionStatement.setObjectName("actionStatement")
+        self.actionStatement.triggered.connect(self.Statement)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
         self.menuOptions.addAction(self.actionSave)
         self.menuOptions.addAction(self.actionGraph)
+        self.menuOptions.addAction(self.actionStatement)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -185,6 +190,11 @@ class Ui_MainWindow(QObject):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def Statement(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = StatementScreen.MyWindow()
+        self.window.show()
 
     def Graph(self):
         self.window = QtWidgets.QMainWindow()
@@ -275,6 +285,7 @@ class Ui_MainWindow(QObject):
         self.actionPrevious.setText(_translate("MainWindow", "Undo"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionGraph.setText(_translate("MainWindow", "Graph"))
+        self.actionStatement.setText(_translate("MainWindow", "Statement"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
