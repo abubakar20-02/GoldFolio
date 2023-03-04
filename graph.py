@@ -58,6 +58,7 @@ class Ui_MainWindow(QObject):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.comboBox.currentIndexChanged.connect(self.changegraph)
         self.horizontalLayout.addWidget(self.comboBox)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -120,6 +121,7 @@ class Ui_MainWindow(QObject):
         self.comboBox.setItemText(1, _translate("MainWindow", "2 Weeks"))
         self.comboBox.setItemText(2, _translate("MainWindow", "Week"))
         self.comboBox.setItemText(3, _translate("MainWindow", "Year"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "5 Years"))
         self.comboBox_3.setItemText(0, _translate("MainWindow", "Gold"))
         self.comboBox_3.setItemText(1, _translate("MainWindow", "Bough For"))
         # self.label_2.setText(_translate("MainWindow", "X axis:"))
@@ -134,6 +136,8 @@ class Ui_MainWindow(QObject):
             Mode = "Week"
         if self.comboBox.currentIndex() == 3:
             Mode = "Year"
+        if self.comboBox.currentIndex() == 4:
+            Mode = "5Years"
         if self.comboBox_3.currentIndex() == 0:
             ValueSelect = "Gold"
         if self.comboBox_3.currentIndex() == 1:
@@ -152,8 +156,10 @@ class Ui_MainWindow(QObject):
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
         if Mode == "Year":
             print(datetime.now().year)
-            data = Statement.trial("Gold", Start=datetime(datetime.now().year, 1, 1), End=datetime(datetime.now().year, 12, 31))
+            data = Statement.trial(ValueSelect, Start=datetime(datetime.now().year, 1, 1), End=datetime(datetime.now().year, 12, 31))
             print("year")
+        if Mode == "5Years":
+            data = Statement.trial1(ValueSelect, Start=datetime(datetime.now().year-5, 1, 1), End=datetime(datetime.now().year, 12, 31))
         if Mode in ("Week", "2Week", "Month"):
             data = Statement.traverse_all_dates(ValueSelect, Preset=Mode, Mode=1)
         x = list(data.keys())
@@ -189,7 +195,7 @@ class Ui_MainWindow(QObject):
         if Mode in ("Week", "2Week", "Month"):
             date_format = mdates.DateFormatter('%Y-%m-%d')
             self.canvas.axes.xaxis.set_major_formatter(date_format)
-        self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
+            self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
         self.canvas.draw()
 
 
