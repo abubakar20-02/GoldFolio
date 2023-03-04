@@ -57,6 +57,7 @@ class Ui_MainWindow(QObject):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.comboBox.currentIndexChanged.connect(self.changegraph)
         self.horizontalLayout.addWidget(self.comboBox)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -118,6 +119,7 @@ class Ui_MainWindow(QObject):
         self.comboBox.setItemText(0, _translate("MainWindow", "Month"))
         self.comboBox.setItemText(1, _translate("MainWindow", "2 Weeks"))
         self.comboBox.setItemText(2, _translate("MainWindow", "Week"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "Year"))
         self.comboBox_3.setItemText(0, _translate("MainWindow", "Gold"))
         self.comboBox_3.setItemText(1, _translate("MainWindow", "Bough For"))
         # self.label_2.setText(_translate("MainWindow", "X axis:"))
@@ -130,6 +132,8 @@ class Ui_MainWindow(QObject):
             Mode = "2Week"
         if self.comboBox.currentIndex() == 2:
             Mode = "Week"
+        if self.comboBox.currentIndex() == 3:
+            Mode = "Year"
         if self.comboBox_3.currentIndex() == 0:
             ValueSelect = "Gold"
         if self.comboBox_3.currentIndex() == 1:
@@ -142,11 +146,23 @@ class Ui_MainWindow(QObject):
         # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
         from Database.Statement import Statement
         Statement = Statement()
+
         # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
         # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
         #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        data = Statement.traverse_all_dates(ValueSelect, Preset=Mode, Mode=1)
-        # data = Statement.trial("Gold", Start=strToDate("2022-01-01"), End=strToDate("2022-12-12"))
+        if Mode == "Year":
+            print(datetime.now().year)
+            data = Statement.trial("Gold", Start=datetime(datetime.now().year, 1, 1), End=datetime(datetime.now().year, 12, 31))
+            print("year")
+        if Mode in ("Week", "2Week", "Month"):
+            data = Statement.traverse_all_dates(ValueSelect, Preset=Mode, Mode=1)
+        x = list(data.keys())
+        # xv = range(0,len(x))
+        y = list(data.values())
+        print(x)
+        print(y)
+        ########################
+        #
         # Define the format of the date string
         # format_str = '%Y-%m-%d'
         # # Convert each dictionary key to a datetime object
@@ -154,28 +170,25 @@ class Ui_MainWindow(QObject):
         #     datetime_obj = datetime.datetime.strptime(key, format_str)
         #     data[datetime_obj] = data.pop(key)
         # print(data)
-        x = list(data.keys())
-        # xv = range(0,len(x))
-        y = list(data.values())
-        print(x)
-        print(y)
         # x = [datetime.datetime(2022, 1, 1, 0, 0),
         #      datetime.datetime(2022, 1, 2, 0, 0),
         #      datetime.datetime(2022, 1, 3, 0, 0),
         #      datetime.datetime(2022, 1, 4, 0, 0),
         #      datetime.datetime(2022, 1, 5, 0, 0)]
-        self.canvas.axes.set_xticks(x)
-        self.canvas.axes.set_xticklabels(x, rotation=45)
-        # x = [1, 2, 3, 4, 5]
-        # y = [1850, 1800, 1900, 1950, 1750]
+        if Mode in ("Week", "2Week", "Month"):
+            self.canvas.axes.set_xticks(x)
+            self.canvas.axes.set_xticklabels(x, rotation=45)
+            # x = [1, 2, 3, 4, 5]
+            # y = [1850, 1800, 1900, 1950, 1750]
         self.canvas.axes.plot(x, y, '-o')
         self.canvas.axes.grid(True)
         self.canvas.axes.set_xlabel('Date')
         self.canvas.axes.set_ylabel(ValueSelect)
 
         # # Format the x-axis ticks as dates
-        date_format = mdates.DateFormatter('%Y-%m-%d')
-        self.canvas.axes.xaxis.set_major_formatter(date_format)
+        if Mode in ("Week", "2Week", "Month"):
+            date_format = mdates.DateFormatter('%Y-%m-%d')
+            self.canvas.axes.xaxis.set_major_formatter(date_format)
         self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
         self.canvas.draw()
 
