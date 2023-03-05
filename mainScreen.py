@@ -19,6 +19,7 @@ import MoneyLogScreen
 import StatementScreen
 import UserSelect
 import graph
+import graph1
 from Database.Investment import Investment
 from Database import DBFunctions
 import pickle
@@ -207,7 +208,7 @@ class Ui_MainWindow(QObject):
 
     def Graph(self):
         self.window = QtWidgets.QMainWindow()
-        self.window = graph.MyWindow()
+        self.window = graph1.MyWindow()
         self.window.show()
 
     def updateTable(self):
