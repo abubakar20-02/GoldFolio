@@ -21,6 +21,7 @@ import StatementScreen
 import UserSelect
 import graph
 import graph1
+import sellRate
 from Database.Investment import Investment
 from Database import DBFunctions
 import pickle
@@ -80,7 +81,7 @@ class Ui_MainWindow(QObject):
         self.Sell = QtWidgets.QPushButton(self.centralwidget)
         self.Sell.setObjectName("Sell")
         self.verticalLayout.addWidget(self.Sell)
-        self.Sell.clicked.connect(self.getTransactionID)
+        self.Sell.clicked.connect(self.openSell)
         self.AddButton = QtWidgets.QPushButton(self.centralwidget)
         self.AddButton.setObjectName("AddButton")
         self.verticalLayout.addWidget(self.AddButton)
@@ -202,6 +203,7 @@ class Ui_MainWindow(QObject):
         self.window = QtWidgets.QMainWindow()
         self.window = MoneyLogScreen.MyWindow()
         self.window.show()
+
     def Statement(self):
         self.window = QtWidgets.QMainWindow()
         self.window = StatementScreen.MyWindow()
@@ -212,7 +214,6 @@ class Ui_MainWindow(QObject):
         self.window = graph1.MyWindow()
         self.window.show()
 
-    @core.pyqtSlot()
     def updateTable(self):
         self.val += 1
         self.Investment.updateProfitLoss(self.val)
@@ -231,6 +232,15 @@ class Ui_MainWindow(QObject):
         self.Investment.setProfile(UserID)
         table = self.Investment.getTable()
         self.load_dataframe_to_table(table, self.tableWidget)
+
+    def openSell(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = sellRate.MyWindow()
+        self.window.show()
+        self.window.pushButton.clicked.connect(lambda: self.getTransactionID(self.window.Rate.text()))
+        self.window.pushButton.clicked.connect(self.updateTable)
+        self.window.pushButton.clicked.connect(self.window.close)
+        # self.window.AddButton.clicked.connect(self.loadDataFromTable)
 
     def openAddUser(self):
         self.window = QtWidgets.QMainWindow()
@@ -267,7 +277,11 @@ class Ui_MainWindow(QObject):
         # return the list of data
         return data
 
-    def getTransactionID(self):
+    def getTransactionID(self, Rate=None):
+        if Rate == "":
+            Rate = None
+        else:
+            Rate = float(Rate)
         # could be better.
         # assigned transaction id 5 times.
         selected_rows = self.tableWidget.selectedItems()
@@ -282,7 +296,7 @@ class Ui_MainWindow(QObject):
             data = item.data(Qt.DisplayRole)
             id.append(data)
         uniqueID = list(set(id))
-        self.Investment.sell(uniqueID)
+        self.Investment.sell(uniqueID, Rate=Rate)
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
         self.loadDataFromTable()
@@ -315,7 +329,7 @@ class Ui_MainWindow(QObject):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 # Set the color based on the value
                 if column == len(dataframe.columns) - 1:
-                    if dataframe.iloc[row,column] is not None:
+                    if dataframe.iloc[row, column] is not None:
                         if dataframe.iloc[row, column] == 0:
                             item.setForeground(QColor('black'))
                         if dataframe.iloc[row, column] > 0:

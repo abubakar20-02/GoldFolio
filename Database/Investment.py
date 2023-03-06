@@ -280,12 +280,17 @@ class Investment:
                           columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor'])
         self.conn.close()
 
-    def updateProfitLoss(self, GoldRate):
+    def updateProfitLoss(self, GoldRate, Investment_ID=None):
         """Run continuously to update profit/loss"""
+        values = (GoldRate, self.Profile)
         self.__SetUpConnection()
-        self.c.execute('''
-                  UPDATE Investment SET ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID =?)
-                  ''', (GoldRate, self.Profile))
+        select = "SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID =? "
+        if Investment_ID is not None:
+            values = values + (Investment_ID,)
+            select += "AND Investment_ID = ?"
+        complete = "UPDATE Investment SET ProfitLoss =({0})".format(select)
+        print(complete)
+        self.c.execute(complete, values)
         self.conn.commit()
         self.conn.close()
         # self.showTable()
@@ -466,7 +471,7 @@ class Investment:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
 
-    def sell(self, uniqueID):
+    def sell(self, uniqueID, Rate=None):
         # instead of total sum, use profit
         self.TotalProfitLoss = 0
         self.TotalSum = 0
@@ -474,7 +479,7 @@ class Investment:
         from Database import User
         User = User.User()
         for id in uniqueID:
-            self.sellIndividual(id)
+            self.sellIndividual(id, Rate=Rate)
         Transaction_ID = generateTransactionID()
         self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
         # print(self.TotalSum)
@@ -484,7 +489,9 @@ class Investment:
                                       TradeCost=self.TotalSum)
         User.addMoney(self.TotalSum + self.TotalProfitLoss, LogChanges=False)
 
-    def sellIndividual(self, id):
+    def sellIndividual(self, id, Rate=None):
+        if Rate is not None:
+            self.updateProfitLoss(Rate, Investment_ID=id)
         self.__SetUpConnection()
         try:
             self.c.execute("SELECT * FROM Investment WHERE Investment_ID = ?", (id,))
