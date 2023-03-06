@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QObject, QTimer
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
+from PyQt5 import QtCore as core
 
 import Add
 import AddUser
@@ -211,6 +212,7 @@ class Ui_MainWindow(QObject):
         self.window = graph1.MyWindow()
         self.window.show()
 
+    @core.pyqtSlot()
     def updateTable(self):
         self.val += 1
         self.Investment.updateProfitLoss(self.val)
@@ -227,7 +229,8 @@ class Ui_MainWindow(QObject):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
         self.Investment.setProfile(UserID)
-        self.load_dataframe_to_table(self.Investment.getTable(), self.tableWidget)
+        table = self.Investment.getTable()
+        self.load_dataframe_to_table(table, self.tableWidget)
 
     def openAddUser(self):
         self.window = QtWidgets.QMainWindow()
@@ -312,12 +315,13 @@ class Ui_MainWindow(QObject):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 # Set the color based on the value
                 if column == len(dataframe.columns) - 1:
-                    if dataframe.iloc[row, column] == 0:
-                        item.setForeground(QColor('black'))
-                    if dataframe.iloc[row, column] > 0:
-                        item.setForeground(QColor('green'))
-                    if dataframe.iloc[row, column] < 0:
-                        item.setForeground(QColor('red'))
+                    if dataframe.iloc[row,column] is not None:
+                        if dataframe.iloc[row, column] == 0:
+                            item.setForeground(QColor('black'))
+                        if dataframe.iloc[row, column] > 0:
+                            item.setForeground(QColor('green'))
+                        if dataframe.iloc[row, column] < 0:
+                            item.setForeground(QColor('red'))
                 table_widget.setItem(row, column, item)
 
 
