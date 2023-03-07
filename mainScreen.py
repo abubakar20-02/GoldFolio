@@ -129,7 +129,7 @@ class Ui_MainWindow(QObject):
         self.actionSellAll.triggered.connect(self.sellALl)
         self.actionSellProfit = QtWidgets.QAction(MainWindow)
         self.actionSellProfit.setObjectName("actionSellProfit")
-        self.actionSellProfit.triggered.connect(self.MoneyLog)
+        self.actionSellProfit.triggered.connect(self.sellProfit)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
@@ -248,6 +248,14 @@ class Ui_MainWindow(QObject):
         self.window = sellRate.MyWindow()
         self.window.show()
         self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text())))
+        self.window.pushButton.clicked.connect(self.updateTable)
+        self.window.pushButton.clicked.connect(self.window.close)
+
+    def sellProfit(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = sellRate.MyWindow()
+        self.window.show()
+        self.window.pushButton.clicked.connect(lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text())))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 

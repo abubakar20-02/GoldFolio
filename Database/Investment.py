@@ -338,8 +338,8 @@ class Investment:
         self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
                        (self.Profile,))
         TotalCost = self.c.fetchone()[0]
-        from User import User
-        User = User()
+        from Database import User
+        User = User.User()
         User.SelectProfile(self.Profile)
         User.addMoney(TotalProfit + TotalCost, LogChanges=False)
         print("Total Profit:" + str(TotalProfit))
