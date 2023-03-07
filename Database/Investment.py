@@ -318,7 +318,7 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self, LogChanges=True, Rate=None):
+    def sellProfit(self, LogChanges=True, Rate=None, Date=None):
         # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
@@ -343,9 +343,17 @@ class Investment:
         User.SelectProfile(self.Profile)
         User.addMoney(TotalProfit + TotalCost, LogChanges=False)
         print("Total Profit:" + str(TotalProfit))
-        self.c.execute('''
-                    INSERT INTO Statement SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
-                  ''', (self.Profile,))
+        self.c.execute(
+            '''SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+            (self.Profile,))
+        values = self.c.fetchall()
+        for i in range(len(values)):
+            values[i] = values[i] + (Date,)
+        print(values)
+        self.c.executemany('''
+                    INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
+                    VALUES (?,?,?,?,?,?,?)  
+                  ''', values)
         self.c.execute('''
                     DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
                   ''', (self.Profile,))

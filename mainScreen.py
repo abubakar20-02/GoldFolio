@@ -255,7 +255,7 @@ class Ui_MainWindow(QObject):
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
-        self.window.pushButton.clicked.connect(lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text())))
+        self.window.pushButton.clicked.connect(lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),Date = self.window.Date.date().toPyDate()))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
