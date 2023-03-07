@@ -258,7 +258,7 @@ class Investment:
     def getTable(self):
         self.__SetUpConnection()
         try:
-            sql = "SELECT * FROM Investment WHERE User_ID = ?"
+            sql = "SELECT * FROM Investment WHERE User_ID = ? ORDER BY Date_Added DESC"
             values = (self.Profile,)
             df = pd.read_sql(sql, self.conn, params=values)
             df = df.drop('User_ID', axis=1)
@@ -471,7 +471,7 @@ class Investment:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
 
-    def sell(self, uniqueID, Rate=None):
+    def sell(self, uniqueID, Rate=None, Date=None):
         # instead of total sum, use profit
         self.TotalProfitLoss = 0
         self.TotalSum = 0
@@ -479,7 +479,7 @@ class Investment:
         from Database import User
         User = User.User()
         for id in uniqueID:
-            self.sellIndividual(id, Rate=Rate)
+            self.sellIndividual(id, Rate=Rate, Date=Date)
         Transaction_ID = generateTransactionID()
         self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
         # print(self.TotalSum)
@@ -489,7 +489,7 @@ class Investment:
                                       TradeCost=self.TotalSum)
         User.addMoney(self.TotalSum + self.TotalProfitLoss, LogChanges=False)
 
-    def sellIndividual(self, id, Rate=None):
+    def sellIndividual(self, id, Rate=None, Date=None):
         if Rate is not None:
             self.updateProfitLoss(Rate, Investment_ID=id)
         self.__SetUpConnection()
@@ -510,7 +510,10 @@ class Investment:
             self.c.execute(sql, (id,))
             self.conn.commit()
             self.Statement.setProfile(Values[2])
-            self.Statement.addIntoTable(Values[3], Values[4], Values[5], Values[6], Transaction_ID=Values[0])
+            print(Date)
+            self.Statement.addIntoTable(Values[3], Values[4], Values[5], Values[6], Transaction_ID=Values[0],
+                                        Date=Date.strftime("%Y-%m-%d"))
+            print(Date)
         except sqlite3.Error as error:
             print(error)
         finally:
