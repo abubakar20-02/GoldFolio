@@ -126,7 +126,7 @@ class Ui_MainWindow(QObject):
         self.actionMoneyLog.triggered.connect(self.MoneyLog)
         self.actionSellAll = QtWidgets.QAction(MainWindow)
         self.actionSellAll.setObjectName("actionSellAll")
-        self.actionSellAll.triggered.connect(self.sellALl)
+        self.actionSellAll.triggered.connect(self.sellAll)
         self.actionSellProfit = QtWidgets.QAction(MainWindow)
         self.actionSellProfit.setObjectName("actionSellProfit")
         self.actionSellProfit.triggered.connect(self.sellProfit)
@@ -243,11 +243,11 @@ class Ui_MainWindow(QObject):
         table = self.Investment.getTable()
         self.load_dataframe_to_table(table, self.tableWidget)
 
-    def sellALl(self):
+    def sellAll(self):
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
-        self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text())))
+        self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text()),Date = self.window.Date.date().toPyDate()))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
@@ -258,6 +258,8 @@ class Ui_MainWindow(QObject):
         self.window.pushButton.clicked.connect(lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),Date = self.window.Date.date().toPyDate()))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
+
+
 
     def openSell(self):
         self.window = QtWidgets.QMainWindow()
