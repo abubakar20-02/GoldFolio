@@ -57,7 +57,7 @@ class Ui_MainWindow(QObject):
         self.tableWidget.setObjectName("tableWidget")
         # self.tableWidget.setColumnCount(5)
         # self.tableWidget.setRowCount(1)
-        self.loadDataFromTable()
+        self.updateTable()
         self.tableWidget.setColumnHidden(0, True)
         # make the table uneditable
         self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -124,6 +124,12 @@ class Ui_MainWindow(QObject):
         self.actionMoneyLog = QtWidgets.QAction(MainWindow)
         self.actionMoneyLog.setObjectName("actionMoneyLog")
         self.actionMoneyLog.triggered.connect(self.MoneyLog)
+        self.actionSellAll = QtWidgets.QAction(MainWindow)
+        self.actionSellAll.setObjectName("actionSellAll")
+        self.actionSellAll.triggered.connect(self.sellALl)
+        self.actionSellProfit = QtWidgets.QAction(MainWindow)
+        self.actionSellProfit.setObjectName("actionSellProfit")
+        self.actionSellProfit.triggered.connect(self.MoneyLog)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
@@ -131,6 +137,8 @@ class Ui_MainWindow(QObject):
         self.menuOptions.addAction(self.actionGraph)
         self.menuOptions.addAction(self.actionStatement)
         self.menuOptions.addAction(self.actionMoneyLog)
+        self.menuOptions.addAction(self.actionSellAll)
+        self.menuOptions.addAction(self.actionSellProfit)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -235,6 +243,14 @@ class Ui_MainWindow(QObject):
         table = self.Investment.getTable()
         self.load_dataframe_to_table(table, self.tableWidget)
 
+    def sellALl(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = sellRate.MyWindow()
+        self.window.show()
+        self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text())))
+        self.window.pushButton.clicked.connect(self.updateTable)
+        self.window.pushButton.clicked.connect(self.window.close)
+
     def openSell(self):
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
@@ -256,14 +272,14 @@ class Ui_MainWindow(QObject):
         self.window = QtWidgets.QMainWindow()
         self.window = UserSelect.MyWindow()
         self.window.show()
-        self.window.SelectButton.clicked.connect(self.loadDataFromTable)
+        self.window.SelectButton.clicked.connect(self.updateTable)
         self.window.SelectButton.clicked.connect(self.window.close)
 
     def addInvestment(self):
         self.window = QtWidgets.QMainWindow()
         self.window = Add.MyWindow()
         self.window.show()
-        self.window.AddButton.clicked.connect(self.loadDataFromTable)
+        self.window.AddButton.clicked.connect(self.updateTable)
         self.window.AddButton.clicked.connect(self.window.close)
 
     def get_selected_data(self):
@@ -302,7 +318,7 @@ class Ui_MainWindow(QObject):
         self.Investment.sell(uniqueID, Rate=Rate, Date=Date)
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
-        self.loadDataFromTable()
+        self.updateTable()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -317,6 +333,8 @@ class Ui_MainWindow(QObject):
         self.actionGraph.setText(_translate("MainWindow", "Graph"))
         self.actionStatement.setText(_translate("MainWindow", "Statement"))
         self.actionMoneyLog.setText(_translate("MainWindow", "MoneyLog"))
+        self.actionSellAll.setText(_translate("MainWindow", "SellAll"))
+        self.actionSellProfit.setText(_translate("MainWindow", "SellProfit"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
@@ -330,22 +348,23 @@ class Ui_MainWindow(QObject):
         for row in range(len(dataframe)):
             for column in range(len(dataframe.columns)):
                 item = QtWidgets.QTableWidgetItem()
-                if dataframe.iloc[row, column] is not None:
-                    if column == 0 or column == 1:
-                        item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
-                    else:
-                        item.setData(QtCore.Qt.DisplayRole, float(dataframe.iloc[row, column]))
-                    # item = QTableWidgetItem(str(dataframe.iloc[row, column]))
-                    # Set the color based on the value
-                    if column == len(dataframe.columns) - 1:
-                        #
-                        if dataframe.iloc[row, column] == 0:
-                            item.setForeground(QColor('black'))
-                        if dataframe.iloc[row, column] > 0:
-                            item.setForeground(QColor('green'))
-                        if dataframe.iloc[row, column] < 0:
-                            item.setForeground(QColor('red'))
-                    table_widget.setItem(row, column, item)
+                if dataframe.iloc[row, column] is None:
+                    dataframe.iloc[row, column] = 0
+                if column == 0 or column == 1:
+                    item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
+                else:
+                    item.setData(QtCore.Qt.DisplayRole, float(dataframe.iloc[row, column]))
+                # item = QTableWidgetItem(str(dataframe.iloc[row, column]))
+                # Set the color based on the value
+                if column == len(dataframe.columns) - 1:
+                    #
+                    if dataframe.iloc[row, column] == 0:
+                        item.setForeground(QColor('black'))
+                    if dataframe.iloc[row, column] > 0:
+                        item.setForeground(QColor('green'))
+                    if dataframe.iloc[row, column] < 0:
+                        item.setForeground(QColor('red'))
+                table_widget.setItem(row, column, item)
 
 
 if __name__ == "__main__":

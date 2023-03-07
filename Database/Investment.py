@@ -411,8 +411,8 @@ class Investment:
 
         print(TotalCost)
 
-        from User import User
-        User = User()
+        from Database import User
+        User = User.User()
         User.SelectProfile(self.Profile)
         if TotalPositiveProfit is None:
             TotalPositiveProfit = 0
