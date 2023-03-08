@@ -621,6 +621,8 @@ class Investment:
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
 
     def sell(self, uniqueID, Rate=None, Date=None):
+        if len(uniqueID) == 0:
+            return
         # instead of total sum, use profit
         self.TotalProfitLoss = 0
         self.TotalSum = 0
