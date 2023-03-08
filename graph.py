@@ -9,6 +9,8 @@
 
 
 import datetime
+import pickle
+
 import matplotlib
 from PyQt5.QtCore import QObject
 
@@ -49,18 +51,6 @@ class Ui_MainWindow(QObject):
         self.SeeBy.setObjectName("SeeBy")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label = QtWidgets.QLabel(self.main)
-        self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
-        self.comboBox = QtWidgets.QComboBox(self.main)
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.currentIndexChanged.connect(self.changegraph)
-        self.horizontalLayout.addWidget(self.comboBox)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.SeeBy.addLayout(self.horizontalLayout)
@@ -70,7 +60,7 @@ class Ui_MainWindow(QObject):
         self.canvas.setMinimumSize(QtCore.QSize(500, 500))
         self.canvas.setObjectName("canvas")
         self.verticalLayout.addWidget(self.canvas)
-        self.line()
+        self.pie()
         self.SeeBy.addLayout(self.verticalLayout)
         self.BottomLayout = QtWidgets.QVBoxLayout()
         self.BottomLayout.setObjectName("BottomLayout")
@@ -87,15 +77,6 @@ class Ui_MainWindow(QObject):
         self.BottomLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.label_3 = QtWidgets.QLabel(self.main)
-        self.label_3.setObjectName("label_3")
-        self.horizontalLayout_3.addWidget(self.label_3)
-        self.comboBox_3 = QtWidgets.QComboBox(self.main)
-        self.comboBox_3.setObjectName("comboBox_3")
-        self.comboBox_3.addItem("")
-        self.comboBox_3.addItem("")
-        self.comboBox_3.currentIndexChanged.connect(self.changegraph)
-        self.horizontalLayout_3.addWidget(self.comboBox_3)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem2)
         self.BottomLayout.addLayout(self.horizontalLayout_3)
@@ -116,87 +97,41 @@ class Ui_MainWindow(QObject):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "See by: "))
-        self.comboBox.setItemText(0, _translate("MainWindow", "Month"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "2 Weeks"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "Week"))
-        self.comboBox.setItemText(3, _translate("MainWindow", "Year"))
-        self.comboBox.setItemText(4, _translate("MainWindow", "5 Years"))
-        self.comboBox_3.setItemText(0, _translate("MainWindow", "Gold"))
-        self.comboBox_3.setItemText(1, _translate("MainWindow", "Bough For"))
-        # self.label_2.setText(_translate("MainWindow", "X axis:"))
-        self.label_3.setText(_translate("MainWindow", "Y axis:"))
 
-    def changegraph(self):
-        if self.comboBox.currentIndex() == 0:
-            Mode = "Month"
-        if self.comboBox.currentIndex() == 1:
-            Mode = "2Week"
-        if self.comboBox.currentIndex() == 2:
-            Mode = "Week"
-        if self.comboBox.currentIndex() == 3:
-            Mode = "Year"
-        if self.comboBox.currentIndex() == 4:
-            Mode = "5Years"
-        if self.comboBox_3.currentIndex() == 0:
-            ValueSelect = "Gold"
-        if self.comboBox_3.currentIndex() == 1:
-            ValueSelect = "BoughtFor"
-        self.line(Mode=Mode, ValueSelect=ValueSelect)
-
-    def line(self, Mode="Month", ValueSelect="Gold"):
-        self.canvas.axes.clear()
-        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
-        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-        from Database.Statement import Statement
-        Statement = Statement()
-
-        # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
-        # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
-        #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        if Mode == "Year":
-            print(datetime.now().year)
-            data = Statement.trial(ValueSelect, Start=datetime(datetime.now().year, 1, 1), End=datetime(datetime.now().year, 12, 31))
-            print("year")
-        if Mode == "5Years":
-            data = Statement.trial1(ValueSelect, Start=datetime(datetime.now().year-5, 1, 1), End=datetime(datetime.now().year, 12, 31))
-        if Mode in ("Week", "2Week", "Month"):
-            data = Statement.traverse_all_dates(ValueSelect, Preset=Mode, Mode=1)
-        x = list(data.keys())
-        # xv = range(0,len(x))
-        y = list(data.values())
-        print(x)
-        print(y)
-        ########################
-        #
-        # Define the format of the date string
-        # format_str = '%Y-%m-%d'
-        # # Convert each dictionary key to a datetime object
-        # for key in data:
-        #     datetime_obj = datetime.datetime.strptime(key, format_str)
-        #     data[datetime_obj] = data.pop(key)
+    def pie(self):
+        from Database import User,Investment
+        with open("my_variable.pickle", "rb") as f:
+            UserID = pickle.load(f)
+        Gold = Investment.Investment()
+        Gold.setProfile(UserID)
+        Money = User.User()
+        Money.SelectProfile(UserID)
+        data = Money.getDataForGraph()
+        print(data)
         # print(data)
-        # x = [datetime.datetime(2022, 1, 1, 0, 0),
-        #      datetime.datetime(2022, 1, 2, 0, 0),
-        #      datetime.datetime(2022, 1, 3, 0, 0),
-        #      datetime.datetime(2022, 1, 4, 0, 0),
-        #      datetime.datetime(2022, 1, 5, 0, 0)]
-        if Mode in ("Week", "2Week", "Month"):
-            self.canvas.axes.set_xticks(x)
-            self.canvas.axes.set_xticklabels(x, rotation=45)
-            # x = [1, 2, 3, 4, 5]
-            # y = [1850, 1800, 1900, 1950, 1750]
-        self.canvas.axes.plot(x, y, '-o')
-        self.canvas.axes.grid(True)
-        self.canvas.axes.set_xlabel('Date')
-        self.canvas.axes.set_ylabel(ValueSelect)
+        # data = {'C': 20, 'C++': 15, 'Java': 30,
+        #         'Python': 35}
+        # courses = list(data.keys())
+        # values = list(data.values())
+        data_without_zero = {k: v for k, v in data.items() if v > 0}
+        names = list(data_without_zero.keys())
+        values = list(data_without_zero.values())
+        # explode = (0.1,0.1)
+        wp = {'linewidth': 1, 'edgecolor': "black"}
+        _, _, autotexts = self.canvas.axes.pie(values, labels=[''] * len(values), shadow=True, autopct='%1.1f%%',
+                                               wedgeprops=wp, pctdistance=1.3)
+        # create legend labels with percentages
+        # Generate legend labels with extra information for 'Gold'
+        legend_labels = []
+        for i, label in enumerate(names):
+            if label == 'GoldMoney':
+                extra_info =str(Gold.getTotalGold())+ " g"  # Example extra information
+                legend_labels.append(f'{label} ({values[i]:.1f}, {extra_info})')
+            else:
+                legend_labels.append(f'{label} ({values[i]:.1f})')
 
-        # # Format the x-axis ticks as dates
-        if Mode in ("Week", "2Week", "Month"):
-            date_format = mdates.DateFormatter('%Y-%m-%d')
-            self.canvas.axes.xaxis.set_major_formatter(date_format)
-            self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
-        self.canvas.draw()
+        self.canvas.axes.legend(legend_labels, loc='best')
+        # self.canvas.axes.legend(bars, names, loc="best")
 
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):

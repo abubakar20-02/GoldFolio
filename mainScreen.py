@@ -20,6 +20,7 @@ import AddUser
 import MoneyLogScreen
 import StatementScreen
 import UserSelect
+import graph
 import graph1
 import sellRate
 from Database import DBFunctions
@@ -155,6 +156,9 @@ class Ui_MainWindow(object):
         self.actionSellProfit = QtWidgets.QAction(MainWindow)
         self.actionSellProfit.setObjectName("actionSellProfit")
         self.actionSellProfit.triggered.connect(self.sellProfit)
+        self.actionShowMoneyGraph = QtWidgets.QAction(MainWindow)
+        self.actionShowMoneyGraph.setObjectName("actionSellProfit")
+        self.actionShowMoneyGraph.triggered.connect(self.showMoneyGraph)
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
@@ -164,6 +168,7 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.actionMoneyLog)
         self.menuOptions.addAction(self.actionSellAll)
         self.menuOptions.addAction(self.actionSellProfit)
+        self.menuOptions.addAction(self.actionShowMoneyGraph)
         self.menubar.addAction(self.menuOptions.menuAction())
 
         # set stylesheet for QTableWidget
@@ -237,6 +242,11 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def showMoneyGraph(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = graph.MyWindow()
+        self.window.show()
 
     def MoneyLog(self):
         self.window = QtWidgets.QMainWindow()
@@ -388,6 +398,7 @@ class Ui_MainWindow(object):
         self.actionMoneyLog.setText(_translate("MainWindow", "MoneyLog"))
         self.actionSellAll.setText(_translate("MainWindow", "SellAll"))
         self.actionSellProfit.setText(_translate("MainWindow", "SellProfit"))
+        self.actionShowMoneyGraph.setText(_translate("MainWindow", "MoneyGraph"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table

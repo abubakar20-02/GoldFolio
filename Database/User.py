@@ -261,6 +261,13 @@ class User:
             self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
+    def getDataForGraph(self):
+        a=("RawCash", self.getMoney())
+        self.Investment.setProfile(self.Profile)
+        b = ("GoldMoney",self.Investment.getSumBoughtFor())
+        dict1 = dict([a,b])
+        return dict1
+
         # get current money then add money for that user.
 
     def convertToExcel(self):

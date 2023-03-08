@@ -266,7 +266,7 @@ class Investment:
                 sql += f" AND Date_Added <= '{EndDate}'"
             sql += f" ORDER BY Date_Added DESC"
 
-            print (sql)
+            print(sql)
             values = (self.Profile,)
             df = pd.read_sql(sql, self.conn, params=values)
             df = df.drop('User_ID', axis=1)
@@ -327,7 +327,7 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self, LogChanges=True, Rate=None, Date=None,StartDate=None,EndDate=None):
+    def sellProfit(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None):
         # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
@@ -422,12 +422,12 @@ class Investment:
         self.InvestmentArchive.Archive(Values)
 
     # add user here
-    def sellAll(self, LogChanges=True, Rate=None, Date=None, StartDate=None,EndDate=None):
+    def sellAll(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None):
         # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
 
-            #maybe use investment id to update specific records only.
+            # maybe use investment id to update specific records only.
             self.updateProfitLoss(Rate)
         self.__SetUpConnection()
         sql = "SELECT * FROM Investment WHERE User_ID = ?"
@@ -667,3 +667,17 @@ class Investment:
             print(error)
         finally:
             self.conn.close()
+
+    def getSumBoughtFor(self):
+        self.__SetUpConnection()
+        self.c.execute("SELECT SUM(BoughtFor) FROM Investment WHERE User_ID =?", (self.Profile,))
+        Sum = self.c.fetchone()[0]
+        self.conn.close()
+        return Sum
+
+    def getTotalGold(self):
+        self.__SetUpConnection()
+        self.c.execute("SELECT SUM(Gold) FROM Investment WHERE User_ID =?", (self.Profile,))
+        Sum = self.c.fetchone()[0]
+        self.conn.close()
+        return Sum
