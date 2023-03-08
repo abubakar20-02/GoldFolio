@@ -11,9 +11,9 @@
 import pickle
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QObject, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget, QHeaderView, QAbstractItemView
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 
 import Add
 import AddUser
@@ -22,12 +22,11 @@ import StatementScreen
 import UserSelect
 import graph1
 import sellRate
-import sellRateD
 from Database import DBFunctions
 from Database.Investment import Investment
 
 
-class Ui_MainWindow(QObject):
+class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
@@ -38,15 +37,45 @@ class Ui_MainWindow(QObject):
         self.Investment = Investment()
         self.Investment.setProfile(UserID)
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1170, 661)
+        MainWindow.resize(664, 693)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setObjectName("label_2")
+        self.horizontalLayout_9.addWidget(self.label_2)
+        self.StartDate = QtWidgets.QDateEdit(calendarPopup=True)
+        self.StartDate.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.horizontalLayout_9.addWidget(self.StartDate)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem)
+        self.horizontalLayout_10.addLayout(self.horizontalLayout_9)
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.End = QtWidgets.QLabel(self.centralwidget)
+        self.End.setObjectName("End")
+        self.horizontalLayout_8.addWidget(self.End)
+        self.EndDate = QtWidgets.QDateEdit(calendarPopup=True)
+        self.EndDate.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.horizontalLayout_8.addWidget(self.EndDate)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_8.addItem(spacerItem1)
+        self.horizontalLayout_10.addLayout(self.horizontalLayout_8)
+        self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
+        self.radioButton.setObjectName("radioButton")
+        self.horizontalLayout_10.addWidget(self.radioButton)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_10)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setMinimumSize(QtCore.QSize(550, 600))
+        self.tableWidget.setObjectName("tableWidget")
+
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.updateTable()
         self.timer.timeout.connect(self.updateTable)
@@ -68,32 +97,28 @@ class Ui_MainWindow(QObject):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.horizontalLayout_2.addWidget(self.tableWidget)
-
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        # self.widget = QtWidgets.QWidget(self.centralwidget)
-        # self.widget.setMinimumSize(QtCore.QSize(500, 500))
-        # self.widget.setObjectName("widget")
-        # self.horizontalLayout.addWidget(self.widget)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setContentsMargins(10, -1, -1, -1)
         self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem2)
         self.Sell = QtWidgets.QPushButton(self.centralwidget)
         self.Sell.setObjectName("Sell")
-        self.verticalLayout.addWidget(self.Sell)
         self.Sell.clicked.connect(self.openSell)
+        self.verticalLayout.addWidget(self.Sell)
         self.AddButton = QtWidgets.QPushButton(self.centralwidget)
         self.AddButton.setObjectName("AddButton")
-        self.verticalLayout.addWidget(self.AddButton)
         self.AddButton.clicked.connect(self.addInvestment)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem1)
+        self.verticalLayout.addWidget(self.AddButton)
+        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem3)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1170, 36))
         self.menubar.setObjectName("menubar")
@@ -206,6 +231,10 @@ class Ui_MainWindow(QObject):
         self.tableWidget.setStyleSheet(table_style)
         self.tableWidget.verticalScrollBar().setStyleSheet(scrollbar_style)
 
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -225,9 +254,13 @@ class Ui_MainWindow(QObject):
         self.window.show()
 
     def updateTable(self):
+        startDate = endDate = None
         self.val += 1
         self.Investment.updateProfitLoss(self.val)
-        self.loadDataFromTable()
+        if self.radioButton.isChecked():
+            startDate = self.StartDate.date().toPyDate()
+            endDate = self.EndDate.date().toPyDate()
+        self.loadDataFromTable(StartDate=startDate, EndDate=endDate)
 
     def Save(self):
         DBFunctions.ClearTables()
@@ -236,18 +269,24 @@ class Ui_MainWindow(QObject):
         DBFunctions.previousStage()
         self.loadDataFromTable()
 
-    def loadDataFromTable(self):
+    def loadDataFromTable(self, StartDate=None, EndDate=None):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
         self.Investment.setProfile(UserID)
-        table = self.Investment.getTable()
+        print("yo"+ str(StartDate))
+        table = self.Investment.getTable(StartDate=StartDate, EndDate=EndDate)
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def sellAll(self):
+        startdate= enddate = None
+        if self.radioButton.isChecked():
+            startdate = self.StartDate.date().toPyDate()
+            enddate=self.EndDate.date().toPyDate()
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
-        self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text()),Date = self.window.Date.date().toPyDate()))
+        self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text()),
+                                                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
@@ -255,11 +294,11 @@ class Ui_MainWindow(QObject):
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
-        self.window.pushButton.clicked.connect(lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),Date = self.window.Date.date().toPyDate()))
+        self.window.pushButton.clicked.connect(
+            lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),
+                                               Date=self.window.Date.date().toPyDate()))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
-
-
 
     def openSell(self):
         self.window = QtWidgets.QMainWindow()
@@ -334,7 +373,7 @@ class Ui_MainWindow(QObject):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Sell.setText(_translate("MainWindow", "Sell"))
-        self.AddButton.setText(_translate("MainWindow", "Buy"))
+        self.AddButton.setText(_translate("MainWindow", "AddButton"))
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.actionChange_User.setText(_translate("MainWindow", "Change User"))
         self.actionAdd_User.setText(_translate("MainWindow", "Add User"))

@@ -41,7 +41,7 @@ class Ui_MainWindow(QObject):
         self.Rate.setObjectName("Rate")
         self.horizontalLayout.addWidget(self.Rate)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setObjectName("Sell")
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
