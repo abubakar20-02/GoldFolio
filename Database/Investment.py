@@ -327,24 +327,67 @@ class Investment:
         self.conn.close()
 
     # add user here
-    def sellProfit(self, LogChanges=True, Rate=None, Date=None):
+    def sellProfit(self, LogChanges=True, Rate=None, Date=None,StartDate=None,EndDate=None):
         # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
             self.updateProfitLoss(Rate)
+
+        sql = "SELECT * FROM Investment WHERE User_ID = ? AND ProfitLoss>0"
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+
+        sqlCount = "SELECT COUNT(*) FROM Investment WHERE User_ID = ? AND ProfitLoss>0"
+        if StartDate:
+            sqlCount += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sqlCount += f" AND Date_Added <= '{EndDate}'"
+
+        sqlProfitLoss = "SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>0"
+        if StartDate:
+            sqlProfitLoss += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sqlProfitLoss += f" AND Date_Added <= '{EndDate}'"
+
+        sqlSumBoughtFor = "SELECT SUM(BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>0"
+        if StartDate:
+            sqlSumBoughtFor += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sqlSumBoughtFor += f" AND Date_Added <= '{EndDate}'"
+
+        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE User_ID=? AND ProfitLoss>0"
+        if StartDate:
+            sqlSelectStatement += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sqlSelectStatement += f" AND Date_Added <= '{EndDate}'"
+
+        sqlDeleteStatement = "DELETE FROM Investment WHERE User_ID=? AND ProfitLoss>0"
+        if StartDate:
+            sqlDeleteStatement += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sqlDeleteStatement += f" AND Date_Added <= '{EndDate}'"
+
         self.__SetUpConnection()
-        self.c.execute('''SELECT * FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
+        self.c.execute(sql, (self.Profile,))
         Values = self.c.fetchall()
-        self.c.execute('''SELECT COUNT(*) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''', (self.Profile,))
+        self.c.execute(sqlCount, (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
         # calculate total profit
         # profitloss/100 * bought for
-        self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+        self.c.execute(sqlProfitLoss,
                        (self.Profile,))
         TotalProfit = self.c.fetchone()[0]
         if TotalProfit is None:
             return
-        self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+        self.c.execute(sqlSumBoughtFor,
                        (self.Profile,))
         TotalCost = self.c.fetchone()[0]
         from Database import User
@@ -353,7 +396,7 @@ class Investment:
         User.addMoney(TotalProfit + TotalCost, LogChanges=False)
         print("Total Profit:" + str(TotalProfit))
         self.c.execute(
-            '''SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)''',
+            sqlSelectStatement,
             (self.Profile,))
         values = self.c.fetchall()
         for i in range(len(values)):
@@ -363,9 +406,7 @@ class Investment:
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
                     VALUES (?,?,?,?,?,?,?)  
                   ''', values)
-        self.c.execute('''
-                    DELETE FROM Investment WHERE (ProfitLoss>0 AND User_ID=?)
-                  ''', (self.Profile,))
+        self.c.execute(sqlDeleteStatement, (self.Profile,))
         self.conn.commit()
         if LogChanges is True:
             Transaction_ID = generateTransactionID()

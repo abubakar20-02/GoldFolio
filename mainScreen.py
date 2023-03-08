@@ -291,12 +291,16 @@ class Ui_MainWindow(object):
         self.window.pushButton.clicked.connect(self.window.close)
 
     def sellProfit(self):
+        startdate= enddate = None
+        if self.radioButton.isChecked():
+            startdate = self.StartDate.date().toPyDate()
+            enddate=self.EndDate.date().toPyDate()
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
         self.window.pushButton.clicked.connect(
             lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),
-                                               Date=self.window.Date.date().toPyDate()))
+                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
