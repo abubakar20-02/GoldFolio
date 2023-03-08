@@ -673,6 +673,8 @@ class Investment:
         self.c.execute("SELECT SUM(BoughtFor) FROM Investment WHERE User_ID =?", (self.Profile,))
         Sum = self.c.fetchone()[0]
         self.conn.close()
+        if Sum is None:
+            Sum = 0
         return Sum
 
     def getTotalGold(self):
@@ -680,4 +682,6 @@ class Investment:
         self.c.execute("SELECT SUM(Gold) FROM Investment WHERE User_ID =?", (self.Profile,))
         Sum = self.c.fetchone()[0]
         self.conn.close()
+        if Sum is None:
+            Sum = 0
         return Sum
