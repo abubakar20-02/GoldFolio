@@ -13,7 +13,7 @@ from Database.Statement import Statement
 from Database.User import User
 from Database import DBFunctions
 
-
+# when reversing sell profit there is issue.
 def strToDate(date_string):
     # date_string = "2022-03-05"
     date_format = "%Y-%m-%d"

@@ -503,7 +503,7 @@ class Log:
                 User.addMoney(-Data[4], LogChanges=False)
             elif ActionType == DB_Code.ProfitLoss:
                 # using investment get bought price too.
-                User.addMoney((-Data[4]), LogChanges=False)
+                User.addMoney((-Data[4]-Data[5]), LogChanges=False)
             elif ActionType == DB_Code.BuyInvestment:
                 User.addMoney(-Data[4], LogChanges=False)
             self.conn.close()
