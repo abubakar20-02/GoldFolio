@@ -123,8 +123,13 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1170, 36))
         self.menubar.setObjectName("menubar")
+
         self.menuOptions = QtWidgets.QMenu(self.menubar)
         self.menuOptions.setObjectName("menuOptions")
+
+        self.menuExports = QtWidgets.QMenu(self.menubar)
+        self.menuExports.setObjectName("menuExports")
+
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -159,6 +164,13 @@ class Ui_MainWindow(object):
         self.actionShowMoneyGraph = QtWidgets.QAction(MainWindow)
         self.actionShowMoneyGraph.setObjectName("actionSellProfit")
         self.actionShowMoneyGraph.triggered.connect(self.showMoneyGraph)
+
+        self.actionExportInvestment = QtWidgets.QAction(MainWindow)
+        self.actionExportInvestment.setObjectName("actionSellProfit")
+        self.actionExportInvestment.triggered.connect(self.InvestmentExcel)
+
+        self.menuExports.addAction(self.actionExportInvestment)
+
         self.menuOptions.addAction(self.actionChange_User)
         self.menuOptions.addAction(self.actionAdd_User)
         self.menuOptions.addAction(self.actionPrevious)
@@ -170,6 +182,7 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.actionSellProfit)
         self.menuOptions.addAction(self.actionShowMoneyGraph)
         self.menubar.addAction(self.menuOptions.menuAction())
+        self.menubar.addAction(self.menuExports.menuAction())
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -242,6 +255,9 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def InvestmentExcel(self):
+        self.Investment.convertToExcel()
 
     def showMoneyGraph(self):
         self.window = QtWidgets.QMainWindow()
@@ -399,6 +415,9 @@ class Ui_MainWindow(object):
         self.actionSellAll.setText(_translate("MainWindow", "SellAll"))
         self.actionSellProfit.setText(_translate("MainWindow", "SellProfit"))
         self.actionShowMoneyGraph.setText(_translate("MainWindow", "MoneyGraph"))
+
+        self.menuExports.setTitle(_translate("MainWindow","Export"))
+        self.actionExportInvestment.setText(_translate("MainWindow", "Export Investments"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
