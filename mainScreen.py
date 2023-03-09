@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 import Add
 import AddUser
 import MoneyLogScreen
+import Setting
 import StatementScreen
 import UserSelect
 import graph
@@ -33,7 +34,8 @@ class Ui_MainWindow(object):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
 
-        self.timer = QTimer()
+        self.loadSettings()
+
         self.val = 0
         self.Investment = Investment()
         self.Investment.setProfile(UserID)
@@ -80,7 +82,7 @@ class Ui_MainWindow(object):
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.updateTable()
         self.timer.timeout.connect(self.updateTable)
-        self.timer.start(3000)
+        self.timer.start(self.UpdateFrequency*1000)
 
         # set the last column to stretch to fill any remaining space
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -130,6 +132,9 @@ class Ui_MainWindow(object):
         self.menuExports = QtWidgets.QMenu(self.menubar)
         self.menuExports.setObjectName("menuExports")
 
+        self.menuSettings = QtWidgets.QMenu(self.menubar)
+        self.menuSettings.setObjectName("menuSettings")
+
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -169,6 +174,12 @@ class Ui_MainWindow(object):
         self.actionExportInvestment.setObjectName("actionSellProfit")
         self.actionExportInvestment.triggered.connect(self.InvestmentExcel)
 
+        self.actionSettings = QtWidgets.QAction(MainWindow)
+        self.actionSettings.setObjectName("actionSettings")
+        self.actionSettings.triggered.connect(self.Setting)
+
+        self.menuSettings.addAction(self.actionSettings)
+
         self.menuExports.addAction(self.actionExportInvestment)
 
         self.menuOptions.addAction(self.actionChange_User)
@@ -183,6 +194,7 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.actionShowMoneyGraph)
         self.menubar.addAction(self.menuOptions.menuAction())
         self.menubar.addAction(self.menuExports.menuAction())
+        self.menubar.addAction(self.menuSettings.menuAction())
 
         # set stylesheet for QTableWidget
         table_style = '''
@@ -256,6 +268,16 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def loadSettings(self):
+        with open("Settings.pickle", "rb") as f:
+            self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
+            # close previous timer and start new one
+            self.timer = QTimer()
+            self.timer.stop()
+            self.timer.start(self.UpdateFrequency*1000)
+            self.timer.timeout.connect(self.updateTable)
+
+
     def InvestmentExcel(self):
         self.Investment.convertToExcel()
 
@@ -263,6 +285,13 @@ class Ui_MainWindow(object):
         self.window = QtWidgets.QMainWindow()
         self.window = graph.MyWindow()
         self.window.show()
+
+    def Setting(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = Setting.MyWindow()
+        self.window.show()
+        print(self.UpdateFrequency)
+        self.window.SubmitButton.clicked.connect(self.loadSettings)
 
     def MoneyLog(self):
         self.window = QtWidgets.QMainWindow()
@@ -326,7 +355,7 @@ class Ui_MainWindow(object):
         self.window.show()
         self.window.pushButton.clicked.connect(
             lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),
-                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate))
+                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate,ProfitMargin=self.ProfitMargin))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
@@ -418,6 +447,9 @@ class Ui_MainWindow(object):
 
         self.menuExports.setTitle(_translate("MainWindow","Export"))
         self.actionExportInvestment.setText(_translate("MainWindow", "Export Investments"))
+
+        self.menuSettings.setTitle(_translate("MainWindow","Settings"))
+        self.actionSettings.setText(_translate("MainWindow", "Settings"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):
         # Set the number of rows and columns for the table
