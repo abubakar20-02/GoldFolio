@@ -292,6 +292,7 @@ class Ui_MainWindow(object):
         self.window.show()
         print(self.UpdateFrequency)
         self.window.SubmitButton.clicked.connect(self.loadSettings)
+        self.window.SubmitButton.clicked.connect(self.window.close)
 
     def MoneyLog(self):
         self.window = QtWidgets.QMainWindow()

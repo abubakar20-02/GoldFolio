@@ -329,48 +329,48 @@ class Investment:
     # add user here
     def sellProfit(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None, ProfitMargin=None):
         if ProfitMargin is None:
-            ProfitMargin = 0
+            ProfitMargin = 1
         # only apply rate to what is going to be sold.
         if Rate is not None:
             # if connected to a thread this might not work all the time.
             self.updateProfitLoss(Rate)
 
-        sql = "SELECT * FROM Investment WHERE User_ID = ? AND ProfitLoss>?"
+        sql = "SELECT * FROM Investment WHERE User_ID = ? AND ProfitLoss>=?"
         if StartDate:
             sql += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
             sql += f" AND Date_Added <= '{EndDate}'"
 
-        sqlCount = "SELECT COUNT(*) FROM Investment WHERE User_ID = ? AND ProfitLoss>?"
+        sqlCount = "SELECT COUNT(*) FROM Investment WHERE User_ID = ? AND ProfitLoss>=?"
         if StartDate:
             sqlCount += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
             sqlCount += f" AND Date_Added <= '{EndDate}'"
 
-        sqlProfitLoss = "SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>?"
+        sqlProfitLoss = "SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
         if StartDate:
             sqlProfitLoss += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
             sqlProfitLoss += f" AND Date_Added <= '{EndDate}'"
 
-        sqlSumBoughtFor = "SELECT SUM(BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>?"
+        sqlSumBoughtFor = "SELECT SUM(BoughtFor) FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
         if StartDate:
             sqlSumBoughtFor += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
             sqlSumBoughtFor += f" AND Date_Added <= '{EndDate}'"
 
-        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE User_ID=? AND ProfitLoss>?"
+        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
         if StartDate:
             sqlSelectStatement += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
             sqlSelectStatement += f" AND Date_Added <= '{EndDate}'"
 
-        sqlDeleteStatement = "DELETE FROM Investment WHERE User_ID=? AND ProfitLoss>?"
+        sqlDeleteStatement = "DELETE FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
         if StartDate:
             sqlDeleteStatement += f" AND Date_Added >= '{StartDate}'"
 
@@ -399,7 +399,7 @@ class Investment:
         print("Total Profit:" + str(TotalProfit))
         self.c.execute(
             sqlSelectStatement,
-            (self.Profile, ProfitMargin))
+            (self.Profile,ProfitMargin))
         values = self.c.fetchall()
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
@@ -408,7 +408,7 @@ class Investment:
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
                     VALUES (?,?,?,?,?,?,?)  
                   ''', values)
-        self.c.execute(sqlDeleteStatement, (self.Profile, ProfitMargin))
+        self.c.execute(sqlDeleteStatement, (self.Profile,ProfitMargin))
         self.conn.commit()
         if LogChanges is True:
             Transaction_ID = generateTransactionID()
