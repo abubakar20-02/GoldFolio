@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.updateTable()
         self.timer.timeout.connect(self.updateTable)
-        self.timer.start(self.UpdateFrequency*1000)
+        self.timer.start(self.UpdateFrequency * 1000)
 
         # set the last column to stretch to fill any remaining space
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -274,9 +274,8 @@ class Ui_MainWindow(object):
             # close previous timer and start new one
             self.timer = QTimer()
             self.timer.stop()
-            self.timer.start(self.UpdateFrequency*1000)
+            self.timer.start(self.UpdateFrequency * 1000)
             self.timer.timeout.connect(self.updateTable)
-
 
     def InvestmentExcel(self):
         self.Investment.convertToExcel()
@@ -329,34 +328,37 @@ class Ui_MainWindow(object):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
         self.Investment.setProfile(UserID)
-        print("yo"+ str(StartDate))
+        print("yo" + str(StartDate))
         table = self.Investment.getTable(StartDate=StartDate, EndDate=EndDate)
+        print(self.Investment.getRateRequired(StartDate=StartDate, EndDate=EndDate))
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def sellAll(self):
-        startdate= enddate = None
+        startdate = enddate = None
         if self.radioButton.isChecked():
             startdate = self.StartDate.date().toPyDate()
-            enddate=self.EndDate.date().toPyDate()
+            enddate = self.EndDate.date().toPyDate()
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
         self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text()),
-                                                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate))
+                                                                               Date=self.window.Date.date().toPyDate(),
+                                                                               StartDate=startdate, EndDate=enddate))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
     def sellProfit(self):
-        startdate= enddate = None
+        startdate = enddate = None
         if self.radioButton.isChecked():
             startdate = self.StartDate.date().toPyDate()
-            enddate=self.EndDate.date().toPyDate()
+            enddate = self.EndDate.date().toPyDate()
         self.window = QtWidgets.QMainWindow()
         self.window = sellRate.MyWindow()
         self.window.show()
         self.window.pushButton.clicked.connect(
             lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),
-                                               Date=self.window.Date.date().toPyDate(),StartDate=startdate,EndDate=enddate,ProfitMargin=self.ProfitMargin))
+                                               Date=self.window.Date.date().toPyDate(), StartDate=startdate,
+                                               EndDate=enddate, ProfitMargin=self.ProfitMargin))
         self.window.pushButton.clicked.connect(self.updateTable)
         self.window.pushButton.clicked.connect(self.window.close)
 
@@ -446,10 +448,10 @@ class Ui_MainWindow(object):
         self.actionSellProfit.setText(_translate("MainWindow", "SellProfit"))
         self.actionShowMoneyGraph.setText(_translate("MainWindow", "MoneyGraph"))
 
-        self.menuExports.setTitle(_translate("MainWindow","Export"))
+        self.menuExports.setTitle(_translate("MainWindow", "Export"))
         self.actionExportInvestment.setText(_translate("MainWindow", "Export Investments"))
 
-        self.menuSettings.setTitle(_translate("MainWindow","Settings"))
+        self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
 
     def load_dataframe_to_table(self, dataframe, table_widget):

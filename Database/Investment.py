@@ -399,7 +399,7 @@ class Investment:
         print("Total Profit:" + str(TotalProfit))
         self.c.execute(
             sqlSelectStatement,
-            (self.Profile,ProfitMargin))
+            (self.Profile, ProfitMargin))
         values = self.c.fetchall()
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
@@ -408,7 +408,7 @@ class Investment:
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
                     VALUES (?,?,?,?,?,?,?)  
                   ''', values)
-        self.c.execute(sqlDeleteStatement, (self.Profile,ProfitMargin))
+        self.c.execute(sqlDeleteStatement, (self.Profile, ProfitMargin))
         self.conn.commit()
         if LogChanges is True:
             Transaction_ID = generateTransactionID()
@@ -681,11 +681,40 @@ class Investment:
             Sum = 0
         return Sum
 
-    def getTotalGold(self):
+    def getTotalGold(self, StartDate=None, EndDate=None):
         self.__SetUpConnection()
-        self.c.execute("SELECT SUM(Gold) FROM Investment WHERE User_ID =?", (self.Profile,))
+        sql = "SELECT SUM(Gold) FROM Investment WHERE User_ID =?"
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql, (self.Profile,))
         Sum = self.c.fetchone()[0]
         self.conn.close()
         if Sum is None:
             Sum = 0
         return Sum
+
+    def getTotalBought(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT SUM(BoughtFor) FROM Investment WHERE User_ID =?"
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql, (self.Profile,))
+        Sum = self.c.fetchone()[0]
+        self.conn.close()
+        if Sum is None:
+            Sum = 0
+        return Sum
+
+    def getRateRequired(self, StartDate=None, EndDate=None):
+        try:
+            Rate = (self.getTotalBought(StartDate=StartDate, EndDate=EndDate) / self.getTotalGold(StartDate=StartDate,
+                                                                                                  EndDate=EndDate))
+        except:
+            Rate = None
+        return Rate
