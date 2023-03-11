@@ -392,3 +392,21 @@ class Statement:
         finally:
             self.conn.close()
             return df
+
+    def Overall(self, Column, StartDate, EndDate):
+        delta = abs(EndDate - StartDate)
+        if StartDate.month == EndDate.month:
+            if delta > timedelta(days=14):
+                print("month")
+            elif delta > timedelta(days=7):
+                print("2 weeks")
+            else:
+                print("week")
+        elif StartDate.year == EndDate.year:
+            print("year")
+        else:
+            print("5 years")
+
+        # if days less than 31 then set using days
+        # else use Monthly until gap is more than a year
+
