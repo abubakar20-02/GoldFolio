@@ -27,9 +27,12 @@ import sellRate
 from Database import DBFunctions
 from Database.Investment import Investment
 
+from GoldRate import Gold
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.Gold = Gold(24, "Gram", "USD")
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
@@ -311,7 +314,8 @@ class Ui_MainWindow(object):
     def updateTable(self):
         startDate = endDate = None
         self.val += 1
-        self.Investment.updateProfitLoss(self.val)
+        self.Investment.updateProfitLoss(self.Gold.getAsk())
+        print(self.Gold.getAsk())
         if self.radioButton.isChecked():
             startDate = self.StartDate.date().toPyDate()
             endDate = self.EndDate.date().toPyDate()
