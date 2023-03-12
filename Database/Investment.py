@@ -10,6 +10,8 @@ from Database import Archive
 from Database import Log
 from Database import Statement
 
+from fpdf import FPDF
+
 
 def generateTransactionID():
     return str(uuid.uuid4())
@@ -718,3 +720,48 @@ class Investment:
         except:
             Rate = None
         return Rate
+
+    def PDF(self):
+        self.__SetUpConnection()
+
+        # Execute the SQL statement and get the results as a pandas DataFrame
+        sql = "SELECT Date_Added,Gold,Purity,BoughtFor,ProfitLoss FROM Investment"
+        df = pd.read_sql(sql,self.conn)
+
+        # Create a PDF document using the fpdf library
+        pdf = MyPDF()
+        pdf.add_page()
+        pdf.alias_nb_pages()
+
+        # Set the font and size of the text in the PDF document
+        pdf.set_font("Arial", size=12)
+
+        # Calculate the maximum width of the data in each column
+        column_width = pdf.w / len(df.columns)
+
+        # Create a list of equal column widths that fill the width of the page
+        column_widths = [column_width] * len(df.columns)
+
+        # Set the left margin to 0 to stretch the table to take the entire width of the page
+        left_margin = 0
+
+        # Add the DataFrame to the PDF document as a table
+        pdf.set_x(left_margin)
+        for i, column in enumerate(df.columns):
+            pdf.cell(column_widths[i], 10, str(column), border=1)
+        for index, row in df.iterrows():
+            pdf.ln()
+            pdf.set_x(left_margin)
+            for i, column in enumerate(df.columns):
+                pdf.cell(column_widths[i], 10, str(row[column]), border=1)
+
+        # Save the PDF document to a file
+        pdf.output("mytable.pdf")
+        self.conn.close()
+
+class MyPDF(FPDF):
+    def footer(self):
+        # Add a footer to the bottom center of each page
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')

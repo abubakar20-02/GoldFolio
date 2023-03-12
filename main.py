@@ -43,6 +43,7 @@ if __name__ == "__main__":
     Investment.setProfile("ma")
     Investment.insertIntoTable(123, 123, 123)
     Investment.ImportFromExcel()
+    Investment.PDF()
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)

@@ -87,6 +87,8 @@ class Ui_MainWindow(object):
         self.timer.timeout.connect(self.updateTable)
         self.timer.start(self.UpdateFrequency * 1000)
 
+        self.radioButton.clicked.connect(self.updateTable)
+
         # set the last column to stretch to fill any remaining space
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
         self.tableWidget.setObjectName("tableWidget")
