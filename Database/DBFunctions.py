@@ -105,9 +105,11 @@ def ClearTables():
     __ClearArchive()
 
 
-def previousStage(num=None):
+def previousStage(UserID,num=None):
     from Database import Log
     Log = Log.Log()
+    print(f"UserID: {UserID}")
+    Log.SelectProfile(UserID)
     if num is not None:
         for i in range(0, num):
             Log.previousStage()

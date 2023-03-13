@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 from Database import DBFunctions
@@ -38,17 +39,33 @@ if __name__ == "__main__":
     User.createTable()
 
     User.insertIntoTable("Muhammad", "Abubakar", 1000)
+    time.sleep(1)
     User.SelectProfile("ma")
     User.addMoney(1000)
+    time.sleep(1)
     Investment.setProfile("ma")
     Investment.insertIntoTable(123, 123, 123)
+    time.sleep(1)
     Investment.ImportFromExcel()
+    time.sleep(1)
     Investment.PDF()
     User.insertIntoTable("Hamza","Rizwan",1000)
+    time.sleep(1)
     User.SelectProfile("hr")
     User.addMoney(100)
+    time.sleep(1)
+    Investment.setProfile("hr")
+    Investment.insertIntoTable(123,123,123)
+    time.sleep(1)
+    Investment.insertIntoTable(123, 123, 123)
+    time.sleep(1)
+    Investment.insertIntoTable(123, 123, 123)
+    time.sleep(1)
     User.SelectProfile("ma")
     User.addMoney(500)
+    time.sleep(1)
+    Investment.sellAll(Rate=10)
+    time.sleep(1)
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)

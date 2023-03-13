@@ -232,6 +232,8 @@ class User:
                   SELECT Money FROM User WHERE User_ID = ?
                   ''', (self.Profile,))
         Money = self.c.fetchone()[0]
+        if Money is None:
+            Money = 0
         self.conn.close()
         return Money
 
@@ -264,10 +266,10 @@ class User:
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
     def getDataForGraph(self):
-        a=("RawCash", self.getMoney())
+        a = ("RawCash", self.getMoney())
         self.Investment.setProfile(self.Profile)
-        b = ("GoldMoney",self.Investment.getSumBoughtFor())
-        dict1 = dict([a,b])
+        b = ("GoldMoney", self.Investment.getSumBoughtFor())
+        dict1 = dict([a, b])
         return dict1
 
         # get current money then add money for that user.

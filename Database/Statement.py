@@ -18,7 +18,6 @@ class Statement:
 
     def setProfile(self, user):
         self.Profile = user
-        self.Log.SelectProfile(self.Profile)
 
     # can't handle empty lines at the moment
     def ImportFromExcel(self):

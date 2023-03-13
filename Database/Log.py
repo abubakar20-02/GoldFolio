@@ -24,6 +24,7 @@ class Log:
 
     def SelectProfile(self, User):
         self.Profile = User
+        print(self.Profile)
 
     # need refactoring
     def generateTransactionID(self):
@@ -38,7 +39,7 @@ class Log:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Log
-              ([User] VARCHAR [TimeStamp], TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TransactionType] VARCHAR)
+              ([User_ID] VARCHAR, [TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TransactionType] VARCHAR)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -61,7 +62,7 @@ class Log:
         self.generateTransactionID()
         self.TransactionType = TransactionType
         self.c.execute('''
-              INSERT INTO Log (User,Transaction_ID,TransactionType)
+              INSERT INTO Log (User_ID,Transaction_ID,TransactionType)
                     VALUES 
                     (?,?,?)
               ''', (self.Profile, Transaction_ID, TransactionType,))
@@ -73,24 +74,31 @@ class Log:
         self.__SetUpConnection()
         self.generateTransactionID()
         self.c.execute('''
-            SELECT COUNT(*) FROM Log 
-              ''')
+            SELECT COUNT(*) FROM Log WHERE User_ID = ?
+              ''', (self.Profile,))
         Records = self.c.fetchone()[0]
         if Records == 0:
             return
+        print(f"Inside profile: {self.Profile}")
         self.c.execute('''
-            SELECT * FROM Log LIMIT 1 OFFSET ?
-              ''', (Records - 1,))
+            SELECT * FROM Log WHERE User_ID = ?
+              ''',(self.Profile,))
         Data = self.c.fetchone()
+        print(f"everything {Data}")
+        self.c.execute('''
+            SELECT * FROM Log WHERE User_ID = ? ORDER BY TIMESTAMP DESC LIMIT 1
+              ''', (self.Profile,))
+        Data = self.c.fetchone()
+        print(f"actual data: {Data}")
         # print(Data[1])
         self.c.execute('''
             DELETE FROM Log WHERE Transaction_ID = ?
-              ''', (Data[1],))
+              ''', (Data[2],))
         self.conn.commit()
         self.conn.close()
-        self.UserLog.SearchByID(Data[1])
-        self.InvestmentLog.SearchByID(Data[1])
-        self.MoneyLog.SearchByID(Data[1])
+        self.UserLog.SearchByID(Data[2])
+        self.InvestmentLog.SearchByID(Data[2])
+        self.MoneyLog.SearchByID(Data[2])
 
     class UserLog:
         def __init__(self):

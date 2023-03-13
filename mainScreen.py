@@ -26,6 +26,7 @@ import graph1
 import sellRate
 from Database import DBFunctions
 from Database.Investment import Investment
+from Database import Log
 
 from GoldRate import Gold
 
@@ -35,13 +36,13 @@ class Ui_MainWindow(object):
         self.Gold = Gold(24, "Gram", "USD")
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
-            UserID = pickle.load(f)
+            self.UserID = pickle.load(f)
 
         self.loadSettings()
 
         self.val = 0
         self.Investment = Investment()
-        self.Investment.setProfile(UserID)
+        self.Investment.setProfile(self.UserID)
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(664, 693)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -327,13 +328,14 @@ class Ui_MainWindow(object):
         DBFunctions.ClearTables()
 
     def prevStage(self):
-        DBFunctions.previousStage()
+        print(self.UserID)
+        DBFunctions.previousStage(self.UserID)
         self.loadDataFromTable()
 
     def loadDataFromTable(self, StartDate=None, EndDate=None):
         with open("my_variable.pickle", "rb") as f:
-            UserID = pickle.load(f)
-        self.Investment.setProfile(UserID)
+            self.UserID = pickle.load(f)
+        self.Investment.setProfile(self.UserID)
         print("yo" + str(StartDate))
         table = self.Investment.getTable(StartDate=StartDate, EndDate=EndDate)
         print(self.Investment.getRateRequired(StartDate=StartDate, EndDate=EndDate))
