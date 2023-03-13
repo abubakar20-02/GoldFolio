@@ -756,7 +756,7 @@ class Investment:
                 pdf.cell(column_widths[i], 10, str(row[column]), border=1)
 
         # Save the PDF document to a file
-        pdf.output("mytable.pdf")
+        pdf.output("Investment.pdf")
         self.conn.close()
 
 class MyPDF(FPDF):
