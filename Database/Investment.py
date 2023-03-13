@@ -104,6 +104,7 @@ class Investment:
 
     def setProfile(self, profile):
         self.Profile = profile
+        self.Log.SelectProfile(self.Profile)
 
     # __ makes the method private
     def __SetUpConnection(self):

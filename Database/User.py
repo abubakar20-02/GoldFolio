@@ -30,6 +30,7 @@ class User:
 
     def SelectProfile(self, Profile):
         self.Profile = Profile
+        self.Log.SelectProfile(self.Profile)
 
     def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'
@@ -177,6 +178,7 @@ class User:
           ''', (UserID, FName, LName, Money))
         self.conn.commit()
         if LogChanges is True:
+            self.Log.SelectProfile(UserID)
             Transaction_ID = generateTransactionID()
             self.__LogForInsert(FName, LName, Money, UserID, Transaction_ID)
             self.MoneyLog.insertIntoTable(UserID, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)

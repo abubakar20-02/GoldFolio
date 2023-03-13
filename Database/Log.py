@@ -22,6 +22,9 @@ class Log:
         self.MoneyLog = self.Money()
         self.createTable()
 
+    def SelectProfile(self, User):
+        self.Profile = User
+
     # need refactoring
     def generateTransactionID(self):
         self.uid = str(uuid.uuid4())
@@ -35,7 +38,7 @@ class Log:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Log
-              ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TransactionType] VARCHAR)
+              ([User] VARCHAR [TimeStamp], TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,[Transaction_ID] VARCHAR PRIMARY KEY, [TransactionType] VARCHAR)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -58,10 +61,10 @@ class Log:
         self.generateTransactionID()
         self.TransactionType = TransactionType
         self.c.execute('''
-              INSERT INTO Log (Transaction_ID,TransactionType)
+              INSERT INTO Log (User,Transaction_ID,TransactionType)
                     VALUES 
-                    (?,?)
-              ''', (Transaction_ID, TransactionType,))
+                    (?,?,?)
+              ''', (self.Profile, Transaction_ID, TransactionType,))
         self.conn.commit()
         self.conn.close()
 
@@ -503,7 +506,7 @@ class Log:
                 User.addMoney(-Data[4], LogChanges=False)
             elif ActionType == DB_Code.ProfitLoss:
                 # using investment get bought price too.
-                User.addMoney((-Data[4]-Data[5]), LogChanges=False)
+                User.addMoney((-Data[4] - Data[5]), LogChanges=False)
             elif ActionType == DB_Code.BuyInvestment:
                 User.addMoney(-Data[4], LogChanges=False)
             self.conn.close()
