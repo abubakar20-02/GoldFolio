@@ -1,15 +1,11 @@
 import yfinance as yf
 import pandas as pd
 
+
 # platinum is correlating negatively
 # sp 500 has high correlation with usd index. so removed it
 
-# adj is real exchange rate
-if __name__ == "__main__":
-    # start_date = "2013-01-01"
-    start_date = "2020-01-01"
-    end_date = "2022-03-14"
-
+def getDataSet(start_date, end_date):
     gold_data = yf.download("GC=F", start=start_date, end=end_date, interval="1d")
     gold_data = gold_data[['Open', 'Close']]
     print(type(gold_data))
@@ -108,4 +104,21 @@ if __name__ == "__main__":
     combined_data = combined_data[(combined_data >= 0).all(1)]
     combined_data.insert(len(combined_data.columns) - 5, 'GoldToOil',
                          (combined_data['Gold Open'] / combined_data['Oil open']))
-    combined_data.to_excel("gold_data.xlsx")
+    return combined_data
+
+
+# adj is real exchange rate
+if __name__ == "__main__":
+    import time
+
+    # start_date = "2013-01-01"
+    start_date = "2020-01-01"
+    end_date = "2022-03-10"
+    getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
+
+    # create a function that takes todays date and using timestamp go back in the past.
+
+    # load model.
+    from joblib import load
+
+    model = load('model.joblib')
