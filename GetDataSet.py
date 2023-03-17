@@ -7,8 +7,8 @@ import pandas as pd
 # adj is real exchange rate
 if __name__ == "__main__":
     # start_date = "2013-01-01"
-    start_date = "2010-01-01"
-    end_date = "2020-03-14"
+    start_date = "2020-01-01"
+    end_date = "2022-03-14"
 
     gold_data = yf.download("GC=F", start=start_date, end=end_date, interval="1d")
     gold_data = gold_data[['Open', 'Close']]
