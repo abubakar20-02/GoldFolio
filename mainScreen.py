@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 
 import Add
 import AddUser
+import GoldCalculator
 import MoneyLogScreen
 import Setting
 import StatementScreen
@@ -176,6 +177,10 @@ class Ui_MainWindow(object):
         self.actionShowMoneyGraph.setObjectName("actionSellProfit")
         self.actionShowMoneyGraph.triggered.connect(self.showMoneyGraph)
 
+        self.actionGoldCalculator = QtWidgets.QAction(MainWindow)
+        self.actionGoldCalculator.setObjectName("actionGoldCalculator")
+        self.actionGoldCalculator.triggered.connect(self.GoldCalculator)
+
         self.actionExportInvestment = QtWidgets.QAction(MainWindow)
         self.actionExportInvestment.setObjectName("actionSellProfit")
         self.actionExportInvestment.triggered.connect(self.InvestmentExcel)
@@ -198,6 +203,7 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.actionSellAll)
         self.menuOptions.addAction(self.actionSellProfit)
         self.menuOptions.addAction(self.actionShowMoneyGraph)
+        self.menuOptions.addAction(self.actionGoldCalculator)
         self.menubar.addAction(self.menuOptions.menuAction())
         self.menubar.addAction(self.menuExports.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
@@ -313,6 +319,12 @@ class Ui_MainWindow(object):
         self.window = QtWidgets.QMainWindow()
         self.window = graph1.MyWindow()
         self.window.show()
+
+    def GoldCalculator(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = GoldCalculator.MyWindow()
+        self.window.show()
+        self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
 
     def updateTable(self):
         startDate = endDate = None
@@ -455,6 +467,7 @@ class Ui_MainWindow(object):
         self.actionSellAll.setText(_translate("MainWindow", "SellAll"))
         self.actionSellProfit.setText(_translate("MainWindow", "SellProfit"))
         self.actionShowMoneyGraph.setText(_translate("MainWindow", "MoneyGraph"))
+        self.actionGoldCalculator.setText(_translate("MainWindow", "GoldCalculator"))
 
         self.menuExports.setTitle(_translate("MainWindow", "Export"))
         self.actionExportInvestment.setText(_translate("MainWindow", "Export Investments"))
