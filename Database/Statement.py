@@ -101,7 +101,7 @@ class Statement:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Statement
-              ([Investment_ID] VARCHAR PRIMARY KEY, [Date_added] DATE DEFAULT CURRENT_DATE ,[User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,
+              ([Investment_ID] VARCHAR PRIMARY KEY, [Date_added] DATE DEFAULT CURRENT_DATE ,[User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL,[Value_Change] REAL,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
@@ -109,6 +109,7 @@ class Statement:
 
     def addIntoTable(self, Gold, Purity, BoughtFor, ProfitLoss, Transaction_ID=None, Date=None):
         """Takes in the investmentID , User ID, Gold in grams, Purity and the total price bought for"""
+        Value_Change = BoughtFor * (ProfitLoss / 100)
         self.__SetUpConnection()
         if Date is None:
             Date = datetime.now().date()
@@ -124,11 +125,11 @@ class Statement:
                 Transaction_ID = str(uuid.uuid4())
             try:
                 self.c.execute('''
-                      INSERT INTO Statement (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+                      INSERT INTO Statement (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change)
 
                             VALUES
-                            (?,?,?,?,?,?,?)
-                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
+                            (?,?,?,?,?,?,?,?)
+                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss, Value_Change))
             except sqlite3.Error as error:
                 print(error)
                 Error = True
@@ -154,11 +155,11 @@ class Statement:
         self.__SetUpConnection()
         try:
             self.c.execute('''
-                  INSERT INTO Investment (Investment_ID,Date_added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+                  INSERT INTO Investment (Investment_ID,Date_added, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change)
 
                         VALUES
-                        (?,?,?,?,?,?)
-                  ''', (InvestmentId, Date_added, UserID, Gold, Purity, BoughtFor, 0.00))
+                        (?,?,?,?,?,?,?)
+                  ''', (InvestmentId, Date_added, UserID, Gold, Purity, BoughtFor, 0.00, 0.00))
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)
@@ -409,4 +410,3 @@ class Statement:
 
         # if days less than 31 then set using days
         # else use Monthly until gap is more than a year
-

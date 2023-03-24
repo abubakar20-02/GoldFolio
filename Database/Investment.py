@@ -371,7 +371,7 @@ class Investment:
         if EndDate:
             sqlSumBoughtFor += f" AND Date_Added <= '{EndDate}'"
 
-        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
+        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change FROM Investment WHERE User_ID=? AND ProfitLoss>=?"
         if StartDate:
             sqlSelectStatement += f" AND Date_Added >= '{StartDate}'"
 
@@ -409,12 +409,15 @@ class Investment:
             sqlSelectStatement,
             (self.Profile, ProfitMargin))
         values = self.c.fetchall()
+        print("--------------")
+        print(values)
+        print("--------------")
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
         print(values)
         self.c.executemany('''
-                    INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
-                    VALUES (?,?,?,?,?,?,?)  
+                    INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change,Date_Added) 
+                    VALUES (?,?,?,?,?,?,?,?)  
                   ''', values)
         self.c.execute(sqlDeleteStatement, (self.Profile, ProfitMargin))
         self.conn.commit()
@@ -468,7 +471,7 @@ class Investment:
         if EndDate:
             sqlSumBoughtFor += f" AND Date_Added <= '{EndDate}'"
 
-        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss FROM Investment WHERE User_ID=?"
+        sqlSelectStatement = "SELECT Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change FROM Investment WHERE User_ID=?"
         if StartDate:
             sqlSelectStatement += f" AND Date_Added >= '{StartDate}'"
 
@@ -510,8 +513,8 @@ class Investment:
         print(values)
 
         self.c.executemany('''
-                    INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
-                    VALUES (?,?,?,?,?,?,?)  
+                    INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change,Date_Added) 
+                    VALUES (?,?,?,?,?,?,?,?)  
                   ''', values)
         self.c.execute(sqlDeleteStatement, (self.Profile,))
         self.conn.commit()
