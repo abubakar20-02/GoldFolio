@@ -116,7 +116,7 @@ class Investment:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS Investment
-              ([Investment_ID] VARCHAR PRIMARY KEY,[Date_Added] DATE, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL DEFAULT 0.0,
+              ([Investment_ID] VARCHAR PRIMARY KEY,[Date_Added] DATE, [User_ID] VARCHAR,[Gold] REAL ,[Purity] REAL, [BoughtFor] REAL, [ProfitLoss] REAL DEFAULT 0.0, [Value_Change] REAL DEFAULT 0.0,
               FOREIGN KEY(User_ID) REFERENCES User(User_ID))
               ''')
         self.conn.commit()
@@ -200,6 +200,9 @@ class Investment:
         self.__SetUpConnection()
         if ProfitLoss is None:
             ProfitLoss = 0.0
+            Value_Change = 0.0
+        else:
+            Value_Change = (ProfitLoss/100) * BoughtFor
         if IgnoreMoney is False:
             from Database import User
             User = User.User()
@@ -223,11 +226,11 @@ class Investment:
                 Transaction_ID = generateTransactionID()
             try:
                 self.c.execute('''
-                      INSERT INTO Investment (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
+                      INSERT INTO Investment (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss, Value_Change)
     
                             VALUES
-                            (?,?,?,?,?,?,?)
-                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss))
+                            (?,?,?,?,?,?,?,?)
+                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss,Value_Change))
                 self.conn.commit()
                 self.conn.close()
                 if IgnoreMoney is False:
@@ -249,7 +252,7 @@ class Investment:
         self.__SetUpConnection()
         my_uuid = str(uuid.uuid4())
         self.c.execute('''
-              UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID = ?
+              UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2), Value_Change = ProfitLoss*BoughtFor WHERE User_ID = ?
               ''', (Money, Gold, Purity, self.Profile, GoldRate))
         self.conn.commit()
         # _________________________________________________
@@ -300,7 +303,8 @@ class Investment:
         if Investment_ID is not None:
             values = values + (Investment_ID,)
             select += "AND Investment_ID = ?"
-        complete = "UPDATE Investment SET ProfitLoss =({0})".format(select)
+        complete = "UPDATE Investment SET ProfitLoss =({0}) AND Value_Change = (ProfitLoss/100)*BoughtFor".format(select)
+        # Value = ProfitLoss* Bought For
         print(complete)
         self.c.execute(complete, values)
         self.conn.commit()
