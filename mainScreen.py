@@ -11,9 +11,9 @@
 import pickle
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QDate
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
 
 import Add
 import AddUser
@@ -30,7 +30,6 @@ from Database.Investment import Investment
 from Database import Log
 
 from GoldRate import Gold
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -58,7 +57,9 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_9.addWidget(self.label_2)
         self.StartDate = QtWidgets.QDateEdit(calendarPopup=True)
+        self.StartDate.setMaximumDate(QDate.currentDate())
         self.StartDate.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.StartDate.dateChanged.connect(self.updateDateRangeForEndDate)
         self.horizontalLayout_9.addWidget(self.StartDate)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem)
@@ -69,6 +70,7 @@ class Ui_MainWindow(object):
         self.End.setObjectName("End")
         self.horizontalLayout_8.addWidget(self.End)
         self.EndDate = QtWidgets.QDateEdit(calendarPopup=True)
+        self.EndDate.setMaximumDate(QDate.currentDate())
         self.EndDate.setDateTime(QtCore.QDateTime.currentDateTime())
         self.horizontalLayout_8.addWidget(self.EndDate)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -280,6 +282,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def updateDateRangeForEndDate(self):
+        self.EndDate.setMinimumDate(self.StartDate.date())
     def loadSettings(self):
         with open("Settings.pickle", "rb") as f:
             self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
@@ -495,7 +499,7 @@ class Ui_MainWindow(object):
                     item.setData(QtCore.Qt.DisplayRole, float(dataframe.iloc[row, column]))
                 # item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 # Set the color based on the value
-                if column == len(dataframe.columns) - 1:
+                if column == len(dataframe.columns) - 1 or column == len(dataframe.columns) - 2:
                     #
                     if dataframe.iloc[row, column] == 0:
                         item.setForeground(QColor('black'))
