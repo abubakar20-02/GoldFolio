@@ -72,6 +72,7 @@ class Ui_MainWindow(object):
         self.EndDate = QtWidgets.QDateEdit(calendarPopup=True)
         self.EndDate.setMaximumDate(QDate.currentDate())
         self.EndDate.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.EndDate.dateChanged.connect(self.updateDateRangeForStartDate)
         self.horizontalLayout_8.addWidget(self.EndDate)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem1)
@@ -284,6 +285,9 @@ class Ui_MainWindow(object):
 
     def updateDateRangeForEndDate(self):
         self.EndDate.setMinimumDate(self.StartDate.date())
+
+    def updateDateRangeForStartDate(self):
+        self.StartDate.setMaximumDate(self.EndDate.date())
     def loadSettings(self):
         with open("Settings.pickle", "rb") as f:
             self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
