@@ -303,10 +303,11 @@ class Investment:
         if Investment_ID is not None:
             values = values + (Investment_ID,)
             select += "AND Investment_ID = ?"
-        complete = "UPDATE Investment SET ProfitLoss =({0}) AND Value_Change = (ProfitLoss/100)*BoughtFor".format(select)
+        complete = "UPDATE Investment SET ProfitLoss =({0})".format(select)
         # Value = ProfitLoss* Bought For
         print(complete)
         self.c.execute(complete, values)
+        self.c.execute("UPDATE Investment SET VAlue_Change = (ProfitLoss/100)*BoughtFor".format(select))
         self.conn.commit()
         self.conn.close()
         # self.showTable()
@@ -507,6 +508,7 @@ class Investment:
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
         print(values)
+
         self.c.executemany('''
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Date_Added) 
                     VALUES (?,?,?,?,?,?,?)  
