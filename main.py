@@ -14,6 +14,7 @@ from Database.Statement import Statement
 from Database.User import User
 from Database import DBFunctions
 
+
 # when reversing sell profit there is issue.
 def strToDate(date_string):
     # date_string = "2022-03-05"
@@ -38,7 +39,8 @@ if __name__ == "__main__":
     User.deleteTable(False)
     User.createTable()
 
-    User.insertIntoTable("Muhammad", "Abubakar", 1000)
+    User.insertIntoTable("Muhammad", "Abubakar", 1000, "trial")
+    User.UpdatePassword("ma","trial2")
     time.sleep(1)
     User.SelectProfile("ma")
     User.addMoney(1000)
@@ -49,13 +51,13 @@ if __name__ == "__main__":
     Investment.ImportFromExcel()
     time.sleep(1)
     Investment.PDF()
-    User.insertIntoTable("Hamza","Rizwan",1000)
+    User.insertIntoTable("Hamza", "Rizwan", 1000, "trial1")
     time.sleep(1)
     User.SelectProfile("hr")
     User.addMoney(100)
     time.sleep(1)
     Investment.setProfile("hr")
-    Investment.insertIntoTable(123,123,123)
+    Investment.insertIntoTable(123, 123, 123)
     time.sleep(1)
     Investment.insertIntoTable(123, 123, 123)
     time.sleep(1)

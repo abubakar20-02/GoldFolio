@@ -268,6 +268,9 @@ class Ui_MainWindow(QObject):
         self.menubar.addAction(self.menuStatistics.menuAction())
         self.menubar.addAction(self.menuStatements.menuAction())
 
+        self.User.setStyleSheet(SetupFile.NoChangeTextColor)
+        self.Cash.setStyleSheet(SetupFile.NoChangeTextColor)
+
         self.getUserData()
         self.AddCashButton.clicked.connect(lambda: self.addCash())
 
