@@ -11,3 +11,7 @@ Snap_DB = 'DBSnapshot/SnapDatabase.db'
 Snap_Archive = 'DBSnapshot/SnapArchive.db'
 
 Snap_DBLog = 'DBSnapshot/SnapDBLog.db'
+
+AdminUser = "Admin"
+
+AdminPass= "Admin"

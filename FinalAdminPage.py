@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QAbstractItemView
 
+import FinalChangePassword
 from Database import User
 
 
@@ -58,6 +59,8 @@ class Ui_Form(QObject):
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.loadDataFromTable()
+        # if no record selected it crashes.
+        self.ChangePasswordButton.clicked.connect(lambda: self.changePassScreen(self.get_selected_row()))
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -91,6 +94,19 @@ class Ui_Form(QObject):
                 item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 table_widget.setItem(row, column, item)
 
+    def get_selected_row(self):
+        row = self.tableWidget.currentRow()
+        if row == -1:
+            print("No row is selected.")
+        else:
+            item = self.tableWidget.item(row, 0).text()
+            return item
+
+    def changePassScreen(self, UserID):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalChangePassword.MyWindow()
+        self.window.setupPage(UserID)
+        self.window.show()
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
