@@ -1,6 +1,7 @@
 import math
 import sqlite3
 import uuid
+import bcrypt
 
 import pandas as pd
 
@@ -11,6 +12,19 @@ from Database.Log import Log
 
 def generateTransactionID():
     return str(uuid.uuid4())
+
+
+def hash_password(password):
+    # Convert the password to bytes
+    password_bytes = password.encode('utf-8')
+
+    # Generate a salt
+    salt = bcrypt.gensalt()
+
+    # Hash the password with the salt
+    hashed_password = bcrypt.hashpw(password_bytes, salt)
+
+    return hashed_password
 
 
 class User:
@@ -99,7 +113,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -165,17 +179,17 @@ class User:
         # mention this was updated
         self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
-    def insertIntoTable(self, FName, LName, Money, LogChanges=True, UserID=None):
+    def insertIntoTable(self, FName, LName, Money, Password, LogChanges=True, UserID=None):
         """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         if UserID is None:
             UserID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
-          INSERT INTO User (User_ID, FirstName,LastName,Money)
+          INSERT INTO User (User_ID, FirstName,LastName,Money,Password)
 
                 VALUES
-                (?,?,?,?)
-          ''', (UserID, FName, LName, Money))
+                (?,?,?,?,?)
+          ''', (UserID, FName, LName, Money, hash_password(Password)))
         self.conn.commit()
         if LogChanges is True:
             self.Log.SelectProfile(UserID)
@@ -291,3 +305,19 @@ class User:
 
     def convertToExcel(self):
         DBFunctions.convertToExcel("User", SetUpFile.DBName, RemoveFirstColumn=False)
+
+    def getHashedPassword(self, param):
+        self.__SetUpConnection()
+        self.c.execute("SELECT Password FROM USER WHERE User_ID=?", (param,))
+        hashpass = self.c.fetchone()[0]
+        self.conn.close()
+        return hashpass
+
+    def UpdatePassword(self, User_ID, Password):
+        print("in")
+        self.__SetUpConnection()
+        self.c.execute('''
+        UPDATE User SET Password = ? WHERE User_ID = ?'''
+                       , (hash_password(Password), User_ID))
+        self.conn.commit()
+        self.conn.close()
