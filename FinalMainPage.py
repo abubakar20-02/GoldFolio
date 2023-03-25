@@ -549,7 +549,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously("24", "Oz", "USD")
+        self.worker = UpdateRatesContinuously("24", "Oz", "USD",self.UpdateFrequency)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.
@@ -595,11 +595,12 @@ class UpdateRatesContinuously(QObject):
     values = pyqtSignal(object)
     error = pyqtSignal()
 
-    def __init__(self, Purity, Unit, Currency):
+    def __init__(self, Purity, Unit, Currency,TimeFreq):
         super(UpdateRatesContinuously, self).__init__()
         self.Purity = Purity
         self.Unit = Unit
         self.Currency = Currency
+        self.TimeFreq = TimeFreq
 
     def run(self):
         while True:
@@ -608,7 +609,7 @@ class UpdateRatesContinuously(QObject):
                 self.values.emit(rates)
             except:
                 self.error.emit()
-            for i in range(30):
+            for i in range(self.TimeFreq):
                 time.sleep(1)
                 print("working")
                 global Change
