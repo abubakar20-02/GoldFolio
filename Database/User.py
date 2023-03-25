@@ -231,8 +231,10 @@ class User:
         self.c.execute('''
                   SELECT Money FROM User WHERE User_ID = ?
                   ''', (self.Profile,))
-        Money = self.c.fetchone()[0]
-        if Money is None:
+        result = self.c.fetchone()
+        if result is not None:
+            Money = result[0]
+        else:
             Money = 0
         self.conn.close()
         return Money
