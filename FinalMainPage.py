@@ -393,11 +393,9 @@ class Ui_MainWindow(QObject):
         self.getUserData()
 
     def getUserData(self):
-        print("oowowoowwo")
-
         self.Cash.setText(str(self.UserProfile.getMoney()))
         # add function in user to get user name.
-        self.User.setText("trial")
+        self.User.setText(self.UserProfile.getName())
 
     def line(self, Mode="Month", ValueSelect="Gold", StartDate=None, EndDate=None):
         self.canvas.axes.clear()

@@ -239,6 +239,19 @@ class User:
         self.conn.close()
         return Money
 
+    def getName(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+        SELECT FirstName,LastName FROM User WHERE User_ID=?
+        ''', (self.Profile,))
+        FirstName, LastName = self.c.fetchone()
+        if FirstName is not None and LastName is not None:
+            Name = FirstName + " " + LastName + " (" + self.Profile + ")"
+        else:
+            Name = "-"
+        self.conn.close()
+        return Name
+
     def updateMoney(self, Money):
         self.__SetUpConnection()
         self.c.execute('''
