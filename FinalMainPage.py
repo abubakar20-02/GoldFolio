@@ -9,6 +9,11 @@
 import pickle
 from datetime import datetime
 
+import numpy as np
+import pandas as pd
+
+import FinalAddMoney
+from Database import User
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDate
 from PyQt5.QtGui import QColor
@@ -21,12 +26,14 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 
+
 class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -35,7 +42,8 @@ class Ui_MainWindow(object):
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
             self.UserID = pickle.load(f)
-
+        self.UserProfile = User.User()
+        self.UserProfile.SelectProfile(self.UserID)
         self.loadSettings()
 
         self.val = 0
@@ -159,14 +167,14 @@ class Ui_MainWindow(object):
         self.GraphLayout = QtWidgets.QVBoxLayout()
         self.GraphLayout.setObjectName("GraphLayout")
         spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.GraphLayout.addItem(spacerItem4)
+        # self.GraphLayout.addItem(spacerItem4)
         self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.canvas.setMinimumSize(QtCore.QSize(500, 500))
         self.canvas.setObjectName("canvas")
         self.GraphLayout.addWidget(self.canvas)
         self.line()
         spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.GraphLayout.addItem(spacerItem5)
+        # self.GraphLayout.addItem(spacerItem5)
         self.horizontalLayout_3.addLayout(self.GraphLayout)
         self.BuyAndSellLayout = QtWidgets.QVBoxLayout()
         self.BuyAndSellLayout.setObjectName("BuyAndSellLayout")
@@ -250,6 +258,9 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuStatistics.menuAction())
         self.menubar.addAction(self.menuStatements.menuAction())
 
+        self.getUserData()
+        self.AddCashButton.clicked.connect(lambda: self.addCash())
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -258,10 +269,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Banner.setText(_translate("MainWindow", "Banner"))
         self.User_Text.setText(_translate("MainWindow", "User: "))
-        self.User.setText(_translate("MainWindow", "Muhammad Abubakar"))
         self.ChangeUserButton.setText(_translate("MainWindow", "Change"))
         self.Cash_Text.setText(_translate("MainWindow", "Cash: "))
-        self.Cash.setText(_translate("MainWindow", "2"))
         self.AddCashButton.setText(_translate("MainWindow", "Add"))
         self.StartDate_Text.setText(_translate("MainWindow", "Start Date:"))
         self.EndDate_Text.setText(_translate("MainWindow", "End Date:"))
@@ -287,6 +296,16 @@ class Ui_MainWindow(object):
         self.actionCash.setText(_translate("MainWindow", "Cash "))
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
+
+    def addCash(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalAddMoney.MyWindow()
+        self.window.show()
+        self.window.AddMoney.clicked.connect(lambda: self.UserProfile.addMoney(self.window.Money.value()))
+        self.window.AddMoney.clicked.connect(self.window.close)
+        self.window.AddMoney.clicked.connect(self.getUserData)
+        # self.window.AddButton.clicked.connect(self.loadDataFromTable)
+        # self.window.AddButton.clicked.connect(self.window.close)
 
     def updateTable(self):
         startDate = endDate = None
@@ -355,6 +374,13 @@ class Ui_MainWindow(object):
 
     def updateDateRangeForStartDate(self):
         self.StartDate.setMaximumDate(self.EndDate.date())
+
+    def getUserData(self):
+        print("oowowoowwo")
+
+        self.Cash.setText(str(self.UserProfile.getMoney()))
+        # add function in user to get user name.
+        self.User.setText("trial")
 
     def line(self, Mode="Month", ValueSelect="Gold", StartDate=None, EndDate=None):
         self.canvas.axes.clear()
@@ -431,6 +457,74 @@ class Ui_MainWindow(object):
             date_format = mdates.DateFormatter('%Y-%m-%d')
             self.canvas.axes.xaxis.set_major_formatter(date_format)
         self.canvas.draw()
+
+    # def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):
+    #     n_vars = 1 if type(data) is list else data.shape[1]
+    #     dff = pd.DataFrame(data)
+    #     cols, names = list(), list()
+    #     # input sequence (t-n, ... t-1)
+    #     for i in range(n_in, 0, -1):
+    #         cols.append(dff.shift(i))
+    #         names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
+    #     # forecast sequence (t, t+1, ... t+n)
+    #     for i in range(0, n_out):
+    #         cols.append(dff.shift(-i))
+    #         if i == 0:
+    #             names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
+    #         else:
+    #             names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
+    #     # put it all together
+    #     agg = pd.concat(cols, axis=1)
+    #     agg.columns = names
+    #     # drop rows with NaN values
+    #     if dropnan:
+    #         agg.dropna(inplace=True)
+    #     return agg
+    #
+    # df = pd.read_excel("gold_data.xlsx")
+    # df = df.iloc[:, 1:]
+    #
+    # reframed = series_to_supervised(df, 1, 1)
+    # values = reframed.values
+    # n_train_time = 80
+    # test = values[n_train_time:, :]
+    # test_X, test_y = test[:, :-1], test[:, -1]
+    # test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
+    #
+    # def recursive_forecast(self, model, input_data, n_days):
+    #     forecast = []
+    #     current_input = input_data[-1].copy()
+    #
+    #     for _ in range(n_days):
+    #         prediction = model.predict(current_input.reshape(1, 1, -1))
+    #         forecast.append(prediction[0, 0])
+    #         current_input = np.roll(current_input, -1)
+    #         current_input[-1] = prediction
+    #
+    #     return np.array(forecast)
+    #
+    # n_days = 7
+    # yhat = recursive_forecast(model, test_X, n_days)
+    # # Reshape yhat to (1, n_days)
+    # yhat = yhat.reshape(-1, 1)
+    #
+    # inv_yhat = np.concatenate((test_X[:n_days, -10:], yhat), axis=1)
+    # # inv_yhat = scaler.inverse_transform(inv_yhat)
+    # inv_yhat = inv_yhat[:, -1]
+    #
+    # interval = 60
+    # predictinterval = interval + n_days
+    # aa = [x for x in range(interval)]
+    # bb = [x for x in range(interval - 1, predictinterval)]
+    # print(bb)
+    #
+    # plt.plot(aa, inv_y[len(inv_y) - interval:], marker='.', label="actual")
+    # inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
+    # plt.plot(bb, inv_yhat[:], 'r', marker='.', label="predicition")
+    # # plt.plot(aa, inv_yhat[:interval], 'r', label="prediction")
+    # plt.ylabel('Price', size=15)
+    # plt.xlabel('Time step', size=15)
+    # plt.legend(fontsize=15)
 
 
 if __name__ == "__main__":
