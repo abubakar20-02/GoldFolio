@@ -321,3 +321,17 @@ class User:
                        , (hash_password(Password), User_ID))
         self.conn.commit()
         self.conn.close()
+
+    def getTable(self):
+        self.__SetUpConnection()
+        try:
+            sql = "SELECT * FROM User"
+            print(sql)
+            df = pd.read_sql(sql, self.conn)
+            df = df.drop('Password', axis=1)
+        except sqlite3.Error as error:
+            print(error)
+        finally:
+            self.conn.close()
+            # print(df)
+            return df

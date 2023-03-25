@@ -10,10 +10,12 @@ import pickle
 
 import bcrypt
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QLineEdit
 
 import FinalAddUser
+import FinalAdminPage
 import FinalMainPage
-from Database import User
+from Database import User,SetUpFile
 
 
 def verify_password(password, hashed_password):
@@ -45,6 +47,7 @@ class Ui_Form(object):
         self.Password_text.setObjectName("Password_text")
         self.horizontalLayout_3.addWidget(self.Password_text)
         self.Password = QtWidgets.QLineEdit(Form)
+        self.Password.setEchoMode(QLineEdit.Password)
         self.Password.setObjectName("Password")
         self.horizontalLayout_3.addWidget(self.Password)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -69,6 +72,7 @@ class Ui_Form(object):
         self.horizontalLayout_2.addItem(spacerItem4)
         self.label = QtWidgets.QLabel(Form)
         self.label.setObjectName("label")
+        self.label.setHidden(True)
         self.horizontalLayout_2.addWidget(self.label)
         spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem5)
@@ -89,6 +93,11 @@ class Ui_Form(object):
         self.LogInButton.setText(_translate("Form", "Log in"))
         self.label.setText(_translate("Form", "TextLabel"))
 
+    def openAdminPage(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalAdminPage.MyWindow()
+        self.window.show()
+
     def openCreateAccount(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddUser.MyWindow()
@@ -96,11 +105,17 @@ class Ui_Form(object):
 
     def LogIn(self):
         # if admin logs in then they get access to change passwords for users.
+        print(SetUpFile.AdminUser)
+        if self.UserName.text() == SetUpFile.AdminUser and self.Password.text() == SetUpFile.AdminPass:
+            print("load admin page")
+            self.openAdminPage()
+            return
         self.UserName.text()
         isPassCorrect = verify_password(self.Password.text(), self.User.getHashedPassword(self.UserName.text()))
         print(isPassCorrect)
         if isPassCorrect is False:
             self.label.setText("Wrong user name or password!")
+            self.label.setHidden(False)
         else:
             with open("my_variable.pickle", "wb") as f:
                 pickle.dump(self.UserName.text(), f)
