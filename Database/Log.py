@@ -82,7 +82,7 @@ class Log:
         print(f"Inside profile: {self.Profile}")
         self.c.execute('''
             SELECT * FROM Log WHERE User_ID = ?
-              ''',(self.Profile,))
+              ''', (self.Profile,))
         Data = self.c.fetchone()
         print(f"everything {Data}")
         self.c.execute('''
@@ -510,6 +510,8 @@ class Log:
             User = User.User()
             Investment = Investment()
             User.SelectProfile(Data[2])
+            if ActionType == DB_Code.MoneyIn:
+                User.addMoney(-Data[4], LogChanges=False)
             if ActionType == DB_Code.MoneyOut:
                 User.addMoney(-Data[4], LogChanges=False)
             elif ActionType == DB_Code.ProfitLoss:

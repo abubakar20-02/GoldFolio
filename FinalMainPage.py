@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 import FinalAddMoney
-from Database import User
+from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDate
 from PyQt5.QtGui import QColor
@@ -226,6 +226,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.actionUndo = QtWidgets.QAction(MainWindow)
         self.actionUndo.setObjectName("actionUndo")
+        self.actionUndo.triggered.connect(self.prevStage)
         self.actionGold_Calculator = QtWidgets.QAction(MainWindow)
         self.actionGold_Calculator.setObjectName("actionGold_Calculator")
         self.actionSettings = QtWidgets.QAction(MainWindow)
@@ -374,6 +375,11 @@ class Ui_MainWindow(object):
 
     def updateDateRangeForStartDate(self):
         self.StartDate.setMaximumDate(self.EndDate.date())
+
+    def prevStage(self):
+        DBFunctions.previousStage(self.UserID)
+        self.loadDataFromTable()
+        self.getUserData()
 
     def getUserData(self):
         print("oowowoowwo")
