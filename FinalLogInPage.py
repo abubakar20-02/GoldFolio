@@ -123,6 +123,7 @@ class Ui_Form(QObject):
             self.OpenMainPage()
 
     def OpenMainPage(self):
+        self.close()
         self.window = QtWidgets.QWidget()
         self.window = FinalMainPage.MyWindow()
         self.window.show()
@@ -139,7 +140,6 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     if os.path.isfile("my_variable.pickle"):
-        print("directopen")
         window = FinalMainPage.MyWindow()
         window.show()
     else:

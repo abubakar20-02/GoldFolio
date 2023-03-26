@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 import FinalAddMoney
+import FinalMoneyLog
 import SetupFile
 from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -228,9 +229,11 @@ class Ui_MainWindow(QObject):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.actionUndo = QtWidgets.QAction(MainWindow)
         self.actionUndo.setObjectName("actionUndo")
         self.actionUndo.triggered.connect(self.prevStage)
+
         self.actionGold_Calculator = QtWidgets.QAction(MainWindow)
         self.actionGold_Calculator.setObjectName("actionGold_Calculator")
         self.actionSettings = QtWidgets.QAction(MainWindow)
@@ -241,8 +244,11 @@ class Ui_MainWindow(QObject):
         self.actionImport_Data.setObjectName("actionImport_Data")
         self.actionExport_Data = QtWidgets.QAction(MainWindow)
         self.actionExport_Data.setObjectName("actionExport_Data")
+
         self.actionCash = QtWidgets.QAction(MainWindow)
         self.actionCash.setObjectName("actionCash")
+        self.actionCash.triggered.connect(self.openMoneyLog)
+
         self.actionInvestment = QtWidgets.QAction(MainWindow)
         self.actionInvestment.setObjectName("actionInvestment")
         self.actionGraphs = QtWidgets.QAction(MainWindow)
@@ -310,6 +316,11 @@ class Ui_MainWindow(QObject):
     def LogOut(self):
         os.remove("my_variable.pickle")
         self.close()
+
+    def openMoneyLog(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalMoneyLog.MyWindow()
+        self.window.show()
 
     def addCash(self):
         self.window = QtWidgets.QWidget()
