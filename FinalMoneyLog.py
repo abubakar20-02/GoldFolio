@@ -126,17 +126,25 @@ class Ui_Form(QObject):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def updateDateRangeForEndDate(self):
-        # self.updateTable()
+        self.Search()
         self.EndDate.setMinimumDate(self.StartDate.date())
 
     def updateDateRangeForStartDate(self):
-        # self.updateTable()
+        self.Search()
         self.StartDate.setMaximumDate(self.EndDate.date())
+
+    def Search(self):
+        StartDate = self.StartDate.date().toPyDate()
+        EndDate = self.EndDate.date().toPyDate()
+
+        self.loadDataFromTable(StartDate=StartDate, EndDate=EndDate)
+
+        print(type(self.StartDate.date().getDate()))
 
     def checkIfCustom(self):
         if self.PresetComboBox.currentIndex() == self.PresetComboBox.count()-1:
             self.radioButton.setEnabled(True)
-            # self.checkRadioButton()
+            self.checkRadioButton()
         else:
             self.EnableDates(False)
             self.radioButton.setEnabled(False)
@@ -144,7 +152,9 @@ class Ui_Form(QObject):
     def checkRadioButton(self):
         if self.radioButton.isChecked():
             self.EnableDates(True)
+            self.Search()
         else:
+            self.loadDataFromTable()
             self.EnableDates(False)
 
     def EnableDates(self,Bool):
