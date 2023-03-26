@@ -28,11 +28,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 
-value = 0
-
-loop = True
-Change = False
-
 
 class MplCanvas(FigureCanvas):
 
@@ -44,7 +39,6 @@ class MplCanvas(FigureCanvas):
 
 class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
-
         self.Gold = Gold(24, "Gram", "USD")
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
@@ -544,13 +538,19 @@ class Ui_MainWindow(QObject):
     # plt.xlabel('Time step', size=15)
     # plt.legend(fontsize=15)
 
-        # closeExcelFile()
+    # closeExcelFile()
+
+
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    value = 0
+
     def __init__(self):
+        print("init")
+        self.value = 0
         super().__init__()
         self.setupUi(self)
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously("24", "Oz", "USD",self.UpdateFrequency)
+        self.worker = UpdateRatesContinuously("24", "Oz", "USD", self.UpdateFrequency)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.
@@ -563,22 +563,20 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.my_thread.start()
 
     def ClearRates(self):
-        self.BidValue.setText("")
-        self.AskValue.setText("")
+        self.Bid.setText("")
+        self.Ask.setText("")
 
     def ApplyChanges(self, rates):
-        global value
-        print("value: " + str(value))
         Ask = "$ " + str(rates.getAsk())
         Bid = "$ " + str(rates.getBid())
 
-        if value > float(rates.getAsk()):
+        if MyWindow.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NegativeChangeTextColor)
-        if value < float(rates.getAsk()):
+        if MyWindow.value < float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.PositiveChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.PositiveChangeTextColor)
-        if value == float(rates.getAsk()):
+        if MyWindow.value == float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NoChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
         value = float(rates.getAsk())
@@ -588,16 +586,18 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # When user closes the application, loop turns false which results in exiting the thread.
 
     def closeEvent(self, event):
-        global loop
-        loop = False
+        print("closed")
+        self.worker.StopThread()
+
 
 class UpdateRatesContinuously(QObject):
     finished = pyqtSignal()
     values = pyqtSignal(object)
     error = pyqtSignal()
 
-    def __init__(self, Purity, Unit, Currency,TimeFreq):
+    def __init__(self, Purity, Unit, Currency, TimeFreq):
         super(UpdateRatesContinuously, self).__init__()
+        self.isRunning = True
         self.Purity = Purity
         self.Unit = Unit
         self.Currency = Currency
@@ -611,12 +611,17 @@ class UpdateRatesContinuously(QObject):
             except:
                 self.error.emit()
             for i in range(self.TimeFreq):
+                if not self.isRunning:
+                    return
                 time.sleep(1)
                 print("working")
-                global Change
-                if Change:
-                    Change = not Change
-                    break
+                # global Change
+                # if Change:
+                #     Change = not Change
+                #     break
+
+    def StopThread(self):
+        self.isRunning = False
 
 
 if __name__ == "__main__":
