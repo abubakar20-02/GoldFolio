@@ -542,7 +542,6 @@ class Ui_MainWindow(QObject):
 
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-    value = 0
 
     def __init__(self):
         print("init")
@@ -570,16 +569,16 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Ask = "$ " + str(rates.getAsk())
         Bid = "$ " + str(rates.getBid())
 
-        if MyWindow.value > float(rates.getAsk()):
+        if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NegativeChangeTextColor)
-        if MyWindow.value < float(rates.getAsk()):
+        if self.value < float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.PositiveChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.PositiveChangeTextColor)
-        if MyWindow.value == float(rates.getAsk()):
+        if self.value == float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NoChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
-        value = float(rates.getAsk())
+        self.value = float(rates.getAsk())
         self.Ask.setText(Ask)
         self.Bid.setText(Bid)
 
@@ -608,8 +607,10 @@ class UpdateRatesContinuously(QObject):
             try:
                 rates = Gold(self.Purity, self.Unit, self.Currency)
                 self.values.emit(rates)
+                print("emitted")
             except:
                 self.error.emit()
+            print(f"time freq: {self.TimeFreq}")
             for i in range(self.TimeFreq):
                 if not self.isRunning:
                     return
