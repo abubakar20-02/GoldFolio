@@ -274,11 +274,10 @@ class Ui_MainWindow(QObject):
 
         self.getUserData()
         self.AddCashButton.clicked.connect(lambda: self.addCash())
-        self.LogOutButton.clicked.connect(lambda:self.LogOut())
+        self.LogOutButton.clicked.connect(lambda: self.LogOut())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -587,8 +586,6 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Ask = "$ " + str(rates.getAsk())
         Bid = "$ " + str(rates.getBid())
 
-        self.value = float(rates.getAsk())
-
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NegativeChangeTextColor)
@@ -600,6 +597,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
         self.Ask.setText(Ask)
         self.Bid.setText(Bid)
+        self.value = float(rates.getAsk())
 
         # When user closes the application, loop turns false which results in exiting the thread.
 
@@ -634,7 +632,7 @@ class UpdateRatesContinuously(QObject):
                 if not self.isRunning:
                     return
                 time.sleep(1)
-                print("working")
+                #print("working")
                 # global Change
                 # if Change:
                 #     Change = not Change

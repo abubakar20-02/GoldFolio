@@ -165,8 +165,9 @@ class Ui_Form(QObject):
             timedelta1 = 1826
 
         if self.PresetComboBox.currentIndex() != 4:
-            print(f"today {today} end {today - timedelta(days=timedelta1)}")
             self.loadDataFromTable(StartDate=today - timedelta(days=timedelta1), EndDate=today)
+            self.MoneyLog.Overall("Change", today - timedelta(days=timedelta1), today)
+            print("work")
 
     def checkRadioButton(self):
         if self.radioButton.isChecked():
