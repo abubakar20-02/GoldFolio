@@ -141,6 +141,7 @@ class Ui_Form(QObject):
         EndDate = self.EndDate.date().toPyDate()
 
         self.loadDataFromTable(StartDate=StartDate, EndDate=EndDate)
+        self.MoneyLog.Overall("Change", StartDate=StartDate, EndDate=EndDate)
 
         print(type(self.StartDate.date().getDate()))
 
@@ -166,7 +167,7 @@ class Ui_Form(QObject):
 
         if self.PresetComboBox.currentIndex() != 4:
             self.loadDataFromTable(StartDate=today - timedelta(days=timedelta1), EndDate=today)
-            self.MoneyLog.Overall("Change", today - timedelta(days=timedelta1), today)
+            self.MoneyLog.Overall("Change", StartDate=today - timedelta(days=timedelta1), EndDate=today)
             print("work")
 
     def checkRadioButton(self):
@@ -176,6 +177,8 @@ class Ui_Form(QObject):
         else:
             self.loadDataFromTable()
             self.EnableDates(False)
+            self.MoneyLog.Overall("Change")
+
 
     def EnableDates(self, Bool):
         self.StartDate.setEnabled(Bool)
