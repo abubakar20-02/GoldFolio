@@ -1,7 +1,7 @@
 # create UserArchive function that can convert excel file to db.
 import sqlite3
 import uuid
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import pandas as pd
 
@@ -575,5 +575,180 @@ class Log:
                 self.conn.close()
                 return df
 
+        def getMinMaxDates(self):
+            self.__SetUpConnection()
+            self.c.execute("SELECT MIN(Date_Added),Max(Date_Added) FROM Money")
+            results = self.c.fetchone()
+            self.conn.close()
+            return results
+
         def convertToExcel(self):
             DBFunctions.convertToExcel("Money", SetUpFile.DBLog)
+
+        def Overall(self, Column, StartDate=None, EndDate=None):
+            if StartDate is None and EndDate is None:
+                StartDate, EndDate = self.getMinMaxDates()
+                StartDate = datetime.strptime(StartDate, '%Y-%m-%d').date()
+                EndDate = datetime.strptime(EndDate, '%Y-%m-%d').date()
+
+            self.__SetUpConnection()
+            delta = abs(EndDate - StartDate)
+            if delta >= timedelta(days=366):
+                return self.Yearly(Column, Start=StartDate, End=EndDate)
+                # generate yearly
+                print("years")
+            elif delta <= timedelta(days=31):
+                return self.Daily(Column, Start=StartDate, End=EndDate)
+                # generate single
+                print("single")
+            else:
+                return self.Monthly(Column, Start=StartDate, End=EndDate)
+                # generate monthly
+                print("months")
+            self.conn.close()
+
+        def generate_monthly_dict(self, start_date, end_date):
+            result = {}
+            current_date = start_date.replace(day=1)
+            while current_date <= end_date:
+                result[current_date.strftime('%Y-%m')] = 0
+                current_date += timedelta(days=32)
+                current_date = current_date.replace(day=1)
+            print(result)
+            return result
+
+        def generate_yearly_dict(self, start_date, end_date):
+            result = {}
+            for year in range(start_date.year, end_date.year + 1):
+                result[year] = 0
+            print(result)
+            return result
+
+        def generate_daily_dict(self, start_date, end_date):
+            result = {}
+            date = start_date
+            while date <= end_date:
+                result[date] = 0
+                date += timedelta(days=1)
+            return result
+
+        def Yearly(self, ColumnName, Start=None, End=None):
+            self.__SetUpConnection()
+            sql = (
+                "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Money WHERE User_ID=?").format(
+                ColumnName)
+            if Start:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
+
+            if End:
+                sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
+
+            sql += f"GROUP BY year"
+
+            if Start and End:
+                yearlydict = self.generate_yearly_dict(Start, End)
+
+            print(sql)
+
+            self.c.execute(sql, (self.Profile,))
+
+            total = 0
+            for rows in self.c.fetchall():
+                year, sum = rows
+                total = total + sum
+                print(type(year))
+                yearlydict[datetime.strptime(year, '%Y').year] = total
+
+            print("----")
+            print(yearlydict)
+            print("----")
+
+            self.conn.close()
+            return yearlydict
+
+        def Monthly(self, ColumnName, Start=None, End=None):
+            self.__SetUpConnection()
+            # might need to include trade cost too
+            sql = (
+                "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Money WHERE User_ID=?").format(
+                ColumnName)
+            if Start:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
+
+            if End:
+                sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
+
+            sql += f"GROUP BY month"
+
+            print(sql)
+
+            if Start and End:
+                monthlydict = self.generate_monthly_dict(Start, End)
+
+            print(sql)
+
+            self.c.execute(sql, (self.Profile,))
+            total = 0
+            for rows in self.c.fetchall():
+                print("hmm")
+                print(rows)
+                month, sum = rows
+                total = total + sum
+                monthlydict[month] = total
+
+            print("----")
+            print(monthlydict)
+            print("----")
+
+            self.conn.close()
+            return monthlydict
+
+        def Daily(self, ColumnName, Start=None, End=None):
+            sql = "SELECT SUM({0}) FROM Money WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
+
+            sql1 = "SELECT DISTINCT Date_Added FROM Money WHERE User_ID = ?"
+
+            if Start:
+                # idk why I have to do this.
+                StartDate = Start - timedelta(days=1)
+                sql1 += f" AND Date_Added >= '{StartDate}'"
+
+            if End:
+                sql1 += f" AND Date_Added <= '{End}'"
+
+            sql1 += f" ORDER BY Date_Added ASC"
+
+            # execute SQL query to get all dates
+            self.c.execute(sql1, (self.Profile,))
+
+            dictionary = self.generate_daily_dict(Start, End)
+            dates = []
+            date = Start
+            while date <= End:
+                dates.append(date)
+                date += timedelta(days=1)
+
+            # loop through dates and print the sum of values for each date
+            sum = 0
+            for date in dates:
+                # format_str = '%Y-%m-%d'
+                # date = datetime.strptime(date, format_str)
+                self.c.execute(sql, (date, self.Profile))
+                sum_of_values = self.c.fetchone()[0]
+                if sum_of_values is None:
+                    sum_of_values = 0
+                sum += sum_of_values
+                dictionary[date] = sum
+                # if Mode is None:
+                # dictionary[date] = sum_of_values
+                # else:
+                #     dictionary[date] = sum
+
+            # close database connection
+            self.conn.close()
+            print("----")
+            print(dictionary)
+            print("----")
+            return dictionary
