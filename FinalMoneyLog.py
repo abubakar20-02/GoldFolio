@@ -246,7 +246,8 @@ class Ui_Form(QObject):
             #     self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
             #     date_format = mdates.DateFormatter('%Y-%m-%d')
             #     self.canvas.axes.xaxis.set_major_formatter(date_format)
-
+            else:
+                self.canvas.axes.xaxis.set_major_locator(ticker.MultipleLocator(3))
             self.canvas.draw()
 
     def check_date_format(self,date_str):
