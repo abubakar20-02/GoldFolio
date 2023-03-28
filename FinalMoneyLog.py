@@ -11,9 +11,9 @@ from datetime import timedelta, datetime
 from datetime import date
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QDate, QObject
+from PyQt5.QtCore import QDate, QObject, Qt
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QTableWidget, QAbstractItemView
 from Database import Log
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -103,7 +103,8 @@ class Ui_Form(QObject):
         self.tableWidget = QtWidgets.QTableWidget(Form)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
         self.verticalLayout.addWidget(self.tableWidget)
         self.horizontalLayout_10.addLayout(self.verticalLayout)
         self.horizontalLayout_9.addLayout(self.horizontalLayout_10)
@@ -205,7 +206,10 @@ class Ui_Form(QObject):
         for row in range(len(dataframe)):
             for column in range(len(dataframe.columns)):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
+                print(item.text())
                 # Set the color based on the value
+                if item.text() == "None":
+                    item = QTableWidgetItem(str("-"))
                 if column == len(dataframe.columns) - 2:
                     if dataframe.iloc[row, column] == 0:
                         item.setForeground(QColor('black'))
@@ -213,6 +217,7 @@ class Ui_Form(QObject):
                         item.setForeground(QColor('green'))
                     if dataframe.iloc[row, column] < 0:
                         item.setForeground(QColor('red'))
+                item.setTextAlignment(Qt.AlignCenter)
                 table_widget.setItem(row, column, item)
 
     def line(self, ValueSelect="Change", StartDate=None, EndDate=None):
