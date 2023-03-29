@@ -14,6 +14,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+import FinalAddInvestment
 import FinalAddMoney
 import FinalMoneyLog
 import FinalStatement
@@ -277,6 +278,7 @@ class Ui_MainWindow(QObject):
         self.getUserData()
         self.AddCashButton.clicked.connect(lambda: self.addCash())
         self.LogOutButton.clicked.connect(lambda: self.LogOut())
+        self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -313,6 +315,14 @@ class Ui_MainWindow(QObject):
         self.actionCash.setText(_translate("MainWindow", "Cash "))
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
+
+    def openBuyInvestment(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalAddInvestment.MyWindow()
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
+        self.window.Add.clicked.connect(self.window.close)
+        self.window.Add.clicked.connect(self.updateTable)
+        self.window.show()
 
     def LogOut(self):
         os.remove("my_variable.pickle")
@@ -567,7 +577,7 @@ class UpdateRatesContinuously(QObject):
                 if not self.isRunning:
                     return
                 time.sleep(1)
-                #print("working")
+                # print("working")
                 # global Change
                 # if Change:
                 #     Change = not Change
