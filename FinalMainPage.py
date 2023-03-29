@@ -17,11 +17,12 @@ import pandas as pd
 import FinalAddInvestment
 import FinalAddMoney
 import FinalMoneyLog
+import FinalSellScreen
 import FinalStatement
 import SetupFile
 from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, QDate, QObject, pyqtSignal, QThread
+from PyQt5.QtCore import QTimer, QDate, QObject, pyqtSignal, QThread, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QTableWidget
 
@@ -279,6 +280,7 @@ class Ui_MainWindow(QObject):
         self.AddCashButton.clicked.connect(lambda: self.addCash())
         self.LogOutButton.clicked.connect(lambda: self.LogOut())
         self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())
+        self.SellButton.clicked.connect(lambda: self.openSell())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -322,6 +324,7 @@ class Ui_MainWindow(QObject):
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
         self.window.Add.clicked.connect(self.window.close)
         self.window.Add.clicked.connect(self.updateTable)
+        self.window.Add.clicked.connect(self.getUserData)
         self.window.show()
 
     def LogOut(self):
@@ -401,6 +404,68 @@ class Ui_MainWindow(QObject):
                         item.setForeground(QColor('red'))
                 table_widget.setItem(row, column, item)
 
+    def openSell(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalSellScreen.MyWindow()
+        self.window.show()
+        self.window.Sell.clicked.connect(
+            lambda: self.getTransactionID(self.window.Rate.value(), self.window.Date.date().toPyDate()))
+        self.window.Sell.clicked.connect(self.updateTable)
+        self.window.Sell.clicked.connect(self.window.close)
+        self.window.Sell.clicked.connect(self.getUserData)
+
+    def getTransactionID(self, Rate=None, Date=None):
+        if Rate == "":
+            Rate = None
+        else:
+            Rate = float(Rate)
+        # could be better.
+        # assigned transaction id 5 times.
+        selected_rows = self.tableWidget.selectedItems()
+        id = []
+        column_index = 0
+        for item in selected_rows:
+            row = item.row()
+            # Get the QTableWidgetItem for the cell in the specified row and column
+            item = self.tableWidget.item(row, column_index)
+
+            # Retrieve the data from the QTableWidgetItem
+            data = item.data(Qt.DisplayRole)
+            id.append(data)
+        uniqueID = list(set(id))
+        self.Investment.sell(uniqueID, Rate=Rate, Date=Date)
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+        self.updateTable()
+
+    # def sellAll(self):
+    #     startdate = enddate = None
+    #     if self.radioButton.isChecked():
+    #         startdate = self.StartDate.date().toPyDate()
+    #         enddate = self.EndDate.date().toPyDate()
+    #     self.window = QtWidgets.QMainWindow()
+    #     self.window = sellRate.MyWindow()
+    #     self.window.show()
+    #     self.window.pushButton.clicked.connect(lambda: self.Investment.sellAll(Rate=float(self.window.Rate.text()),
+    #                                                                            Date=self.window.Date.date().toPyDate(),
+    #                                                                            StartDate=startdate, EndDate=enddate))
+    #     self.window.pushButton.clicked.connect(self.updateTable)
+    #     self.window.pushButton.clicked.connect(self.window.close)
+    #
+    # def sellProfit(self):
+    #     startdate = enddate = None
+    #     if self.radioButton.isChecked():
+    #         startdate = self.StartDate.date().toPyDate()
+    #         enddate = self.EndDate.date().toPyDate()
+    #     self.window = QtWidgets.QMainWindow()
+    #     self.window = sellRate.MyWindow()
+    #     self.window.show()
+    #     self.window.pushButton.clicked.connect(
+    #         lambda: self.Investment.sellProfit(Rate=float(self.window.Rate.text()),
+    #                                            Date=self.window.Date.date().toPyDate(), StartDate=startdate,
+    #                                            EndDate=enddate, ProfitMargin=self.ProfitMargin))
+    #     self.window.pushButton.clicked.connect(self.updateTable)
+    #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
         with open("Settings.pickle", "rb") as f:
             self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
