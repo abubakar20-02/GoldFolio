@@ -7,6 +7,8 @@ import pandas as pd
 
 from Database import DB_Code, DBFunctions, SetUpFile
 
+dp = 1
+
 
 class Log:
     def __init__(self):
@@ -462,13 +464,15 @@ class Log:
 
         def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None, TradeCost=None):
             self.__SetUpConnection()
+            if TradeCost is None:
+                TradeCost = 0
             if Transaction_ID is None:
                 Transaction_ID = str(uuid.uuid4())
             self.c.execute('''
                   INSERT INTO Money (Transaction_ID,User_ID,ActionType,Change,TradeCost)
                         VALUES 
                         (?,?,?,?,?)
-                  ''', (Transaction_ID, User_ID, ActionType, Change, TradeCost))
+                  ''', (Transaction_ID, User_ID, ActionType, round(Change, dp), round(TradeCost, dp)))
             self.conn.commit()
             self.conn.close()
 
@@ -635,7 +639,7 @@ class Log:
         def Yearly(self, ColumnName, Start=None, End=None):
             self.__SetUpConnection()
             sql = (
-                "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Money WHERE User_ID=?").format(
+                "SELECT strftime('%Y', Date_Added) AS year, SUM({0} + TradeCost) AS total_value FROM Money WHERE User_ID=?").format(
                 ColumnName)
             if Start:
                 # idk why I have to do this.
@@ -671,7 +675,7 @@ class Log:
             self.__SetUpConnection()
             # might need to include trade cost too
             sql = (
-                "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Money WHERE User_ID=?").format(
+                "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0} + TradeCost) AS total_value FROM Money WHERE User_ID=?").format(
                 ColumnName)
             if Start:
                 # idk why I have to do this.
@@ -706,7 +710,7 @@ class Log:
             return monthlydict
 
         def Daily(self, ColumnName, Start=None, End=None):
-            sql = "SELECT SUM({0}) FROM Money WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
+            sql = "SELECT SUM({0} + TradeCost) FROM Money WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
 
             sql1 = "SELECT DISTINCT Date_Added FROM Money WHERE User_ID = ?"
 

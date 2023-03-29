@@ -68,6 +68,8 @@ if __name__ == "__main__":
     time.sleep(1)
     Investment.sellAll(Rate=10)
     time.sleep(1)
+    Investment.setProfile("ma")
+    Investment.sellAll(Rate=10)
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)

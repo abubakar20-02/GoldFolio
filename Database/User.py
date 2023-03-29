@@ -9,6 +9,8 @@ from Database import DB_Code, DBFunctions, SetUpFile, Archive
 from Database.Investment import Investment
 from Database.Log import Log
 
+dp = 1
+
 
 def generateTransactionID():
     return str(uuid.uuid4())
@@ -251,7 +253,7 @@ class User:
         else:
             Money = 0
         self.conn.close()
-        return Money
+        return round(Money, 1)
 
     def getName(self):
         self.__SetUpConnection()
