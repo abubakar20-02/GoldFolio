@@ -24,8 +24,8 @@ import matplotlib.ticker as ticker
 
 class MplCanvas(FigureCanvas):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
+    def __init__(self, parent=None, height=4, dpi=100):
+        fig = Figure(figsize=(height, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
 
@@ -108,8 +108,9 @@ class Ui_Form(QObject):
         self.verticalLayout.addWidget(self.tableWidget)
         self.horizontalLayout_10.addLayout(self.verticalLayout)
         self.horizontalLayout_9.addLayout(self.horizontalLayout_10)
-        self.canvas = MplCanvas(self, width=650, height=650, dpi=100)
+        self.canvas = MplCanvas(self, height=650, dpi=100)
         self.canvas.setMinimumSize(QtCore.QSize(650, 650))
+        self.canvas.setMaximumSize(QtCore.QSize(900, 900))
         self.canvas.setObjectName("canvas")
         self.horizontalLayout_9.addWidget(self.canvas)
         self.verticalLayout_2.addLayout(self.horizontalLayout_9)
@@ -169,7 +170,7 @@ class Ui_Form(QObject):
         if self.PresetComboBox.currentIndex() != 4:
             self.loadDataFromTable(StartDate=today - timedelta(days=timedelta1), EndDate=today)
             # self.MoneyLog.Overall("Change", StartDate=today - timedelta(days=timedelta1), EndDate=today)
-            self.line("Value_Change",StartDate=today - timedelta(days=timedelta1), EndDate=today)
+            self.line("Value_Change", StartDate=today - timedelta(days=timedelta1), EndDate=today)
             self.canvas.draw()
             print("work")
 
@@ -208,7 +209,7 @@ class Ui_Form(QObject):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 print(item.text())
                 # Set the color based on the value
-                if item.text() =="0.0":
+                if item.text() == "0.0":
                     item = QTableWidgetItem(str("-"))
                 if column == len(dataframe.columns) - 1 or column == len(dataframe.columns) - 2:
                     if dataframe.iloc[row, column] == 0:
