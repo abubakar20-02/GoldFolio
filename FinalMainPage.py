@@ -405,20 +405,24 @@ class Ui_MainWindow(QObject):
                 table_widget.setItem(row, column, item)
 
     def openSell(self):
+        if self.StartDate.isEnabled():
+            StartDate = self.StartDate.date().toPyDate()
+            EndDate = self.EndDate.date().toPyDate()
+        else:
+            StartDate = None
+            EndDate = None
         self.window = QtWidgets.QWidget()
         self.window = FinalSellScreen.MyWindow()
         self.window.show()
         self.window.Sell.clicked.connect(
-            lambda: self.getTransactionID(self.window.Rate.value(), self.window.Date.date().toPyDate()))
+            lambda: self.window.Sell1(self.UserID, Rate=float(self.Gold.getBid()),
+                                      SellDate=self.window.Date.date().toPyDate(),
+                                      TransactionIDs=self.getTransactionID(), StartDate=StartDate, EndDate=EndDate))
         self.window.Sell.clicked.connect(self.updateTable)
         self.window.Sell.clicked.connect(self.window.close)
         self.window.Sell.clicked.connect(self.getUserData)
 
-    def getTransactionID(self, Rate=None, Date=None):
-        if Rate == "":
-            Rate = None
-        else:
-            Rate = float(Rate)
+    def getTransactionID(self):
         # could be better.
         # assigned transaction id 5 times.
         selected_rows = self.tableWidget.selectedItems()
@@ -433,10 +437,12 @@ class Ui_MainWindow(QObject):
             data = item.data(Qt.DisplayRole)
             id.append(data)
         uniqueID = list(set(id))
-        self.Investment.sell(uniqueID, Rate=Rate, Date=Date)
-        self.tableWidget.clearContents()
-        self.tableWidget.setRowCount(0)
-        self.updateTable()
+        return uniqueID
+
+        # self.Investment.sell(uniqueID, Rate=Rate, Date=Date)
+        # self.tableWidget.clearContents()
+        # self.tableWidget.setRowCount(0)
+        # self.updateTable()
 
     # def sellAll(self):
     #     startdate = enddate = None

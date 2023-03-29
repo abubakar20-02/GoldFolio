@@ -100,7 +100,7 @@ class Ui_Form(QObject):
         print(BoughtFor)
         print(UserID)
         self.Investment.setProfile(UserID)
-        self.Investment.insertIntoTable(Gold, "0", BoughtFor, Date=date)
+        self.Investment.insertIntoTable(Gold, 1, BoughtFor, Date=date)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
