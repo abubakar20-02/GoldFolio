@@ -16,6 +16,7 @@ import pandas as pd
 
 import FinalAddMoney
 import FinalMoneyLog
+import FinalStatement
 import SetupFile
 from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -251,6 +252,7 @@ class Ui_MainWindow(QObject):
 
         self.actionInvestment = QtWidgets.QAction(MainWindow)
         self.actionInvestment.setObjectName("actionInvestment")
+        self.actionInvestment.triggered.connect(self.openStatement)
         self.actionGraphs = QtWidgets.QAction(MainWindow)
         self.actionGraphs.setObjectName("actionGraphs")
         self.menuFile.addAction(self.actionSave)
@@ -319,6 +321,11 @@ class Ui_MainWindow(QObject):
     def openMoneyLog(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalMoneyLog.MyWindow()
+        self.window.show()
+
+    def openStatement(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalStatement.MyWindow()
         self.window.show()
 
     def addCash(self):
@@ -413,78 +420,6 @@ class Ui_MainWindow(QObject):
 
     def line(self, Mode="Month", ValueSelect="Gold", StartDate=None, EndDate=None):
         self.canvas.axes.clear()
-        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
-        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-        from Database.Statement import Statement
-        Statement = Statement()
-
-        if StartDate is not None and EndDate is not None:
-            data = Statement.Overall(ValueSelect, StartDate, EndDate)
-            x = list(data.keys())
-            # xv = range(0,len(x))
-            y = list(data.values())
-            print(x)
-            print(y)
-            self.canvas.axes.plot(x, y, '-o')
-            self.canvas.axes.grid(True)
-            self.canvas.axes.set_xlabel('Date')
-            self.canvas.axes.set_ylabel(ValueSelect)
-
-            # # Format the x-axis ticks as dates
-            if Mode in ("Week", "2Week", "Month"):
-                date_format = mdates.DateFormatter('%Y-%m-%d')
-                self.canvas.axes.xaxis.set_major_formatter(date_format)
-                self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
-            self.canvas.draw()
-            return
-
-        # self.cursor = mplcursors.cursor(self.canvas.axes, hover=True)
-        # self.cursor.connect("add", lambda sel: sel.annotation.set_text(
-        #     f"{sel.artist.get_xdata()[sel.target.index]:.2f}, {sel.artist.get_ydata()[sel.target.index]:.2f}"))
-        if Mode == "Year":
-            print(datetime.now().year)
-            data = Statement.trial(ValueSelect, Start=datetime(datetime.now().year, 1, 1),
-                                   End=datetime(datetime.now().year, 12, 31))
-            print("year")
-        if Mode == "5Years":
-            data = Statement.trial1(ValueSelect, Start=datetime(datetime.now().year - 5, 1, 1),
-                                    End=datetime(datetime.now().year, 12, 31))
-        if Mode in ("Week", "2Week", "Month"):
-            data = Statement.traverse_all_dates(ValueSelect, Preset=Mode, Mode=1)
-        x = list(data.keys())
-        # xv = range(0,len(x))
-        y = list(data.values())
-        print(x)
-        print(y)
-        ########################
-        #
-        # Define the format of the date string
-        # format_str = '%Y-%m-%d'
-        # # Convert each dictionary key to a datetime object
-        # for key in data:
-        #     datetime_obj = datetime.datetime.strptime(key, format_str)
-        #     data[datetime_obj] = data.pop(key)
-        # print(data)
-        # x = [datetime.datetime(2022, 1, 1, 0, 0),
-        #      datetime.datetime(2022, 1, 2, 0, 0),
-        #      datetime.datetime(2022, 1, 3, 0, 0),
-        #      datetime.datetime(2022, 1, 4, 0, 0),
-        #      datetime.datetime(2022, 1, 5, 0, 0)]
-        if Mode in ("Week", "2Week", "Month"):
-            self.canvas.axes.set_xticks(x)
-            self.canvas.axes.set_xticklabels(x, rotation=45)
-            # x = [1, 2, 3, 4, 5]
-            # y = [1850, 1800, 1900, 1950, 1750]
-        self.canvas.axes.plot(x, y, '-o')
-        self.canvas.axes.grid(True)
-        self.canvas.axes.set_xlabel('Date')
-        self.canvas.axes.set_ylabel(ValueSelect)
-
-        # # Format the x-axis ticks as dates
-        if Mode in ("Week", "2Week", "Month"):
-            self.canvas.axes.xaxis.set_major_locator(mdates.DayLocator())
-            date_format = mdates.DateFormatter('%Y-%m-%d')
-            self.canvas.axes.xaxis.set_major_formatter(date_format)
         self.canvas.draw()
 
     # def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):

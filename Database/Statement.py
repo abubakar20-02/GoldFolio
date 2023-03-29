@@ -210,160 +210,6 @@ class Statement:
     def convertToExcel(self):
         DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
 
-    def traverse_all_dates(self, ColumnName, StartDate=None, EndDate=None, Preset=None, Mode=None):
-        # connect to database
-        dictionary = {}
-        self.__SetUpConnection()
-        # idk why substract 2
-
-        if Preset == "Month":
-            EndDate = datetime.now().date()
-            StartDate = EndDate - timedelta(
-                days=(calendar.monthrange(datetime.now().year, datetime.now().month)[1]) - 2)
-        if Preset == "Week":
-            EndDate = datetime.now().date()
-            StartDate = EndDate - timedelta(days=5)
-        if Preset == "2Week":
-            EndDate = datetime.now().date()
-            StartDate = EndDate - timedelta(days=12)
-
-        sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ?".format(ColumnName)
-
-        sql1 = "SELECT DISTINCT Date_Added FROM Statement WHERE 1=1"
-
-        if StartDate:
-            # idk why I have to do this.
-            StartDate = StartDate - timedelta(days=1)
-            sql1 += f" AND Date_Added >= '{StartDate}'"
-
-        if EndDate:
-            sql1 += f" AND Date_Added <= '{EndDate}'"
-
-        sql1 += f" ORDER BY Date_Added ASC"
-
-        print(sql1)
-
-        # execute SQL query to get all dates
-        self.c.execute(sql1)
-        if Mode is None:
-            if StartDate and EndDate:
-                date = StartDate
-                while date <= EndDate:
-                    dictionary[date] = 0
-                    date += timedelta(days=1)
-
-        dates = []
-        date = StartDate
-        while date <= EndDate:
-            dates.append(date)
-            date += timedelta(days=1)
-
-        print(dates)
-        # loop through dates and print the sum of values for each date
-        sum = 0
-        for date in dates:
-            # format_str = '%Y-%m-%d'
-            # date = datetime.strptime(date, format_str)
-            self.c.execute(sql, (date,))
-            sum_of_values = self.c.fetchone()[0]
-            if sum_of_values is None:
-                sum_of_values = 0
-            sum += sum_of_values
-            if Mode is None:
-                dictionary[date] = sum_of_values
-            else:
-                dictionary[date] = sum
-
-        # close database connection
-        self.conn.close()
-        return dictionary
-
-    def trial(self, ColumnName, Start=None, End=None):
-        self.__SetUpConnection()
-        sql = (
-            "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Statement WHERE 1=1").format(
-            ColumnName)
-        if Start:
-            # idk why I have to do this.
-            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m')}'"
-
-        if End:
-            sql += f" AND Date_Added <= '{End.strftime('%Y-%m')}'"
-
-        sql += f"GROUP BY month"
-
-        if Start and End:
-            monthlydict = self.generate_monthly_dict(Start, End)
-
-        print(sql)
-
-        self.c.execute(sql)
-
-        for rows in self.c.fetchall():
-            month, sum = rows
-            monthlydict[month] = sum
-
-        print("----")
-        print(monthlydict)
-        print("----")
-
-        self.conn.close()
-        return monthlydict
-
-    def trial1(self, ColumnName, Start=None, End=None):
-        self.__SetUpConnection()
-        sql = (
-            "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Statement WHERE 1=1").format(
-            ColumnName)
-        if Start:
-            # idk why I have to do this.
-            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
-
-        if End:
-            sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
-
-        sql += f"GROUP BY year"
-
-        if Start and End:
-            yearlydict = self.generate_yearly_dict(Start, End)
-
-        print(sql)
-
-        self.c.execute(sql)
-
-        for rows in self.c.fetchall():
-            year, sum = rows
-            print(type(year))
-            yearlydict[datetime.strptime(year, '%Y').year] = sum
-
-        print("----")
-        print(yearlydict)
-        print("----")
-
-        self.conn.close()
-        return yearlydict
-
-    def generate_monthly_dict(self, start_date, end_date):
-        result = {}
-        current_date = start_date.replace(day=1)
-        while current_date <= end_date:
-            result[current_date.strftime('%Y-%m')] = 0
-            current_date += timedelta(days=32)
-            current_date = current_date.replace(day=1)
-        print(result)
-        return result
-
-    def generate_yearly_dict(self, start_date, end_date):
-        result = {}
-        for year in range(start_date.year, end_date.year + 1):
-            result[year] = 0
-        print(result)
-        return result
-
-    def add_to_dict(self, dictionary, key, value):
-        dictionary[key] = value
-        return dictionary
-
     def addtoTable(self, Values):
         print(Values)
         self.__SetUpConnection()
@@ -394,19 +240,179 @@ class Statement:
             self.conn.close()
             return df
 
-    def Overall(self, Column, StartDate, EndDate):
-        delta = abs(EndDate - StartDate)
-        if StartDate.month == EndDate.month:
-            if delta > timedelta(days=14):
-                print("month")
-            elif delta > timedelta(days=7):
-                print("2 weeks")
-            else:
-                print("week")
-        elif StartDate.year == EndDate.year:
-            print("year")
-        else:
-            print("5 years")
+    def getMinMaxDates(self):
+        self.__SetUpConnection()
+        self.c.execute("SELECT MIN(Date_Added),Max(Date_Added) FROM Statement")
+        results = self.c.fetchone()
+        self.conn.close()
+        return results
 
-        # if days less than 31 then set using days
-        # else use Monthly until gap is more than a year
+    def Overall(self, Column, StartDate=None, EndDate=None):
+        if StartDate is None and EndDate is None:
+            StartDate, EndDate = self.getMinMaxDates()
+            if StartDate is None and EndDate is None:
+                return None
+            StartDate = datetime.strptime(StartDate, '%Y-%m-%d').date()
+            EndDate = datetime.strptime(EndDate, '%Y-%m-%d').date()
+
+        self.__SetUpConnection()
+        delta = abs(EndDate - StartDate)
+        if delta >= timedelta(days=366):
+            return self.Yearly(Column, Start=StartDate, End=EndDate)
+            # generate yearly
+            print("years")
+        elif delta <= timedelta(days=31):
+            return self.Daily(Column, Start=StartDate, End=EndDate)
+            # generate single
+            print("single")
+        else:
+            return self.Monthly(Column, Start=StartDate, End=EndDate)
+            # generate monthly
+            print("months")
+        self.conn.close()
+
+    def generate_monthly_dict(self, start_date, end_date):
+        result = {}
+        current_date = start_date.replace(day=1)
+        while current_date <= end_date:
+            result[current_date.strftime('%Y-%m')] = 0
+            current_date += timedelta(days=32)
+            current_date = current_date.replace(day=1)
+        print(result)
+        return result
+
+    def generate_yearly_dict(self, start_date, end_date):
+        result = {}
+        for year in range(start_date.year, end_date.year + 1):
+            result[year] = 0
+        print(result)
+        return result
+
+    def generate_daily_dict(self, start_date, end_date):
+        result = {}
+        date = start_date
+        while date <= end_date:
+            result[date] = 0
+            date += timedelta(days=1)
+        return result
+
+    def Yearly(self, ColumnName, Start=None, End=None):
+        self.__SetUpConnection()
+        sql = (
+            "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Statement WHERE User_ID=?").format(
+            ColumnName)
+        if Start:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
+
+        if End:
+            sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
+
+        sql += f"GROUP BY year"
+
+        if Start and End:
+            yearlydict = self.generate_yearly_dict(Start, End)
+
+        print(sql)
+
+        self.c.execute(sql, (self.Profile,))
+
+        total = 0
+        for rows in self.c.fetchall():
+            year, sum = rows
+            total = total + sum
+            print(type(year))
+            yearlydict[datetime.strptime(year, '%Y').year] = total
+
+        print("----")
+        print(yearlydict)
+        print("----")
+
+        self.conn.close()
+        return yearlydict
+
+    def Monthly(self, ColumnName, Start=None, End=None):
+        self.__SetUpConnection()
+        # might need to include trade cost too
+        sql = (
+            "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Statement WHERE User_ID=?").format(
+            ColumnName)
+        if Start:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
+
+        if End:
+            sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
+
+        sql += f"GROUP BY month"
+
+        print(sql)
+
+        if Start and End:
+            monthlydict = self.generate_monthly_dict(Start, End)
+
+        print(sql)
+
+        self.c.execute(sql, (self.Profile,))
+        total = 0
+        for rows in self.c.fetchall():
+            print("hmm")
+            print(rows)
+            month, sum = rows
+            total = total + sum
+            monthlydict[month] = total
+
+        print("----")
+        print(monthlydict)
+        print("----")
+
+        self.conn.close()
+        return monthlydict
+
+    def Daily(self, ColumnName, Start=None, End=None):
+        sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
+
+        sql1 = "SELECT DISTINCT Date_Added FROM Statement WHERE User_ID = ?"
+
+        if Start:
+            # idk why I have to do this.
+            StartDate = Start - timedelta(days=1)
+            sql1 += f" AND Date_Added >= '{StartDate}'"
+
+        if End:
+            sql1 += f" AND Date_Added <= '{End}'"
+
+        sql1 += f" ORDER BY Date_Added ASC"
+
+        # execute SQL query to get all dates
+        self.c.execute(sql1, (self.Profile,))
+
+        dictionary = self.generate_daily_dict(Start, End)
+        dates = []
+        date = Start
+        while date <= End:
+            dates.append(date)
+            date += timedelta(days=1)
+
+        # loop through dates and print the sum of values for each date
+        sum = 0
+        for date in dates:
+            # format_str = '%Y-%m-%d'
+            # date = datetime.strptime(date, format_str)
+            self.c.execute(sql, (date, self.Profile))
+            sum_of_values = self.c.fetchone()[0]
+            if sum_of_values is None:
+                sum_of_values = 0
+            sum += sum_of_values
+            dictionary[date] = sum
+            # if Mode is None:
+            # dictionary[date] = sum_of_values
+            # else:
+            #     dictionary[date] = sum
+
+        # close database connection
+        self.conn.close()
+        print("----")
+        print(dictionary)
+        print("----")
+        return dictionary

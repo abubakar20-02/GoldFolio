@@ -208,7 +208,7 @@ class Ui_Form(QObject):
                 item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 print(item.text())
                 # Set the color based on the value
-                if item.text() == "None":
+                if item.text() =="0.0":
                     item = QTableWidgetItem(str("-"))
                 if column == len(dataframe.columns) - 2:
                     if dataframe.iloc[row, column] == 0:
