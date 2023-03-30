@@ -329,8 +329,6 @@ class Ui_MainWindow(QObject):
         self.window.show()
         self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
 
-
-
     def LogOut(self):
         os.remove("my_variable.pickle")
         self.close()
@@ -479,7 +477,7 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
         self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency = self.UserProfile.GetSettings()
-            # close previous timer and start new one
+        # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
         self.updateTable()
@@ -491,7 +489,7 @@ class Ui_MainWindow(QObject):
 
     def prevStage(self):
         DBFunctions.previousStage(self.UserID)
-        self.loadDataFromTable()
+        self.updateTable(Rate=float(self.Bid.text()))
         self.getUserData()
 
     def getUserData(self):
