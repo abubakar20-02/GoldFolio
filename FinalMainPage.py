@@ -243,7 +243,6 @@ class Ui_MainWindow(QObject):
 
         self.actionSettings = QtWidgets.QAction(MainWindow)
         self.actionSettings.setObjectName("actionSettings")
-        self.actionSettings.triggered.connect(self.openSettings)
 
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
@@ -331,11 +330,6 @@ class Ui_MainWindow(QObject):
         self.window.show()
         self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
 
-    def openSettings(self):
-        self.window = QtWidgets.QWidget()
-        self.window = FinalSettings.MyWindow()
-        self.window.setProfile(self.UserID)
-        self.window.show()
 
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()
@@ -493,8 +487,7 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.updateTable)
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
-        with open("Settings.pickle", "rb") as f:
-            self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
+        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency = self.UserProfile.GetSettings()
             # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
@@ -597,6 +590,11 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.value = 0
         super().__init__()
         self.setupUi(self)
+        self.StartThread()
+
+        self.actionSettings.triggered.connect(self.openSettings)
+
+    def StartThread(self):
         self.my_thread = QThread()
         self.worker = UpdateRatesContinuously("24", "Gram", "USD", self.UpdateFrequency)
         # We're connecting things to the correct spots
@@ -607,8 +605,20 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.finished.connect(self.worker.deleteLater)
         self.worker.values.connect(self.ApplyChanges)
         self.worker.error.connect(self.ClearRates)
-
         self.my_thread.start()
+
+    def openSettings(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalSettings.MyWindow()
+        self.window.setProfile(self.UserID)
+        self.window.SaveButton.clicked.connect(self.loadSettings)
+        self.window.SaveButton.clicked.connect(self.restartThread)
+        self.window.show()
+
+    def restartThread(self):
+        print("restart")
+        self.worker.StopThread()
+        self.StartThread()
 
     def ClearRates(self):
         self.Bid.setText("")
@@ -673,6 +683,7 @@ class UpdateRatesContinuously(QObject):
 
     def StopThread(self):
         self.isRunning = False
+        self.finished.emit()
 
 
 if __name__ == "__main__":
