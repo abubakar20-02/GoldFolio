@@ -18,7 +18,9 @@ import FinalAddInvestment
 import FinalAddMoney
 import FinalMoneyLog
 import FinalSellScreen
+import FinalSettings
 import FinalStatement
+import GoldCalculator
 import SetupFile
 from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -139,8 +141,6 @@ class Ui_MainWindow(QObject):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.updateTable()
         self.tableWidget.setColumnHidden(0, True)
-        self.timer.timeout.connect(self.updateTable)
-        self.timer.start(self.UpdateFrequency * 1000)
 
         self.LeftSideLayout.addWidget(self.tableWidget)
         self.RightSideLayout.addLayout(self.LeftSideLayout)
@@ -239,10 +239,15 @@ class Ui_MainWindow(QObject):
 
         self.actionGold_Calculator = QtWidgets.QAction(MainWindow)
         self.actionGold_Calculator.setObjectName("actionGold_Calculator")
+        self.actionGold_Calculator.triggered.connect(self.openGoldCalculator)
+
         self.actionSettings = QtWidgets.QAction(MainWindow)
         self.actionSettings.setObjectName("actionSettings")
+        self.actionSettings.triggered.connect(self.openSettings)
+
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
+
         self.actionImport_Data = QtWidgets.QAction(MainWindow)
         self.actionImport_Data.setObjectName("actionImport_Data")
         self.actionExport_Data = QtWidgets.QAction(MainWindow)
@@ -255,8 +260,10 @@ class Ui_MainWindow(QObject):
         self.actionInvestment = QtWidgets.QAction(MainWindow)
         self.actionInvestment.setObjectName("actionInvestment")
         self.actionInvestment.triggered.connect(self.openStatement)
+
         self.actionGraphs = QtWidgets.QAction(MainWindow)
         self.actionGraphs.setObjectName("actionGraphs")
+
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionImport_Data)
         self.menuFile.addAction(self.actionExport_Data)
@@ -318,6 +325,17 @@ class Ui_MainWindow(QObject):
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
 
+    def openGoldCalculator(self):
+        self.window = QtWidgets.QWidget()
+        self.window = GoldCalculator.MyWindow()
+        self.window.show()
+        self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
+
+    def openSettings(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalSettings.MyWindow()
+        self.window.show()
+
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
@@ -351,10 +369,11 @@ class Ui_MainWindow(QObject):
         # self.window.AddButton.clicked.connect(self.loadDataFromTable)
         # self.window.AddButton.clicked.connect(self.window.close)
 
-    def updateTable(self):
+    def updateTable(self, Rate=None):
         startDate = endDate = None
-        self.Investment.updateProfitLoss(self.Gold.getAsk())
-        print(self.Gold.getAsk())
+        if Rate is None:
+            Rate = self.Gold.getBid()
+        self.Investment.updateProfitLoss(Rate)
         if self.radioButton.isChecked():
             startDate = self.StartDate.date().toPyDate()
             endDate = self.EndDate.date().toPyDate()
@@ -476,10 +495,6 @@ class Ui_MainWindow(QObject):
         with open("Settings.pickle", "rb") as f:
             self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
             # close previous timer and start new one
-            self.timer = QTimer()
-            self.timer.stop()
-            self.timer.start(self.UpdateFrequency * 1000)
-            self.timer.timeout.connect(self.updateTable)
 
     def updateDateRangeForEndDate(self):
         self.updateTable()
@@ -582,7 +597,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously("24", "Oz", "USD", self.UpdateFrequency)
+        self.worker = UpdateRatesContinuously("24", "Gram", "USD", self.UpdateFrequency)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.
@@ -611,6 +626,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.value == float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NoChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
+        self.updateTable(Rate=rates.getBid())
         self.Ask.setText(Ask)
         self.Bid.setText(Bid)
         self.value = float(rates.getAsk())
