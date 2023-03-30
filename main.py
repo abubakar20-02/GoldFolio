@@ -1,6 +1,8 @@
 import time
 from datetime import datetime
 
+import dateutil.utils
+
 from Database import DBFunctions
 # when selling indv inv doesnt add money.
 # selling one then sell multiple then try to reverse.
@@ -69,7 +71,8 @@ if __name__ == "__main__":
     Investment.sellAll(Rate=10)
     time.sleep(1)
     Investment.setProfile("ma")
-    Investment.sellAll(Rate=10)
+    from datetime import date
+    Investment.sellAll(Rate=10,Date=date.today())
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)

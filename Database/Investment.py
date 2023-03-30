@@ -202,7 +202,7 @@ class Investment:
             ProfitLoss = 0.0
             Value_Change = 0.0
         else:
-            Value_Change = (ProfitLoss/100) * BoughtFor
+            Value_Change = (ProfitLoss / 100) * BoughtFor
         if IgnoreMoney is False:
             from Database import User
             User = User.User()
@@ -230,7 +230,7 @@ class Investment:
     
                             VALUES
                             (?,?,?,?,?,?,?,?)
-                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss,Value_Change))
+                      ''', (Transaction_ID, Date, self.Profile, Gold, Purity, BoughtFor, ProfitLoss, Value_Change))
                 self.conn.commit()
                 self.conn.close()
                 if IgnoreMoney is False:
@@ -303,11 +303,21 @@ class Investment:
         if Investment_ID is not None:
             values = values + (Investment_ID,)
             select += "AND Investment_ID = ?"
-        complete = "UPDATE Investment SET ProfitLoss =({0})".format(select)
+        values = values + (self.Profile,)
+        if Investment_ID is not None:
+            values = values + (Investment_ID,)
+        complete = "UPDATE Investment SET ProfitLoss =({0}) WHERE User_ID =?".format(select)
+        if Investment_ID is not None:
+            complete += "AND Investment_ID = ?"
         # Value = ProfitLoss* Bought For
         print(complete)
         self.c.execute(complete, values)
-        self.c.execute("UPDATE Investment SET VAlue_Change = (ProfitLoss/100)*BoughtFor".format(select))
+        ValueChangeStatement = "UPDATE Investment SET Value_Change = (ProfitLoss/100)*BoughtFor WHERE User_ID =?"
+        ValueChangeValues = (self.Profile,)
+        if Investment_ID is not None:
+            ValueChangeValues += (Investment_ID,)
+            ValueChangeStatement += "AND Investment_ID = ?"
+        self.c.execute(ValueChangeStatement, ValueChangeValues)
         self.conn.commit()
         self.conn.close()
         # self.showTable()
@@ -736,7 +746,7 @@ class Investment:
 
         # Execute the SQL statement and get the results as a pandas DataFrame
         sql = "SELECT Date_Added,Gold,Purity,BoughtFor,ProfitLoss FROM Investment"
-        df = pd.read_sql(sql,self.conn)
+        df = pd.read_sql(sql, self.conn)
 
         # Create a PDF document using the fpdf library
         pdf = MyPDF()
@@ -768,6 +778,7 @@ class Investment:
         # Save the PDF document to a file
         pdf.output("Investment.pdf")
         self.conn.close()
+
 
 class MyPDF(FPDF):
     def footer(self):

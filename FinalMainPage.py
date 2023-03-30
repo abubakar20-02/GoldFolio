@@ -112,7 +112,7 @@ class Ui_MainWindow(QObject):
         self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton.setText("")
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.clicked.connect(self.updateTable)
+        self.radioButton.clicked.connect(lambda: self.updateTable())
         self.DatesLayout.addWidget(self.radioButton)
         self.StartDate_Text = QtWidgets.QLabel(self.centralwidget)
         self.StartDate_Text.setObjectName("StartDate_Text")
@@ -285,7 +285,6 @@ class Ui_MainWindow(QObject):
         self.getUserData()
         self.AddCashButton.clicked.connect(lambda: self.addCash())
         self.LogOutButton.clicked.connect(lambda: self.LogOut())
-        self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())
         self.SellButton.clicked.connect(lambda: self.openSell())
 
         self.retranslateUi(MainWindow)
@@ -331,14 +330,6 @@ class Ui_MainWindow(QObject):
         self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
 
 
-    def openBuyInvestment(self):
-        self.window = QtWidgets.QWidget()
-        self.window = FinalAddInvestment.MyWindow()
-        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
-        self.window.Add.clicked.connect(self.window.close)
-        self.window.Add.clicked.connect(self.updateTable)
-        self.window.Add.clicked.connect(self.getUserData)
-        self.window.show()
 
     def LogOut(self):
         os.remove("my_variable.pickle")
@@ -366,9 +357,9 @@ class Ui_MainWindow(QObject):
 
     def updateTable(self, Rate=None):
         startDate = endDate = None
-        if Rate is None:
-            Rate = self.Gold.getBid()
-        self.Investment.updateProfitLoss(Rate)
+        if Rate is not None:
+            print("update table rate")
+            self.Investment.updateProfitLoss(Rate)
         if self.radioButton.isChecked():
             startDate = self.StartDate.date().toPyDate()
             endDate = self.EndDate.date().toPyDate()
@@ -432,7 +423,7 @@ class Ui_MainWindow(QObject):
             lambda: self.window.Sell1(self.UserID, Rate=float(self.Gold.getBid()),
                                       SellDate=self.window.Date.date().toPyDate(),
                                       TransactionIDs=self.getTransactionID(), StartDate=StartDate, EndDate=EndDate))
-        self.window.Sell.clicked.connect(self.updateTable)
+        self.window.Sell.clicked.connect(lambda: self.updateTable())
         self.window.Sell.clicked.connect(self.window.close)
         self.window.Sell.clicked.connect(self.getUserData)
 
@@ -593,6 +584,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.StartThread()
 
         self.actionSettings.triggered.connect(self.openSettings)
+        self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())
 
     def StartThread(self):
         self.my_thread = QThread()
@@ -615,6 +607,15 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.SaveButton.clicked.connect(self.restartThread)
         self.window.show()
 
+    def openBuyInvestment(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalAddInvestment.MyWindow()
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
+        self.window.Add.clicked.connect(self.window.close)
+        self.window.Add.clicked.connect(lambda: self.updateTable(Rate=float(self.Bid.text())))
+        self.window.Add.clicked.connect(self.getUserData)
+        self.window.show()
+
     def restartThread(self):
         print("restart")
         self.worker.StopThread()
@@ -625,8 +626,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Ask.setText("")
 
     def ApplyChanges(self, rates):
-        Ask = "$ " + str(rates.getAsk())
-        Bid = "$ " + str(rates.getBid())
+        Ask = str(rates.getAsk())
+        Bid = str(rates.getBid())
 
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)
@@ -673,6 +674,7 @@ class UpdateRatesContinuously(QObject):
             print(f"time freq: {self.TimeFreq}")
             for i in range(self.TimeFreq):
                 if not self.isRunning:
+                    self.finished.emit()
                     return
                 time.sleep(1)
                 # print("working")
@@ -683,7 +685,6 @@ class UpdateRatesContinuously(QObject):
 
     def StopThread(self):
         self.isRunning = False
-        self.finished.emit()
 
 
 if __name__ == "__main__":
