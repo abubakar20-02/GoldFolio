@@ -334,6 +334,7 @@ class Ui_MainWindow(QObject):
     def openSettings(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalSettings.MyWindow()
+        self.window.setProfile(self.UserID)
         self.window.show()
 
     def openBuyInvestment(self):

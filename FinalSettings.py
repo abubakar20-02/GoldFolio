@@ -11,10 +11,13 @@ import pickle
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
+from Database import User
 
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
+        self.Profile = None
+        self.User = User.User()
         Form.setObjectName("Form")
         Form.resize(496, 454)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
@@ -62,12 +65,6 @@ class Ui_Form(QObject):
         self.horizontalLayout_4.addWidget(self.SaveButton)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        if os.path.isfile("Settings.pickle"):
-            with open("Settings.pickle", "rb") as f:
-                ProfitMargin, UpdateFreq = pickle.load(f)
-            self.MinimumProfitMargin.setValue(ProfitMargin)
-            self.UpdateFrequency.setValue(UpdateFreq)
-
         self.SaveButton.clicked.connect(self.Save)
 
         self.retranslateUi(Form)
@@ -81,10 +78,18 @@ class Ui_Form(QObject):
         self.MinmumProfitMargin_Text.setText(_translate("Form", "Minimum profit margin : "))
         self.SaveButton.setText(_translate("Form", "Save"))
 
+    def setProfile(self, Profile):
+        self.Profile = Profile
+        self.User.SelectProfile(self.Profile)
+        MinimumProfit, dp, updatefreq = self.User.GetSettings()
+        print(f"MPM {MinimumProfit},dp {dp} , uf {updatefreq}")
+        self.MinimumProfitMargin.setValue(MinimumProfit)
+        self.UpdateFrequency.setValue(updatefreq)
+        self.DecimalPoints.setValue(dp)
+
     def Save(self):
-        #self.DecimalPoints.value()
-        with open("Settings.pickle", "wb") as f:
-            pickle.dump((self.MinimumProfitMargin.value(), self.UpdateFrequency.value()), f)
+        self.User.ChangeSettings(self.MinimumProfitMargin.value(), self.DecimalPoints.value(),
+                                 self.UpdateFrequency.value())
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):

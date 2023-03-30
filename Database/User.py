@@ -115,7 +115,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] REAL NOT NULL DEFAULT 2, [UpdateFrequency] REAL NOT NULL DEFAULT 30)
               ''')
         self.conn.commit()
         self.conn.close()
@@ -323,6 +323,23 @@ class User:
                        , (hash_password(Password), User_ID))
         self.conn.commit()
         self.conn.close()
+
+    def ChangeSettings(self, MinimumProfitMargin, DecimalPoint, UpdateFrequency):
+        self.__SetUpConnection()
+        self.c.execute('''
+        UPDATE User SET MinimumProfitMargin = ?, DecimalPoint=?,UpdateFrequency=?  WHERE User_ID = ?'''
+                       , (MinimumProfitMargin, DecimalPoint, UpdateFrequency, self.Profile))
+        self.conn.commit()
+        self.conn.close()
+
+    def GetSettings(self):
+        self.__SetUpConnection()
+        self.c.execute('''
+        SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency FROM User  WHERE User_ID = ?''', (self.Profile,))
+        values = self.c.fetchone()
+        self.conn.close()
+        print(values)
+        return values
 
     def getTable(self):
         self.__SetUpConnection()
