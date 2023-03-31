@@ -115,7 +115,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] REAL NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] INTEGER NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30)
               ''')
         self.conn.commit()
         self.conn.close()

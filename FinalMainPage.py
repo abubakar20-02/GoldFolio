@@ -394,7 +394,7 @@ class Ui_MainWindow(QObject):
                 if column == 0 or column == 1:
                     item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 else:
-                    item.setData(QtCore.Qt.DisplayRole, float(dataframe.iloc[row, column]))
+                    item.setData(QtCore.Qt.DisplayRole, round(float(dataframe.iloc[row, column]), self.DecimalPoints))
                 # item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 # Set the color based on the value
                 if column == len(dataframe.columns) - 1 or column == len(dataframe.columns) - 2:
@@ -420,7 +420,8 @@ class Ui_MainWindow(QObject):
         self.window.Sell.clicked.connect(
             lambda: self.window.Sell1(self.UserID, Rate=float(self.Gold.getBid()),
                                       SellDate=self.window.Date.date().toPyDate(),
-                                      TransactionIDs=self.getTransactionID(), StartDate=StartDate, EndDate=EndDate))
+                                      TransactionIDs=self.getTransactionID(), StartDate=StartDate, EndDate=EndDate,
+                                      ProfitMargin=self.ProfitMargin))
         self.window.Sell.clicked.connect(lambda: self.updateTable())
         self.window.Sell.clicked.connect(self.window.close)
         self.window.Sell.clicked.connect(self.getUserData)
@@ -493,7 +494,7 @@ class Ui_MainWindow(QObject):
         self.getUserData()
 
     def getUserData(self):
-        self.Cash.setText(str(self.UserProfile.getMoney()))
+        self.Cash.setText(str(round(self.UserProfile.getMoney(), 2)))
         # add function in user to get user name.
         self.User.setText(self.UserProfile.getName())
 
@@ -610,6 +611,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window = FinalAddInvestment.MyWindow()
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
         self.window.Add.clicked.connect(self.window.close)
+        # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=float(self.Bid.text())))
         self.window.Add.clicked.connect(self.getUserData)
         self.window.show()
