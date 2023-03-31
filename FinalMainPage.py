@@ -490,7 +490,8 @@ class Ui_MainWindow(QObject):
 
     def prevStage(self):
         DBFunctions.previousStage(self.UserID)
-        self.updateTable(Rate=float(self.Bid.text()))
+        Gold1 = Gold(24, "Gram", "USD")
+        self.updateTable(Rate=Gold1.getBid())
         self.getUserData()
 
     def getUserData(self):
@@ -612,7 +613,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data
-        self.window.Add.clicked.connect(lambda: self.updateTable(Rate=float(self.Bid.text())))
+        Gold1 = Gold(24, "Gram", "USD")
+        self.window.Add.clicked.connect(lambda: self.updateTable(Rate=Gold1.getBid()))
         self.window.Add.clicked.connect(self.getUserData)
         self.window.show()
 
@@ -638,7 +640,9 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.value == float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NoChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
+        rates.changeUnit("Gram")
         self.updateTable(Rate=rates.getBid())
+        rates.changeUnit(self.GoldUnit)
         self.Ask.setText(Ask)
         self.Bid.setText(Bid)
         self.value = float(rates.getAsk())

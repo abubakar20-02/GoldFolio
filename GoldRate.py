@@ -98,6 +98,9 @@ class Gold:
             Rate = c.GetRateinBHD(Rate)
         return round(Rate, 2)
 
+    def changeUnit(self, Unit):
+        self.Unit = Unit
+
 
 class Curreny:
     def __init__(self):

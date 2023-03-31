@@ -115,7 +115,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] INTEGER NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30)
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] INTEGER NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30,[GoldUnit] VARCHAR NOT NULL DEFAULT "GRAM")
               ''')
         self.conn.commit()
         self.conn.close()
@@ -324,18 +324,18 @@ class User:
         self.conn.commit()
         self.conn.close()
 
-    def ChangeSettings(self, MinimumProfitMargin, DecimalPoint, UpdateFrequency):
+    def ChangeSettings(self, MinimumProfitMargin, DecimalPoint, UpdateFrequency, GoldUnit):
         self.__SetUpConnection()
         self.c.execute('''
-        UPDATE User SET MinimumProfitMargin = ?, DecimalPoint=?,UpdateFrequency=?  WHERE User_ID = ?'''
-                       , (MinimumProfitMargin, DecimalPoint, UpdateFrequency, self.Profile))
+        UPDATE User SET MinimumProfitMargin = ?, DecimalPoint=?,UpdateFrequency=?, GoldUnit=?  WHERE User_ID = ?'''
+                       , (MinimumProfitMargin, DecimalPoint, UpdateFrequency, GoldUnit, self.Profile))
         self.conn.commit()
         self.conn.close()
 
     def GetSettings(self):
         self.__SetUpConnection()
         self.c.execute('''
-        SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency FROM User  WHERE User_ID = ?''', (self.Profile,))
+        SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency,GoldUnit FROM User  WHERE User_ID = ?''', (self.Profile,))
         values = self.c.fetchone()
         self.conn.close()
         print(values)
