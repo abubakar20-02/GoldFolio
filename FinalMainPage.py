@@ -477,7 +477,7 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.updateTable)
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
-        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency = self.UserProfile.GetSettings()
+        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency,self.GoldUnit = self.UserProfile.GetSettings()
         # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
@@ -587,7 +587,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def StartThread(self):
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously("24", "Gram", "USD", self.UpdateFrequency)
+        self.worker = UpdateRatesContinuously("24", self.GoldUnit, "USD", self.UpdateFrequency)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.

@@ -15,7 +15,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QTableWidget, QAbstractItemView
-from Database import Statement,User
+from Database import Statement, User
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
@@ -35,7 +35,7 @@ class Ui_Form(QObject):
     def setupUi(self, Form):
         self.YAxisValue = "Value_Change"
         self.Statement = Statement.Statement()
-        self.UserProfile= User.User()
+        self.UserProfile = User.User()
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
             self.UserProfile.SelectProfile(UserID)
@@ -156,7 +156,7 @@ class Ui_Form(QObject):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def loadSettings(self):
-        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency = self.UserProfile.GetSettings()
+        _, self.DecimalPoints, _, _ = self.UserProfile.GetSettings()
 
     def changeYAxis(self):
         if self.YAxis.currentIndex() == 0:
@@ -245,7 +245,7 @@ class Ui_Form(QObject):
             for column in range(len(dataframe.columns)):
                 item = QTableWidgetItem()
                 # column 0 is transaction id
-                if column == 0 or column ==1:
+                if column == 0 or column == 1:
                     item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 else:
                     item.setData(QtCore.Qt.DisplayRole, round(float(dataframe.iloc[row, column]), self.DecimalPoints))

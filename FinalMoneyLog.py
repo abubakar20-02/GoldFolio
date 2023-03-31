@@ -135,7 +135,7 @@ class Ui_Form(QObject):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def loadSettings(self):
-        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency = self.UserProfile.GetSettings()
+        _, self.DecimalPoints, _, _ = self.UserProfile.GetSettings()
 
     def updateDateRangeForEndDate(self):
         self.Search()

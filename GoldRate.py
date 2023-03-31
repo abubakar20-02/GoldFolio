@@ -48,13 +48,14 @@ class Gold:
         Ratio = float(self.Purity) / 24
         RateForDifferentKarrots = Ratio * PerGram
 
-        if self.Unit == "Oz":
+        Rate = RateForDifferentKarrots
+        if self.Unit == "Troy ounce":
             Rate = TroyOunce * RateForDifferentKarrots
         elif self.Unit == "Tola":
             Rate = Tola * RateForDifferentKarrots
-        elif self.Unit == "Kilo":
+        elif self.Unit == "Kilogram":
             Rate = Kilo * RateForDifferentKarrots
-        else:
+        elif self.Unit == "Gram":
             Rate = RateForDifferentKarrots
 
         if self.Currency == "Bahraini Dinars":
@@ -81,13 +82,15 @@ class Gold:
         Ratio = float(self.Purity) / 24
         RateForDifferentKarrots = Ratio * PerGram
 
-        if self.Unit == "Oz":
+        Rate = RateForDifferentKarrots
+
+        if self.Unit == "Troy ounce":
             Rate = TroyOunce * RateForDifferentKarrots
         elif self.Unit == "Tola":
             Rate = Tola * RateForDifferentKarrots
-        elif self.Unit == "Kilo":
+        elif self.Unit == "Kilogram":
             Rate = Kilo * RateForDifferentKarrots
-        else:
+        elif self.Unit == "Gram":
             Rate = RateForDifferentKarrots
 
         if self.Currency == "Bahraini Dinars":
