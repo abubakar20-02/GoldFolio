@@ -52,7 +52,6 @@ class Ui_MainWindow(QObject):
         self.UserProfile = User.User()
         self.UserProfile.SelectProfile(self.UserID)
         self.loadSettings()
-        self.Gold = Gold(24, self.GoldUnit, "USD")
 
         self.val = 0
         self.Investment = Investment()
@@ -374,7 +373,7 @@ class Ui_MainWindow(QObject):
         self.Investment.setProfile(self.UserID)
         print("yo" + str(StartDate))
         table = self.Investment.getTable(StartDate=StartDate, EndDate=EndDate)
-        print(self.Investment.getRateRequired(StartDate=StartDate, EndDate=EndDate))
+        print(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=StartDate, EndDate=EndDate)))
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def load_dataframe_to_table(self, dataframe, table_widget):
@@ -478,6 +477,7 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
         self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit = self.UserProfile.GetSettings()
+        self.Gold = Gold(24, self.GoldUnit, "USD")
         # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):

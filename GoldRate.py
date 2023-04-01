@@ -26,7 +26,7 @@ def getPureGoldPerGramInDollars(DollarsPerOuncePure):
 
 
 class Gold:
-    def __init__(self, Purity, Unit, Currency):
+    def __init__(self, Purity=None, Unit=None, Currency=None):
 
         self.Currency = Currency
         self.Unit = Unit
@@ -115,6 +115,17 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
+        return Rate
+
+    def convertRate(self, RateInGram):
+        if self.Unit == "Troy ounce":
+            Rate = TroyOunce * RateInGram
+        elif self.Unit == "Tola":
+            Rate = Tola * RateInGram
+        elif self.Unit == "Kilogram":
+            Rate = Kilo * RateInGram
+        elif self.Unit == "Gram":
+            Rate = RateInGram
         return Rate
 
 class Curreny:
