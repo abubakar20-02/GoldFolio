@@ -31,14 +31,14 @@ class Gold:
         self.Currency = Currency
         self.Unit = Unit
         self.Purity = Purity
+        self.bid = 0
+        self.ask = 0
 
+    def getLatestRate(self):
         data = requests.get("https://www.kitco.com/charts/livegold.html")
-
         soup = BeautifulSoup(data.text, 'html.parser')
-
         self.bid = str(soup.find("div", class_="data-blk bid").findAll("span"))
         self.bid = FormatRates(self.bid)
-
         self.ask = str(soup.find("div", class_="data-blk ask").findAll("span"))
         self.ask = FormatRates(self.ask)
 
@@ -101,6 +101,21 @@ class Gold:
     def changeUnit(self, Unit):
         self.Unit = Unit
 
+    def getAskinGrams(self):
+        PerGram = getPureGoldPerGramInDollars(self.ask)
+        Ratio = float(self.Purity) / 24
+        RateForDifferentKarrots = Ratio * PerGram
+
+        Rate = RateForDifferentKarrots
+        return Rate
+
+    def getBidinGrams(self):
+        PerGram = getPureGoldPerGramInDollars(self.bid)
+        Ratio = float(self.Purity) / 24
+        RateForDifferentKarrots = Ratio * PerGram
+
+        Rate = RateForDifferentKarrots
+        return Rate
 
 class Curreny:
     def __init__(self):

@@ -46,13 +46,13 @@ class MplCanvas(FigureCanvas):
 
 class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
-        self.Gold = Gold(24, "Gram", "USD")
         # Retrieve the variable from the file
         with open("my_variable.pickle", "rb") as f:
             self.UserID = pickle.load(f)
         self.UserProfile = User.User()
         self.UserProfile.SelectProfile(self.UserID)
         self.loadSettings()
+        self.Gold = Gold(24, self.GoldUnit, "USD")
 
         self.val = 0
         self.Investment = Investment()
@@ -418,7 +418,7 @@ class Ui_MainWindow(QObject):
         self.window = FinalSellScreen.MyWindow()
         self.window.show()
         self.window.Sell.clicked.connect(
-            lambda: self.window.Sell1(self.UserID, Rate=float(self.Gold.getBid()),
+            lambda: self.window.Sell1(self.UserID, Rate=self.Gold.getBidinGrams(),
                                       SellDate=self.window.Date.date().toPyDate(),
                                       TransactionIDs=self.getTransactionID(), StartDate=StartDate, EndDate=EndDate,
                                       ProfitMargin=self.ProfitMargin))
@@ -477,7 +477,7 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.updateTable)
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
-        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency,self.GoldUnit = self.UserProfile.GetSettings()
+        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit = self.UserProfile.GetSettings()
         # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
@@ -490,8 +490,8 @@ class Ui_MainWindow(QObject):
 
     def prevStage(self):
         DBFunctions.previousStage(self.UserID)
-        Gold1 = Gold(24, "Gram", "USD")
-        self.updateTable(Rate=Gold1.getBid())
+        # still not good as it keeps asking api for asking values over and over again.
+        self.updateTable(Rate=self.Gold.getBidinGrams())
         self.getUserData()
 
     def getUserData(self):
@@ -588,7 +588,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def StartThread(self):
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously("24", self.GoldUnit, "USD", self.UpdateFrequency)
+        self.worker = UpdateRatesContinuously(self.Gold, self.UpdateFrequency)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.
@@ -613,8 +613,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data
-        Gold1 = Gold(24, "Gram", "USD")
-        self.window.Add.clicked.connect(lambda: self.updateTable(Rate=Gold1.getBid()))
+        self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.Add.clicked.connect(self.getUserData)
         self.window.show()
 
@@ -640,9 +639,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.value == float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NoChangeTextColor)
             self.Ask.setStyleSheet(SetupFile.NoChangeTextColor)
-        rates.changeUnit("Gram")
-        self.updateTable(Rate=rates.getBid())
-        rates.changeUnit(self.GoldUnit)
+        self.updateTable(Rate=rates.getBidinGrams())
         self.Ask.setText(Ask)
         self.Bid.setText(Bid)
         self.value = float(rates.getAsk())
@@ -659,18 +656,20 @@ class UpdateRatesContinuously(QObject):
     values = pyqtSignal(object)
     error = pyqtSignal()
 
-    def __init__(self, Purity, Unit, Currency, TimeFreq):
+    def __init__(self, Gold, TimeFreq):
         super(UpdateRatesContinuously, self).__init__()
         self.isRunning = True
-        self.Purity = Purity
-        self.Unit = Unit
-        self.Currency = Currency
+        self.GoldRate = Gold
         self.TimeFreq = TimeFreq
+
+    def getGoldRate(self, GoldRate):
+        self.GoldRate = GoldRate
 
     def run(self):
         while True:
             try:
-                rates = Gold(self.Purity, self.Unit, self.Currency)
+                rates = self.GoldRate
+                rates.getLatestRate()
                 self.values.emit(rates)
                 print("emitted")
             except:
