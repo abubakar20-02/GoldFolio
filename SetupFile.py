@@ -100,3 +100,7 @@ Rate = ("QLabel{\n"
         "    \n"
         "    background-color: rgb(255, 255, 255);\n"
         "     }")
+
+GoldColor = '#FFD700'
+
+BlueColor = '#1AA7EC'
