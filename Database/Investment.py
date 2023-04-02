@@ -664,6 +664,21 @@ class Investment:
                                       TradeCost=self.TotalSum)
         User.addMoney(self.TotalSum + self.TotalProfitLoss, LogChanges=False)
 
+    def getInvestmentCount(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT COUNT(User_ID) From Investment WHERE User_ID=?"
+        if StartDate:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql,
+                       (self.Profile,))
+        value = self.c.fetchone()[0]
+        self.conn.close()
+        return value
+
     def sellIndividual(self, id, Rate=None, Date=None):
         if Rate is not None:
             self.updateProfitLoss(Rate, Investment_ID=id)

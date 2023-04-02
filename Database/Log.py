@@ -756,3 +756,36 @@ class Log:
             print(dictionary)
             print("----")
             return dictionary
+
+        def getMoneyAdded(self, StartDate=None, EndDate=None):
+            self.__SetUpConnection()
+            sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
+            if StartDate:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{StartDate}'"
+
+            if EndDate:
+                sql += f" AND Date_Added <= '{EndDate}'"
+            self.c.execute(sql,
+                           (self.Profile, DB_Code.MoneyIn))
+            value = self.c.fetchone()[0]
+            if value is None:
+                value = 0
+            value = -value
+            self.conn.close()
+            return value
+
+        def getMoneyOut(self, StartDate=None, EndDate=None):
+            self.__SetUpConnection()
+            sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
+            if StartDate:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{StartDate}'"
+
+            if EndDate:
+                sql += f" AND Date_Added <= '{EndDate}'"
+            self.c.execute(sql,
+                           (self.Profile, DB_Code.MoneyOut))
+            value = self.c.fetchone()[0]
+            self.conn.close()
+            return value

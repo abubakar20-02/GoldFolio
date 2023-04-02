@@ -240,6 +240,21 @@ class Statement:
             self.conn.close()
             return df
 
+    def getInvestmentCount(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT COUNT(User_ID) From Statement WHERE User_ID=?"
+        if StartDate:
+            # idk why I have to do this.
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql,
+                       (self.Profile,))
+        value = self.c.fetchone()[0]
+        self.conn.close()
+        return value
+
     def getMinMaxDates(self):
         self.__SetUpConnection()
         self.c.execute("SELECT MIN(Date_Added),Max(Date_Added) FROM Statement")
