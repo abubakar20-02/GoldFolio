@@ -21,6 +21,7 @@ import FinalMoneyLog
 import FinalSellScreen
 import FinalSettings
 import FinalStatement
+import FinalStatistics
 import GoldCalculator
 import SetupFile
 from Database import User, DBFunctions
@@ -326,8 +327,8 @@ class Ui_MainWindow(QObject):
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
-        self.window = FinalGoldPortfolio.MyWindow()
-        self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
+        self.window = FinalStatistics.MyWindow()
+        #self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
         self.window.show()
 
     def openGoldCalculator(self):
@@ -618,7 +619,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
-        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAsk()))
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams()))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))

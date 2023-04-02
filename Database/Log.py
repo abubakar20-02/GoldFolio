@@ -771,7 +771,7 @@ class Log:
             value = self.c.fetchone()[0]
             if value is None:
                 value = 0
-            value = -value
+            value = value
             self.conn.close()
             return value
 
@@ -787,5 +787,7 @@ class Log:
             self.c.execute(sql,
                            (self.Profile, DB_Code.MoneyOut))
             value = self.c.fetchone()[0]
+            if value is None:
+                value = 0
             self.conn.close()
             return value
