@@ -16,6 +16,7 @@ import pandas as pd
 
 import FinalAddInvestment
 import FinalAddMoney
+import FinalGoldPortfolio
 import FinalMoneyLog
 import FinalSellScreen
 import FinalSettings
@@ -261,6 +262,7 @@ class Ui_MainWindow(QObject):
 
         self.actionGraphs = QtWidgets.QAction(MainWindow)
         self.actionGraphs.setObjectName("actionGraphs")
+        self.actionGraphs.triggered.connect(self.openGoldPortfolio)
 
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionImport_Data)
@@ -321,6 +323,12 @@ class Ui_MainWindow(QObject):
         self.actionCash.setText(_translate("MainWindow", "Cash "))
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
+
+    def openGoldPortfolio(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalGoldPortfolio.MyWindow()
+        self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
+        self.window.show()
 
     def openGoldCalculator(self):
         self.window = QtWidgets.QWidget()

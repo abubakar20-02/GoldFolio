@@ -741,6 +741,21 @@ class Investment:
             Rate = None
         return Rate
 
+    def getGoldAcquisitionCost(self):
+        self.__SetUpConnection()
+        self.c.execute("SELECT SUM(BoughtFor) FROM Investment WHERE User_ID=?", (self.Profile,))
+        value = self.c.fetchone()[0]
+        self.conn.close()
+        if value is None:
+            value = 0
+        return value
+
+
+    # requires Rate in grams
+    def getCurrentGoldValue(self, Rate):
+        totalgold = self.getTotalGold()
+        return Rate*totalgold
+
     def PDF(self):
         self.__SetUpConnection()
 
