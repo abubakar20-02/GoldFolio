@@ -328,6 +328,7 @@ class Ui_MainWindow(QObject):
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalStatistics.MyWindow()
+        self.window.showMaximized()
         #self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
         self.window.show()
 
