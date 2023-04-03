@@ -727,7 +727,7 @@ class Log:
             sql1 += f" ORDER BY Date_Added ASC"
 
             # execute SQL query to get all dates
-            #self.c.execute(sql1, (self.Profile,))
+            # self.c.execute(sql1, (self.Profile,))
 
             dictionary = self.generate_daily_dict(Start, End)
             dates = []
@@ -808,6 +808,7 @@ class Log:
             value = self.c.fetchone()[0]
             if value is None:
                 value = 0
+            value = - value
             self.conn.close()
             return value
 
@@ -822,20 +823,19 @@ class Log:
             ranges.append((start, number))
             return ranges
 
-        def getDatesInWeekFormatForMonth(self):
-            year = 2023
-            month = 3
-            Add = []
-            Withdrawn = []
+        def getDatesInWeekFormatForMonth(self, year, month):
+            Add = {}
+            Withdrawn = {}
             days_in_month = calendar.monthrange(year, month)[1]
             print(self.formatToWeek(days_in_month))
             for start, end in self.formatToWeek(days_in_month):
                 start_date = datetime(year, month, start).date()
                 end_date = datetime(year, month, end).date()
-                Add.append((f"{start}-{end}", self.getMoneyAdded(StartDate=start_date, EndDate=end_date)))
-                Withdrawn.append((f"{start}-{end}", self.getMoneyOut(StartDate=start_date, EndDate=end_date)))
-                print(Add)
-                print(Withdrawn)
+                Add[f"{start}-{end}"] = self.getMoneyAdded(StartDate=start_date, EndDate=end_date)
+                Withdrawn[f"{start}-{end}"] = self.getMoneyOut(StartDate=start_date, EndDate=end_date)
+
+            return Add, Withdrawn
+
             # for i, r in enumerate(self.getMonthRange(days_in_month)):
             #     print(f"Range {i + 1}: {r[0]}-{r[1]}")
             # self.__SetUpConnection()

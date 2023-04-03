@@ -74,6 +74,7 @@ if __name__ == "__main__":
     from datetime import date
     Investment.sellAll(Rate=10,Date=date.today())
     User.ChangeSettings(0.01,3,45,"Kilogram")
+    User.cashout(100)
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)
     # Investment.insertIntoTable(1000,1,1000)

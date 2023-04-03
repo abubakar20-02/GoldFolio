@@ -11,13 +11,15 @@
 import pickle
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, QDate
+from PyQt5.QtWidgets import QCalendarWidget
 
 from Database import Statement,Log,Investment
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
+from matplotlib.patches import Patch
 import matplotlib.ticker as ticker
 
 class MplCanvas(FigureCanvas):
@@ -59,8 +61,14 @@ class Ui_Form(QObject):
         self.Mode.addItem("")
         self.Mode.addItem("")
         self.horizontalLayout_10.addWidget(self.Mode)
-        self.Date = QtWidgets.QDateEdit(self.scrollAreaWidgetContents)
-        self.Date.setObjectName("Date")
+        self.Date = QtWidgets.QDateEdit()
+        self.Date.setDisplayFormat("MM-yyyy")
+        self.Date.setCalendarPopup(True)
+        self.Date.setMaximumDate(QDate.currentDate())
+        self.Date.setDateTime(QtCore.QDateTime.currentDateTime())
+
+
+        #self.EndDate.dateChanged.connect(self.updateDateRangeForStartDate)
         self.horizontalLayout_10.addWidget(self.Date)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_10.addItem(spacerItem1)
@@ -178,6 +186,8 @@ class Ui_Form(QObject):
         self.verticalLayout.addWidget(self.scrollArea)
 
         self.SetupPage()
+        self.Mode.currentIndexChanged.connect(self.updateDateEdit)
+        self.Date.dateChanged.connect(self.updateGraph)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -196,6 +206,21 @@ class Ui_Form(QObject):
         self.AverageProfitLoss_Text.setText(_translate("Form", "Average Profit/Loss : "))
         self.AverageProfitLoss.setText(_translate("Form", "TextLabel"))
 
+    def updateDateEdit(self):
+        if self.Mode.currentIndex() == 0:
+            self.Date.setDisplayFormat("MM-yyyy")
+            self.Date.setEnabled(True)
+        elif self.Mode.currentIndex() == 1:
+            self.Date.setDisplayFormat("yyyy")
+            self.Date.setEnabled(True)
+        elif self.Mode.currentIndex() == 2:
+            self.Date.setEnabled(False)
+
+
+    def updateGraph(self):
+        self.BarGraph()
+        self.canvas.draw()
+
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
@@ -207,12 +232,31 @@ class Ui_Form(QObject):
         self.Statement.setProfile(UserID)
         self.Log.setProfile(UserID)
 
-        self.Log.getDatesInWeekFormatForMonth()
+        self.BarGraph()
 
         self.MoneyAdded.setText(str(self.Log.getMoneyAdded()))
         self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut()))
         self.TotalInvestments.setText(str(self.Investment.getInvestmentCount()))
         self.InvestmentSold.setText(str(self.Statement.getInvestmentCount()))
+
+    def BarGraph(self):
+        self.canvas.axes.clear()
+        Add,Withdrawn=self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(),self.Date.date().month())
+
+        labels = list(Add.keys())
+        y = list(Add.values())
+        y1 = list(Withdrawn.values())
+
+        self.canvas.axes.bar(labels, y, width=0.3, align='center', label='Data 1', color= "Green")
+        self.canvas.axes.bar(labels, y1, width=0.3, align='center', label='Data 2', color = "Red")
+
+        self.canvas.axes.set_xlabel('Date')
+        self.canvas.axes.set_ylabel('Money')
+
+        # Create a custom legend
+        legend_elements = [Patch(facecolor='g', edgecolor='black', label='Money Added'),
+                           Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
+        self.canvas.axes.legend(handles=legend_elements)
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
