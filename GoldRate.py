@@ -118,8 +118,8 @@ class Gold:
         return Rate
 
     def convertRate(self, RateInGram):
+        Rate=0
         if RateInGram is None:
-            Rate = 0
             return
         if self.Unit == "Troy ounce":
             Rate = TroyOunce * RateInGram

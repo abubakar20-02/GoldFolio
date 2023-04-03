@@ -265,6 +265,9 @@ class Ui_Form(QObject):
     def pie(self):
         self.canvas3.axes.clear()
         data = self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
+        has_zero_values = all(value == 0 for value in data.values())
+        if has_zero_values:
+            return
         colors = ["green", "red"]
         print(data)
         # print(data)
