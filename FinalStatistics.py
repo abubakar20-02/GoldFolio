@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QDate
 from PyQt5.QtWidgets import QCalendarWidget
 
-from Database import Statement,Log,Investment
+from Database import Statement, Log, Investment
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
@@ -22,12 +22,14 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 import matplotlib.ticker as ticker
 
+
 class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, height=4, dpi=100):
         fig = Figure(figsize=(height, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
+
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
@@ -67,8 +69,7 @@ class Ui_Form(QObject):
         self.Date.setMaximumDate(QDate.currentDate())
         self.Date.setDateTime(QtCore.QDateTime.currentDateTime())
 
-
-        #self.EndDate.dateChanged.connect(self.updateDateRangeForStartDate)
+        # self.EndDate.dateChanged.connect(self.updateDateRangeForStartDate)
         self.horizontalLayout_10.addWidget(self.Date)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_10.addItem(spacerItem1)
@@ -216,10 +217,11 @@ class Ui_Form(QObject):
         elif self.Mode.currentIndex() == 2:
             self.Date.setEnabled(False)
 
-
     def updateGraph(self):
         self.BarGraph()
         self.canvas.draw()
+        self.pie()
+        self.canvas3.draw()
 
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
@@ -233,6 +235,7 @@ class Ui_Form(QObject):
         self.Log.setProfile(UserID)
 
         self.BarGraph()
+        self.pie()
 
         self.MoneyAdded.setText(str(self.Log.getMoneyAdded()))
         self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut()))
@@ -241,14 +244,15 @@ class Ui_Form(QObject):
 
     def BarGraph(self):
         self.canvas.axes.clear()
-        Add,Withdrawn=self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(),self.Date.date().month())
+        self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
+        Add, Withdrawn = self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(), self.Date.date().month())
 
         labels = list(Add.keys())
         y = list(Add.values())
         y1 = list(Withdrawn.values())
 
-        self.canvas.axes.bar(labels, y, width=0.3, align='center', label='Data 1', color= "Green")
-        self.canvas.axes.bar(labels, y1, width=0.3, align='center', label='Data 2', color = "Red")
+        self.canvas.axes.bar(labels, y, width=0.3, align='center', label='Data 1', color="Green")
+        self.canvas.axes.bar(labels, y1, width=0.3, align='center', label='Data 2', color="Red")
 
         self.canvas.axes.set_xlabel('Date')
         self.canvas.axes.set_ylabel('Money')
@@ -258,13 +262,51 @@ class Ui_Form(QObject):
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
 
+    def pie(self):
+        self.canvas3.axes.clear()
+        data = self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
+        colors = ["green", "red"]
+        print(data)
+        # print(data)
+        # data = {'C': 20, 'C++': 15, 'Java': 30,
+        #         'Python': 35}
+        # courses = list(data.keys())
+        # values = list(data.values())
+        # data_without_zero = {k: v for k, v in data.items() if v > 0}
+        # names = list(data_without_zero.keys())
+        # values = list(data_without_zero.values())
+        # explode = (0.1,0.1)
+        wp = {'linewidth': 1, 'edgecolor': "black"}
+        _, _, autotexts = self.canvas3.axes.pie(data.values(), labels=[''] * len(data.values()), shadow=True, autopct='%1.1f%%',
+                                               wedgeprops=wp, pctdistance=1.3, colors=colors)
+
+        # Create a custom legend
+        legend_elements = [Patch(facecolor='g', edgecolor='black', label='Profit'),
+                           Patch(facecolor='r', edgecolor='black', label='Loss')]
+        self.canvas3.axes.legend(handles=legend_elements)
+        # create legend labels with percentages
+        # Generate legend labels with extra information for 'Gold'
+        # legend_labels = []
+        # for i, label in enumerate(names):
+        #     if label == 'GoldMoney':
+        #         extra_info =str(self.Investment.getTotalGold())+ " g"  # Example extra information
+        #         legend_labels.append(f'{label} ({values[i]:.1f}, {extra_info})')
+        #     else:
+        #         legend_labels.append(f'{label} ({values[i]:.1f})')
+        #
+        # self.canvas.axes.legend(legend_labels, loc='best')
+
+
+
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

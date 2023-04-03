@@ -765,11 +765,10 @@ class Investment:
             value = 0
         return value
 
-
     # requires Rate in grams
     def getCurrentGoldValue(self, Rate):
         totalgold = self.getTotalGold()
-        return Rate*totalgold
+        return Rate * totalgold
 
     def PDF(self):
         self.__SetUpConnection()

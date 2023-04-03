@@ -311,6 +311,44 @@ class Statement:
             date += timedelta(days=1)
         return result
 
+    def getPositiveTradeSum(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT SUM(Value_Change) FROM Statement WHERE ProfitLoss>0 AND User_ID=?"
+        if StartDate:
+            sql += f" AND Date_added >= '{StartDate}'"
+        if EndDate:
+            sql += f" AND Date_added <= '{EndDate}'"
+        self.c.execute(sql, (self.Profile,))
+        value = self.c.fetchone()[0]
+        if value is None:
+            value = 0
+        self.conn.close()
+        return value
+
+    def getNegativeTradeSum(self, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT SUM(Value_Change) FROM Statement WHERE ProfitLoss<0 AND User_ID=?"
+        if StartDate:
+            sql += f" AND Date_added >= '{StartDate}'"
+        if EndDate:
+            sql += f" AND Date_added <= '{EndDate}'"
+        self.c.execute(sql, (self.Profile,))
+        value = self.c.fetchone()[0]
+        if value is None:
+            value = 0
+        value = -value
+        self.conn.close()
+        return value
+
+    def getProfitLossData(self, year, month):
+        days_in_month = calendar.monthrange(year, month)[1]
+        StartDate = datetime(year, month, 1).date()
+        EndDate = datetime(year, month, days_in_month).date()
+        a = ("Profit", self.getPositiveTradeSum(StartDate=StartDate, EndDate=EndDate))
+        b = ("Loss", self.getNegativeTradeSum(StartDate=StartDate, EndDate=EndDate))
+        data = dict([a, b])
+        return data
+
     def Yearly(self, ColumnName, Start=None, End=None):
         self.__SetUpConnection()
         sql = (
