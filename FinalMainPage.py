@@ -299,7 +299,7 @@ class Ui_MainWindow(QObject):
         self.User_Text.setText(_translate("MainWindow", "User: "))
         self.LogOutButton.setText(_translate("MainWindow", "Log out"))
         self.Cash_Text.setText(_translate("MainWindow", "Cash: "))
-        self.AddCashButton.setText(_translate("MainWindow", "Add"))
+        self.AddCashButton.setText(_translate("MainWindow", "Manage Cash"))
         self.StartDate_Text.setText(_translate("MainWindow", "Start Date:"))
         self.EndDate_Text.setText(_translate("MainWindow", "End Date:"))
         self.Bid_Text.setText(_translate("MainWindow", "   Bid: "))

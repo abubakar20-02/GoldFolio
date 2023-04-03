@@ -2,6 +2,7 @@
 import sqlite3
 import uuid
 from datetime import timedelta, datetime
+import calendar
 
 import pandas as pd
 
@@ -433,11 +434,12 @@ class Log:
         def __init__(self):
             self.c = None
             self.conn = None
-            self.createTable()
             self.Profile = None
+            self.createTable()
 
         def setProfile(self, Profile):
             self.Profile = Profile
+            print(f"profile set to: {Profile}")
 
         def __SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
@@ -536,7 +538,7 @@ class Log:
 
             if EndDate:
                 sql += f" AND Date_Added <= '{EndDate}'"
-            self.c.execute(sql, (ActionType, self.Profile,))
+            self.c.execute(sql, (ActionType, self.Profile))
             Sum = self.c.fetchone()[0]
             self.conn.close()
             print(Sum)
@@ -725,7 +727,7 @@ class Log:
             sql1 += f" ORDER BY Date_Added ASC"
 
             # execute SQL query to get all dates
-            self.c.execute(sql1, (self.Profile,))
+            #self.c.execute(sql1, (self.Profile,))
 
             dictionary = self.generate_daily_dict(Start, End)
             dates = []
@@ -759,13 +761,15 @@ class Log:
 
         def getMoneyAdded(self, StartDate=None, EndDate=None):
             self.__SetUpConnection()
-            sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
+            sql = "SELECT SUM(Change) From Money WHERE User_ID = ? AND ActionType = ?"
             if StartDate:
                 # idk why I have to do this.
                 sql += f" AND Date_Added >= '{StartDate}'"
 
             if EndDate:
                 sql += f" AND Date_Added <= '{EndDate}'"
+            print(sql)
+            print(f"profile {self.Profile} , code {DB_Code.MoneyIn}")
             self.c.execute(sql,
                            (self.Profile, DB_Code.MoneyIn))
             value = self.c.fetchone()[0]
@@ -774,6 +778,21 @@ class Log:
             value = value
             self.conn.close()
             return value
+
+        # def getMoneyAdded(self, StartDate=None, EndDate=None):
+        #     self.__SetUpConnection()
+        #     sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType = ?"
+        #     if StartDate:
+        #         # idk why I have to do this.
+        #         sql += f" AND Date_Added >= '{StartDate}'"
+        #
+        #     if EndDate:
+        #         sql += f" AND Date_Added <= '{EndDate}'"
+        #     self.c.execute(sql,
+        #                    (self.Profile,DB_Code.MoneyIn))
+        #     value = self.c.fetchone()[0]
+        #     self.conn.close()
+        #     return value
 
         def getMoneyOut(self, StartDate=None, EndDate=None):
             self.__SetUpConnection()
@@ -791,3 +810,40 @@ class Log:
                 value = 0
             self.conn.close()
             return value
+
+        def formatToWeek(self, number):
+            ranges = []
+            start = 1
+            end = 7
+            while end < number:
+                ranges.append((start, end))
+                start += 7
+                end += 7
+            ranges.append((start, number))
+            return ranges
+
+        def getDatesInWeekFormatForMonth(self):
+            year = 2023
+            month = 3
+            Add = []
+            Withdrawn = []
+            days_in_month = calendar.monthrange(year, month)[1]
+            print(self.formatToWeek(days_in_month))
+            for start, end in self.formatToWeek(days_in_month):
+                start_date = datetime(year, month, start).date()
+                end_date = datetime(year, month, end).date()
+                Add.append((f"{start}-{end}", self.getMoneyAdded(StartDate=start_date, EndDate=end_date)))
+                Withdrawn.append((f"{start}-{end}", self.getMoneyOut(StartDate=start_date, EndDate=end_date)))
+                print(Add)
+                print(Withdrawn)
+            # for i, r in enumerate(self.getMonthRange(days_in_month)):
+            #     print(f"Range {i + 1}: {r[0]}-{r[1]}")
+            # self.__SetUpConnection()
+            # sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
+            # self.c.execute(sql,
+            #                (self.Profile, DB_Code.MoneyOut))
+            # value = self.c.fetchone()[0]
+            # if value is None:
+            #     value = 0
+            # self.conn.close()
+            # return value

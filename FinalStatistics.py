@@ -207,6 +207,8 @@ class Ui_Form(QObject):
         self.Statement.setProfile(UserID)
         self.Log.setProfile(UserID)
 
+        self.Log.getDatesInWeekFormatForMonth()
+
         self.MoneyAdded.setText(str(self.Log.getMoneyAdded()))
         self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut()))
         self.TotalInvestments.setText(str(self.Investment.getInvestmentCount()))
