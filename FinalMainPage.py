@@ -22,6 +22,7 @@ import FinalSellScreen
 import FinalSettings
 import FinalStatement
 import FinalStatistics
+import FinalStatistics1
 import GoldCalculator
 import SetupFile
 from Database import User, DBFunctions
@@ -327,7 +328,7 @@ class Ui_MainWindow(QObject):
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
-        self.window = FinalStatistics.MyWindow()
+        self.window = FinalStatistics1.MyWindow()
         self.window.showMaximized()
         #self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
         self.window.show()
