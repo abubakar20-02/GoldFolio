@@ -1,3 +1,4 @@
+import calendar
 import math
 import sqlite3
 import uuid
@@ -709,33 +710,9 @@ class Investment:
         finally:
             self.conn.close()
 
-    def getSumBoughtFor(self):
+    def getSUM(self, ColumnName, StartDate=None, EndDate=None):
         self.__SetUpConnection()
-        self.c.execute("SELECT SUM(BoughtFor) FROM Investment WHERE User_ID =?", (self.Profile,))
-        Sum = self.c.fetchone()[0]
-        self.conn.close()
-        if Sum is None:
-            Sum = 0
-        return Sum
-
-    def getTotalGold(self, StartDate=None, EndDate=None):
-        self.__SetUpConnection()
-        sql = "SELECT SUM(Gold) FROM Investment WHERE User_ID =?"
-        if StartDate:
-            sql += f" AND Date_Added >= '{StartDate}'"
-
-        if EndDate:
-            sql += f" AND Date_Added <= '{EndDate}'"
-        self.c.execute(sql, (self.Profile,))
-        Sum = self.c.fetchone()[0]
-        self.conn.close()
-        if Sum is None:
-            Sum = 0
-        return Sum
-
-    def getTotalBought(self, StartDate=None, EndDate=None):
-        self.__SetUpConnection()
-        sql = "SELECT SUM(BoughtFor) FROM Investment WHERE User_ID =?"
+        sql = "SELECT SUM({0}) FROM Investment WHERE User_ID =?".format(ColumnName)
         if StartDate:
             sql += f" AND Date_Added >= '{StartDate}'"
 
@@ -750,8 +727,9 @@ class Investment:
 
     def getRateRequired(self, StartDate=None, EndDate=None):
         try:
-            Rate = (self.getTotalBought(StartDate=StartDate, EndDate=EndDate) / self.getTotalGold(StartDate=StartDate,
-                                                                                                  EndDate=EndDate))
+            Rate = (self.getSUM("BoughtFor", StartDate=StartDate, EndDate=EndDate) / self.getTotalGold(
+                StartDate=StartDate,
+                EndDate=EndDate))
         except:
             Rate = None
         return Rate
@@ -767,7 +745,7 @@ class Investment:
 
     # requires Rate in grams
     def getCurrentGoldValue(self, Rate):
-        totalgold = self.getTotalGold()
+        totalgold = self.getSUM("Gold")
         return Rate * totalgold
 
     def PDF(self):

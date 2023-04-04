@@ -222,6 +222,8 @@ class Ui_Form(QObject):
         self.canvas.draw()
         self.pie()
         self.canvas3.draw()
+        self.BarGraph1()
+        self.canvas2.draw()
 
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
@@ -236,6 +238,17 @@ class Ui_Form(QObject):
 
         self.BarGraph()
         self.pie()
+        self.BarGraph1()
+        p, n = self.Statement.getDatesInWeekFormatForMonthValueChange(self.Date.date().year(),
+                                                                      self.Date.date().month())
+        print(p)
+        print(n)
+        print("gold")
+        print(self.Statement.getDatesInWeekFormatForMonth("Gold", self.Date.date().year(),
+                                                          self.Date.date().month()))
+        print("boughtfor")
+        print(self.Statement.getDatesInWeekFormatForMonth("BoughtFor", self.Date.date().year(),
+                                                          self.Date.date().month()))
 
         self.MoneyAdded.setText(str(self.Log.getMoneyAdded()))
         self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut()))
@@ -262,6 +275,27 @@ class Ui_Form(QObject):
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
 
+    def BarGraph1(self):
+        self.canvas2.axes.clear()
+
+        #p, n = self.Statement.getDatesInWeekFormatForMonthValueChange(self.Date.date().year(), self.Date.date().month())
+
+        p = self.Statement.getDatesInWeekFormatForMonth("Gold",self.Date.date().year(), self.Date.date().month())
+        labels = list(p.keys())
+        y = list(p.values())
+        #y1 = list(n.values())
+
+        self.canvas2.axes.barh(labels, y, align='center', label='Data 1', color="Green")
+        # self.canvas2.axes.barh(labels, y1, align='center', label='Data 2', color="Red")
+
+        self.canvas2.axes.set_xlabel('Date')
+        self.canvas2.axes.set_ylabel('Money')
+
+        # Create a custom legend
+        # legend_elements = [Patch(facecolor='g', edgecolor='black', label='Money Added'),
+        #                    Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
+        # self.canvas2.axes.legend(handles=legend_elements)
+
     def pie(self):
         self.canvas3.axes.clear()
         data = self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
@@ -280,8 +314,9 @@ class Ui_Form(QObject):
         # values = list(data_without_zero.values())
         # explode = (0.1,0.1)
         wp = {'linewidth': 1, 'edgecolor': "black"}
-        _, _, autotexts = self.canvas3.axes.pie(data.values(), labels=[''] * len(data.values()), shadow=True, autopct='%1.1f%%',
-                                               wedgeprops=wp, pctdistance=1.3, colors=colors)
+        _, _, autotexts = self.canvas3.axes.pie(data.values(), labels=[''] * len(data.values()), shadow=True,
+                                                autopct='%1.1f%%',
+                                                wedgeprops=wp, pctdistance=1.3, colors=colors)
 
         # Create a custom legend
         legend_elements = [Patch(facecolor='g', edgecolor='black', label='Profit'),
@@ -298,7 +333,6 @@ class Ui_Form(QObject):
         #         legend_labels.append(f'{label} ({values[i]:.1f})')
         #
         # self.canvas.axes.legend(legend_labels, loc='best')
-
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):

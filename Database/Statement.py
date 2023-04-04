@@ -469,3 +469,53 @@ class Statement:
         print(dictionary)
         print("----")
         return dictionary
+
+    def getSUM(self, ColumnName, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        sql = "SELECT SUM({0}) FROM Statement WHERE User_ID =?".format(ColumnName)
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql, (self.Profile,))
+        Sum = self.c.fetchone()[0]
+        self.conn.close()
+        if Sum is None:
+            Sum = 0
+        return Sum
+
+    def formatToWeek(self, number):
+        ranges = []
+        start = 1
+        end = 7
+        while end < number:
+            ranges.append((start, end))
+            start += 7
+            end += 7
+        ranges.append((start, number))
+        return ranges
+
+    def getDatesInWeekFormatForMonthValueChange(self, year, month):
+        positive = {}
+        negative = {}
+        days_in_month = calendar.monthrange(year, month)[1]
+        print(self.formatToWeek(days_in_month))
+        for start, end in self.formatToWeek(days_in_month):
+            start_date = datetime(year, month, start).date()
+            end_date = datetime(year, month, end).date()
+            positive[f"{start}-{end}"] = self.getPositiveTradeSum(StartDate=start_date, EndDate=end_date)
+            negative[f"{start}-{end}"] = self.getNegativeTradeSum(StartDate=start_date, EndDate=end_date)
+
+        return positive,negative
+
+    def getDatesInWeekFormatForMonth(self,Column, year, month):
+        dict1 = {}
+        days_in_month = calendar.monthrange(year, month)[1]
+        print(self.formatToWeek(days_in_month))
+        for start, end in self.formatToWeek(days_in_month):
+            start_date = datetime(year, month, start).date()
+            end_date = datetime(year, month, end).date()
+            dict1[f"{start}-{end}"] = self.getSUM(Column,StartDate=start_date, EndDate=end_date)
+
+        return dict1
