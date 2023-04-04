@@ -507,15 +507,33 @@ class Statement:
             positive[f"{start}-{end}"] = self.getPositiveTradeSum(StartDate=start_date, EndDate=end_date)
             negative[f"{start}-{end}"] = self.getNegativeTradeSum(StartDate=start_date, EndDate=end_date)
 
-        return positive,negative
+        return positive, negative
 
-    def getDatesInWeekFormatForMonth(self,Column, year, month):
+    def getDatesInWeekFormatForMonth(self, Column, year, month):
         dict1 = {}
         days_in_month = calendar.monthrange(year, month)[1]
         print(self.formatToWeek(days_in_month))
         for start, end in self.formatToWeek(days_in_month):
             start_date = datetime(year, month, start).date()
             end_date = datetime(year, month, end).date()
-            dict1[f"{start}-{end}"] = self.getSUM(Column,StartDate=start_date, EndDate=end_date)
+            dict1[f"{start}-{end}"] = self.getSUM(Column, StartDate=start_date, EndDate=end_date)
 
         return dict1
+
+    def getSum(self, Column, StartDate=None, EndDate=None):
+        sql = "SELECT SUM({0}) FROM Statement WHERE User_ID=?".format(Column)
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+
+        self.__SetUpConnection()
+        self.c.execute(sql, (self.Profile,))
+        sum = self.c.fetchone()[0]
+        self.conn.close()
+        return sum
+
+    def getAvgProfitLoss(self, StartDate=None, EndDate=None):
+        return self.getSum("Value_Change", StartDate=StartDate, EndDate=EndDate) / self.getSum("Gold",
+                                                                                               StartDate=StartDate,
+                                                                                               EndDate=EndDate)

@@ -33,6 +33,7 @@ class MplCanvas(FigureCanvas):
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
+        self.Value = None
         Form.setObjectName("Form")
         Form.resize(955, 729)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
@@ -222,7 +223,7 @@ class Ui_Form(QObject):
         self.canvas.draw()
         self.pie()
         self.canvas3.draw()
-        self.BarGraph1()
+        self.BarGraph1(self.Value)
         self.canvas2.draw()
 
     def SetupPage(self):
@@ -238,7 +239,8 @@ class Ui_Form(QObject):
 
         self.BarGraph()
         self.pie()
-        self.BarGraph1()
+        self.Value = "Value_Change"
+        self.BarGraph1(self.Value)
         p, n = self.Statement.getDatesInWeekFormatForMonthValueChange(self.Date.date().year(),
                                                                       self.Date.date().month())
         print(p)
@@ -275,21 +277,25 @@ class Ui_Form(QObject):
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
 
-    def BarGraph1(self):
+    def BarGraph1(self, Var):
         self.canvas2.axes.clear()
 
-        #p, n = self.Statement.getDatesInWeekFormatForMonthValueChange(self.Date.date().year(), self.Date.date().month())
-
-        p = self.Statement.getDatesInWeekFormatForMonth("Gold",self.Date.date().year(), self.Date.date().month())
+        if Var == "Value_Change":
+            p, n = self.Statement.getDatesInWeekFormatForMonthValueChange(self.Date.date().year(),
+                                                                          self.Date.date().month())
+            y1 = list(n.values())
+        else:
+            p = self.Statement.getDatesInWeekFormatForMonth(Var, self.Date.date().year(), self.Date.date().month())
         labels = list(p.keys())
         y = list(p.values())
-        #y1 = list(n.values())
 
         self.canvas2.axes.barh(labels, y, align='center', label='Data 1', color="Green")
-        # self.canvas2.axes.barh(labels, y1, align='center', label='Data 2', color="Red")
-
-        self.canvas2.axes.set_xlabel('Date')
-        self.canvas2.axes.set_ylabel('Money')
+        if Var == "Value_Change":
+            self.canvas2.axes.barh(labels, y1, align='center', label='Data 2', color="Red")
+            self.canvas2.axes.set_xlabel('Net Profit/Loss')
+        else:
+            self.canvas2.axes.set_xlabel(Var)
+        self.canvas2.axes.set_ylabel('Date')
 
         # Create a custom legend
         # legend_elements = [Patch(facecolor='g', edgecolor='black', label='Money Added'),

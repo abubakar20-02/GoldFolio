@@ -241,20 +241,16 @@ class Ui_Form(QObject):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.Mode_Text.setText(_translate("Form", "Mode: "))
         self.MoneyDeposited_Text.setText(_translate("Form", "Money deposited:"))
-        self.MoneyDepositedChange.setText(_translate("Form", "+50.1"))
         self.MoneyWithdrawn_Text.setText(_translate("Form", "Money withdrawn:"))
         self.MoneyWithdrawnChange.setText(_translate("Form", "+50.1"))
         self.InvestmentMade_Text.setText(_translate("Form", "Investment made : "))
-        self.InvestmentMade.setText(_translate("Form", "12000"))
         self.InvestmentMadeChange.setText(_translate("Form", "+50.1"))
         self.InvestmentSold_Text.setText(_translate("Form", "Investment sold : "))
-        self.InvestmentSold.setText(_translate("Form", "12000"))
         self.InvestmentSoldChange.setText(_translate("Form", "+50.1"))
         self.GoldBought_Text.setText(_translate("Form", "Gold bought : "))
         self.GoldBought.setText(_translate("Form", "12000"))
         self.GoldBoughtChange.setText(_translate("Form", "+50.1"))
         self.GoldSold_Text.setText(_translate("Form", "Gold sold : "))
-        self.GoldSold.setText(_translate("Form", "12000"))
         self.GoldSoldChange.setText(_translate("Form", "+50.1"))
         self.AverageProfitLoss_Text.setText(_translate("Form", "Average profit/loss : "))
         self.AverageProfitLoss.setText(_translate("Form", "12000"))
@@ -274,11 +270,10 @@ class Ui_Form(QObject):
     def updateGraph(self):
         self.BarGraph()
         self.canvas.draw()
-        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
-        start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
-        end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
-        self.MoneyDeposited.setText(str(self.Log.getMoneyAdded(StartDate=start_date, EndDate=end_date)))
-        self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut(StartDate=start_date, EndDate=end_date)))
+        self.Line("Value_Change")
+        self.canvas1.draw()
+
+        self.updateVariables()
 
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
@@ -291,12 +286,36 @@ class Ui_Form(QObject):
         self.Statement.setProfile(UserID)
         self.Log.setProfile(UserID)
         days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
-        start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
-        end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
-        self.MoneyDeposited.setText(str(self.Log.getMoneyAdded(StartDate=start_date, EndDate=end_date)))
-        self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut(StartDate=start_date, EndDate=end_date)))
+        self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
+        self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
+
+        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month()-1)[1]
+        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month()-1, 1).date()
+        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month()-1, days_in_month).date()
+
+        #increase = ((current value - previous value) / previous value) * 100
+
+
+
+        self.updateVariables()
 
         self.BarGraph()
+        self.Line("Value_Change",StartDate=self.start_date,EndDate=self.end_date)
+
+    def updateVariables(self):
+        self.MoneyDeposited.setText(str(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)))
+        self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date)))
+        # use MoneyLog to get count.
+        self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
+        self.InvestmentSold.setText(
+            str(self.Statement.getInvestmentCount(StartDate=self.start_date, EndDate=self.end_date)))
+        self.GoldSold.setText(str(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)))
+        self.AverageProfitLoss.setText(
+            str(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)))
+        if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) ==0:
+            self.MoneyDepositedChange.setText(str(""))
+        else:
+            self.MoneyDepositedChange.setText(str((self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)-self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1))/self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1))*100)
 
     def BarGraph(self):
         self.canvas.axes.clear()
@@ -317,6 +336,45 @@ class Ui_Form(QObject):
         legend_elements = [Patch(facecolor='g', edgecolor='black', label='Money Added'),
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
+
+    def Line(self, ValueSelect, StartDate=None, EndDate=None):
+        self.canvas1.axes.clear()
+
+        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
+
+        data = self.Statement.Overall(ValueSelect, StartDate, EndDate)
+        if data is None:
+            return
+        x = list(data.keys())
+        # xv = range(0,len(x))
+        y = list(data.values())
+        print(x)
+        print(y)
+        self.canvas1.axes.plot(x, y, '-o')
+        # self.canvas1.axes.grid(True)
+        self.canvas1.axes.set_xlabel('Date')
+        self.canvas1.axes.set_ylabel(ValueSelect)
+
+        # # # # Format the x-axis ticks as dates
+        if self.check_date_format(x[0]) == '000000':
+            # set the x-axis tick labels as dates
+            date_format = mdates.DateFormatter('%Y-%m-%d')
+            self.canvas1.axes.xaxis.set_major_formatter(date_format)
+
+            # set the x-axis major tick locations to every week
+            self.canvas1.axes.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
+        else:
+            self.canvas1.axes.xaxis.set_major_locator(ticker.MultipleLocator(3))
+        print("inside")
+
+    def check_date_format(self, date_str):
+        try:
+            format_str = date_str.strftime('%f')
+            print(format_str)
+        except:
+            return "a"
+        return format_str
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):

@@ -836,6 +836,34 @@ class Log:
 
             return Add, Withdrawn
 
+        def getInvestmentMade(self, StartDate=None, EndDate=None):
+            sql = "SELECT COUNT(User_ID) FROM Money WHERE User_ID=? AND ActionType=?"
+            if StartDate:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{StartDate}'"
+
+            if EndDate:
+                sql += f" AND Date_Added <= '{EndDate}'"
+            self.__SetUpConnection()
+            self.c.execute(sql, (self.Profile, DB_Code.IB))
+            count = self.c.fetchone()[0]
+            self.conn.close()
+            return count
+
+        def getInvestmentSold(self, StartDate=None, EndDate=None):
+            sql = "SELECT COUNT(User_ID) FROM Money WHERE User_ID=? AND ActionType=?"
+            if StartDate:
+                # idk why I have to do this.
+                sql += f" AND Date_Added >= '{StartDate}'"
+
+            if EndDate:
+                sql += f" AND Date_Added <= '{EndDate}'"
+            self.__SetUpConnection()
+            self.c.execute(sql, (self.Profile, DB_Code.ProfitLoss))
+            count = self.c.fetchone()[0]
+            self.conn.close()
+            return count
+
             # for i, r in enumerate(self.getMonthRange(days_in_month)):
             #     print(f"Range {i + 1}: {r[0]}-{r[1]}")
             # self.__SetUpConnection()
