@@ -92,6 +92,14 @@ NoChangeTextColor = ("QLabel{\n"
                      "color: rgb(0,0,0) "
                      "     }")
 
+PositiveChange = ("QLabel{\n"
+                  "color: rgb(31,255,15) "
+                  "     }")
+
+NegativeChange = ("QLabel{\n"
+                  "color: rgb(238,75,43) "
+                  "     }")
+
 Rate = ("QLabel{\n"
         "     border: 1px solid;\n"
         "    border-style: outset;\n"

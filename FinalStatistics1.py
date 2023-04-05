@@ -17,6 +17,7 @@ from PyQt5.QtCore import QObject, QDate
 from PyQt5.QtWidgets import QCalendarWidget, QDesktopWidget
 from dateutil.relativedelta import relativedelta
 
+import SetupFile
 from Database import Statement, Log, Investment
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -36,6 +37,7 @@ class MplCanvas(FigureCanvas):
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
+        self.dp =2
         Form.setObjectName("Form")
         Form.resize(1110, 792)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(Form)
@@ -272,8 +274,8 @@ class Ui_Form(QObject):
         if self.comboBox.currentIndex() == 1:
             self.start_date = datetime(self.Date.date().year(), 1, 1).date()
             self.end_date = datetime(self.Date.date().year(), 12, 31).date()
-            self.start_date1 = datetime(self.Date.date().year()-1, 1, 1).date()
-            self.end_date1 = datetime(self.Date.date().year()-1, 12, 31).date()
+            self.start_date1 = datetime(self.Date.date().year() - 1, 1, 1).date()
+            self.end_date1 = datetime(self.Date.date().year() - 1, 12, 31).date()
         else:
             days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
             self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
@@ -328,7 +330,8 @@ class Ui_Form(QObject):
             PrevValue = self.Log.getMoneyAdded(StartDate=self.start_date1,
                                                EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
-            self.MoneyInChange.setText(str(PercentageIncrease))
+            self.applyColorChange(PercentageIncrease, self.MoneyInChange)
+            self.MoneyInChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
 
         if self.Log.getMoneyOut(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.MoneyOutChange.setText(str(""))
@@ -338,7 +341,8 @@ class Ui_Form(QObject):
             PrevValue = self.Log.getMoneyOut(StartDate=self.start_date1,
                                              EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
-            self.MoneyOutChange.setText(str(PercentageIncrease))
+            self.applyColorChange(PercentageIncrease, self.MoneyOutChange)
+            self.MoneyOutChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
 
         if self.Statement.getInvestmentCount(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.InvestmentSoldChange.setText(str(""))
@@ -348,7 +352,8 @@ class Ui_Form(QObject):
             PrevValue = self.Statement.getInvestmentCount(StartDate=self.start_date1,
                                                           EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
-            self.InvestmentSoldChange.setText(str(PercentageIncrease))
+            self.applyColorChange(PercentageIncrease, self.InvestmentSoldChange)
+            self.InvestmentSoldChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
 
         if self.Statement.getSum("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.GoldSoldChange.setText(str(""))
@@ -358,7 +363,8 @@ class Ui_Form(QObject):
             PrevValue = self.Statement.getSum("Gold", StartDate=self.start_date1,
                                               EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
-            self.GoldSoldChange.setText(str(PercentageIncrease))
+            self.applyColorChange(PercentageIncrease, self.GoldSoldChange)
+            self.GoldSoldChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
 
         if self.Statement.getAvgProfitLoss(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.AverageProfitLossChange.setText(str(""))
@@ -368,7 +374,22 @@ class Ui_Form(QObject):
             PrevValue = self.Statement.getAvgProfitLoss(StartDate=self.start_date1,
                                                         EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
-            self.AverageProfitLossChange.setText(str(PercentageIncrease))
+            self.applyColorChange(PercentageIncrease, self.AverageProfitLossChange)
+            self.AverageProfitLossChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+
+    def formatPercentageChange(self, Percentage, dp):
+        sign = ""
+        if Percentage > 0:
+            sign = "+"
+        return f"{sign}{round(Percentage, dp)} %"
+
+    def applyColorChange(self, PercentageIncrease, a):
+        if PercentageIncrease > 0:
+            a.setStyleSheet(SetupFile.PositiveChange)
+        elif PercentageIncrease < 0:
+            a.setStyleSheet(SetupFile.NegativeChange)
+        else:
+            a.setStyleSheet("")
 
     def getPercentageIncrease(self, CurrentValue, PrevValue):
         return ((CurrentValue - PrevValue) / abs(PrevValue)) * 100
@@ -380,7 +401,7 @@ class Ui_Form(QObject):
             Add, Withdrawn = self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(), self.Date.date().month())
             self.canvas.axes.set_xlabel('Date')
         else:
-            Add, Withdrawn= self.Log.getDatesInMonthFormatForMonth(self.Date.date().year())
+            Add, Withdrawn = self.Log.getDatesInMonthFormatForMonth(self.Date.date().year())
             self.canvas.axes.set_xlabel('Month')
 
         labels = list(Add.keys())
