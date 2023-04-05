@@ -258,6 +258,7 @@ class Ui_Form(QObject):
         elif self.comboBox.currentIndex() == 1:
             self.Date.setDisplayFormat("yyyy")
         self.setupDates()
+        self.updateGraph()
 
     def updateGraph(self):
         self.BarGraph()
@@ -375,7 +376,12 @@ class Ui_Form(QObject):
     def BarGraph(self):
         self.canvas.axes.clear()
         self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
-        Add, Withdrawn = self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(), self.Date.date().month())
+        if self.comboBox.currentIndex() == 0:
+            Add, Withdrawn = self.Log.getDatesInWeekFormatForMonth(self.Date.date().year(), self.Date.date().month())
+            self.canvas.axes.set_xlabel('Date')
+        else:
+            Add, Withdrawn= self.Log.getDatesInMonthFormatForMonth(self.Date.date().year())
+            self.canvas.axes.set_xlabel('Month')
 
         labels = list(Add.keys())
         y = list(Add.values())
@@ -384,7 +390,6 @@ class Ui_Form(QObject):
         self.canvas.axes.bar(labels, y, width=0.3, align='center', label='Data 1', color="Green")
         self.canvas.axes.bar(labels, y1, width=0.3, align='center', label='Data 2', color="Red")
 
-        self.canvas.axes.set_xlabel('Date')
         self.canvas.axes.set_ylabel('Money')
 
         # Create a custom legend

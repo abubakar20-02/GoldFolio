@@ -836,6 +836,19 @@ class Log:
 
             return Add, Withdrawn
 
+        def getDatesInMonthFormatForMonth(self, year):
+            Add = {}
+            Withdrawn = {}
+            for month in range(12):
+                days_in_month = calendar.monthrange(year, month+1)[1]
+                start_date = datetime(year, month+1, 1).date()
+                end_date = datetime(year, month+1, days_in_month).date()
+                month_name = start_date.strftime("%b")
+                Add[f"{month_name}"] = self.getMoneyAdded(StartDate=start_date, EndDate=end_date)
+                Withdrawn[f"{month_name}"] = self.getMoneyOut(StartDate=start_date, EndDate=end_date)
+
+            return Add, Withdrawn
+
         def getInvestmentMade(self, StartDate=None, EndDate=None):
             sql = "SELECT COUNT(User_ID) FROM Money WHERE User_ID=? AND ActionType=?"
             if StartDate:
