@@ -7,6 +7,8 @@ Tola = 11.6638038
 
 TroyOunce = 31.1034768
 
+import GoldUnits
+
 
 # convert string to correct format for the rates.
 def FormatRates(rates):
@@ -49,13 +51,13 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
-        if self.Unit == "Troy ounce":
+        if self.Unit == GoldUnits.troyounce:
             Rate = TroyOunce * RateForDifferentKarrots
-        elif self.Unit == "Tola":
+        elif self.Unit == GoldUnits.tola:
             Rate = Tola * RateForDifferentKarrots
-        elif self.Unit == "Kilogram":
+        elif self.Unit == GoldUnits.kilogram:
             Rate = Kilo * RateForDifferentKarrots
-        elif self.Unit == "Gram":
+        elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
         if self.Currency == "Bahraini Dinars":
@@ -84,13 +86,13 @@ class Gold:
 
         Rate = RateForDifferentKarrots
 
-        if self.Unit == "Troy ounce":
+        if self.Unit == GoldUnits.troyounce:
             Rate = TroyOunce * RateForDifferentKarrots
-        elif self.Unit == "Tola":
+        elif self.Unit == GoldUnits.tola:
             Rate = Tola * RateForDifferentKarrots
-        elif self.Unit == "Kilogram":
+        elif self.Unit == GoldUnits.kilogram:
             Rate = Kilo * RateForDifferentKarrots
-        elif self.Unit == "Gram":
+        elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
         if self.Currency == "Bahraini Dinars":
@@ -118,18 +120,32 @@ class Gold:
         return Rate
 
     def convertRate(self, RateInGram):
-        Rate=0
+        Rate = 0
         if RateInGram is None:
             return
-        if self.Unit == "Troy ounce":
+        if self.Unit == GoldUnits.troyounce:
             Rate = TroyOunce * RateInGram
-        elif self.Unit == "Tola":
+        elif self.Unit == GoldUnits.tola:
             Rate = Tola * RateInGram
-        elif self.Unit == "Kilogram":
+        elif self.Unit == GoldUnits.kilogram:
             Rate = Kilo * RateInGram
-        elif self.Unit == "Gram":
+        elif self.Unit == GoldUnits.gram:
             Rate = RateInGram
         return Rate
+
+    def convertWeight(self, WeightInGram):
+        Weight = 0
+        if WeightInGram is None:
+            return
+        if self.Unit == GoldUnits.troyounce:
+            Weight = WeightInGram / TroyOunce
+        elif self.Unit == GoldUnits.tola:
+            Weight = WeightInGram / Tola
+        elif self.Unit == GoldUnits.kilogram:
+            Weight = WeightInGram / Kilo
+        elif self.Unit == GoldUnits.gram:
+            Weight = WeightInGram
+        return Weight
 
 
 class Curreny:

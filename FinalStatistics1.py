@@ -18,12 +18,13 @@ from PyQt5.QtWidgets import QCalendarWidget, QDesktopWidget
 from dateutil.relativedelta import relativedelta
 
 import SetupFile
-from Database import Statement, Log, Investment
+from Database import Statement, Log, Investment, User
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
+from GoldRate import Gold
 import matplotlib.ticker as ticker
 
 
@@ -37,7 +38,6 @@ class MplCanvas(FigureCanvas):
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
-        self.dp =2
         Form.setObjectName("Form")
         Form.resize(1110, 792)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(Form)
@@ -289,13 +289,24 @@ class Ui_Form(QObject):
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
+        self.User = User.User()
         self.Investment = Investment.Investment()
         self.Statement = Statement.Statement()
         self.Log = Log.Log.Money()
 
+        self.User.SelectProfile(UserID)
         self.Investment.setProfile(UserID)
         self.Statement.setProfile(UserID)
         self.Log.setProfile(UserID)
+
+        self.loadSettings()
+
+        self.currency = "$"
+        self.Gold = Gold()
+        self.Gold.changeUnit(self.GoldUnit)
+
+
+
         days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
         self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
         self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
@@ -311,19 +322,23 @@ class Ui_Form(QObject):
 
         self.BarGraph()
 
+    def loadSettings(self):
+        _, self.DecimalPoints, _, self.GoldUnit = self.User.GetSettings()
+
     def updateVariables(self):
-        self.MoneyIn.setText(str(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)))
-        self.MoneyOut.setText(str(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date)))
+        self.MoneyIn.setText(
+            self.currency + " " + str(round(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
+        self.MoneyOut.setText(self.currency + " " + str(round(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
         # use MoneyLog to get count.
         # self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
         self.InvestmentSold.setText(
             str(self.Statement.getInvestmentCount(StartDate=self.start_date, EndDate=self.end_date)))
-        self.GoldSold.setText(str(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)))
+        self.GoldSold.setText(str(round(self.Gold.convertWeight(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + " " + self.GoldUnit)
         self.AverageProfitLoss.setText(
-            str(round(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date), 2)))
+            self.currency + " " + str(round(self.Gold.convertRate(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + f" /{self.GoldUnit}")
 
         if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
-            self.MoneyInChange.setText(str(""))
+            self.MoneyInChange.setText("")
         else:
             CurrentValue = self.Log.getMoneyAdded(StartDate=self.start_date,
                                                   EndDate=self.end_date)
@@ -331,10 +346,10 @@ class Ui_Form(QObject):
                                                EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.MoneyInChange)
-            self.MoneyInChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+            self.MoneyInChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
         if self.Log.getMoneyOut(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
-            self.MoneyOutChange.setText(str(""))
+            self.MoneyOutChange.setText("")
         else:
             CurrentValue = self.Log.getMoneyOut(StartDate=self.start_date,
                                                 EndDate=self.end_date)
@@ -342,10 +357,10 @@ class Ui_Form(QObject):
                                              EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.MoneyOutChange)
-            self.MoneyOutChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+            self.MoneyOutChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
         if self.Statement.getInvestmentCount(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
-            self.InvestmentSoldChange.setText(str(""))
+            self.InvestmentSoldChange.setText("")
         else:
             CurrentValue = self.Statement.getInvestmentCount(StartDate=self.start_date,
                                                              EndDate=self.end_date)
@@ -353,10 +368,10 @@ class Ui_Form(QObject):
                                                           EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.InvestmentSoldChange)
-            self.InvestmentSoldChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+            self.InvestmentSoldChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
         if self.Statement.getSum("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
-            self.GoldSoldChange.setText(str(""))
+            self.GoldSoldChange.setText("")
         else:
             CurrentValue = self.Statement.getSum("Gold", StartDate=self.start_date,
                                                  EndDate=self.end_date)
@@ -364,10 +379,10 @@ class Ui_Form(QObject):
                                               EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.GoldSoldChange)
-            self.GoldSoldChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+            self.GoldSoldChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
         if self.Statement.getAvgProfitLoss(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
-            self.AverageProfitLossChange.setText(str(""))
+            self.AverageProfitLossChange.setText("")
         else:
             CurrentValue = self.Statement.getAvgProfitLoss(StartDate=self.start_date,
                                                            EndDate=self.end_date)
@@ -375,7 +390,7 @@ class Ui_Form(QObject):
                                                         EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.AverageProfitLossChange)
-            self.AverageProfitLossChange.setText(self.formatPercentageChange(PercentageIncrease,self.dp))
+            self.AverageProfitLossChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
     def formatPercentageChange(self, Percentage, dp):
         sign = ""
