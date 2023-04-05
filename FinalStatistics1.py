@@ -15,6 +15,7 @@ from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QDate
 from PyQt5.QtWidgets import QCalendarWidget, QDesktopWidget
+from dateutil.relativedelta import relativedelta
 
 from Database import Statement, Log, Investment
 
@@ -266,9 +267,10 @@ class Ui_Form(QObject):
         self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
         self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
 
-        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month() - 1)[1]
-        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, 1).date()
-        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, days_in_month).date()
+        one_month_ago =self.start_date - relativedelta(months=1)  # subtract one month
+        days_in_month = calendar.monthrange(one_month_ago.year, one_month_ago.month)[1]
+        self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
+        self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
         self.updateVariables()
 
         # for year set start start date to year-1-1 end date= year-12-31
@@ -287,9 +289,10 @@ class Ui_Form(QObject):
         self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
         self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
 
-        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month() - 1)[1]
-        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, 1).date()
-        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, days_in_month).date()
+        one_month_ago =self.start_date - relativedelta(months=1)  # subtract one month
+        days_in_month = calendar.monthrange(one_month_ago.year, one_month_ago.month)[1]
+        self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
+        self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
 
         # increase = ((current value - previous value) / previous value) * 100
 
