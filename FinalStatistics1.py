@@ -49,11 +49,13 @@ class Ui_Form(QObject):
         self.horizontalLayout.addWidget(self.label)
         self.comboBox = QtWidgets.QComboBox(Form)
         self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("Month")
+        self.comboBox.addItem("Year")
         self.horizontalLayout.addWidget(self.comboBox)
 
         self.Date = QtWidgets.QDateEdit()
         self.Date.setDisplayFormat("MM-yyyy")
-        self.Date.setCalendarPopup(True)
+        # self.Date.setCalendarPopup(True)
         self.Date.setMaximumDate(QDate.currentDate())
         self.Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.horizontalLayout.addWidget(self.Date)
@@ -226,6 +228,7 @@ class Ui_Form(QObject):
 
         self.SetupPage()
         self.Date.dateChanged.connect(self.updateGraph)
+        self.comboBox.currentIndexChanged.connect(self.updateDateEdit)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -250,30 +253,35 @@ class Ui_Form(QObject):
         self.AverageProfitLossChange.setText(_translate("Form", "TextLabel"))
 
     def updateDateEdit(self):
-        if self.Mode.currentIndex() == 0:
+        if self.comboBox.currentIndex() == 0:
             self.Date.setDisplayFormat("MM-yyyy")
-            self.Date.setEnabled(True)
-        elif self.Mode.currentIndex() == 1:
+        elif self.comboBox.currentIndex() == 1:
             self.Date.setDisplayFormat("yyyy")
-            self.Date.setEnabled(True)
-        elif self.Mode.currentIndex() == 2:
-            self.Date.setEnabled(False)
+        self.setupDates()
 
     def updateGraph(self):
         self.BarGraph()
         self.canvas.draw()
-        # go back 1 month instead of using date
-        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
-        self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
-        self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
-
-        one_month_ago =self.start_date - relativedelta(months=1)  # subtract one month
-        days_in_month = calendar.monthrange(one_month_ago.year, one_month_ago.month)[1]
-        self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
-        self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
-        self.updateVariables()
+        self.setupDates()
 
         # for year set start start date to year-1-1 end date= year-12-31
+
+    def setupDates(self):
+        # go back 1 month instead of using date
+        if self.comboBox.currentIndex() == 1:
+            self.start_date = datetime(self.Date.date().year(), 1, 1).date()
+            self.end_date = datetime(self.Date.date().year(), 12, 31).date()
+            self.start_date1 = datetime(self.Date.date().year()-1, 1, 1).date()
+            self.end_date1 = datetime(self.Date.date().year()-1, 12, 31).date()
+        else:
+            days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
+            self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
+            self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
+            one_month_ago = self.start_date - relativedelta(months=1)  # subtract one month
+            days_in_month = calendar.monthrange(one_month_ago.year, one_month_ago.month)[1]
+            self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
+            self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
+        self.updateVariables()
 
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
@@ -289,7 +297,7 @@ class Ui_Form(QObject):
         self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
         self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
 
-        one_month_ago =self.start_date - relativedelta(months=1)  # subtract one month
+        one_month_ago = self.start_date - relativedelta(months=1)  # subtract one month
         days_in_month = calendar.monthrange(one_month_ago.year, one_month_ago.month)[1]
         self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
         self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
@@ -314,42 +322,55 @@ class Ui_Form(QObject):
         if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.MoneyInChange.setText(str(""))
         else:
-            self.MoneyInChange.setText(str((self.Log.getMoneyAdded(StartDate=self.start_date,
-                                                                   EndDate=self.end_date) - self.Log.getMoneyAdded(
-                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Log.getMoneyAdded(
-                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
+            CurrentValue = self.Log.getMoneyAdded(StartDate=self.start_date,
+                                                  EndDate=self.end_date)
+            PrevValue = self.Log.getMoneyAdded(StartDate=self.start_date1,
+                                               EndDate=self.end_date1)
+            PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
+            self.MoneyInChange.setText(str(PercentageIncrease))
 
         if self.Log.getMoneyOut(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.MoneyOutChange.setText(str(""))
         else:
-            self.MoneyOutChange.setText(str((self.Log.getMoneyOut(StartDate=self.start_date,
-                                                                  EndDate=self.end_date) - self.Log.getMoneyOut(
-                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Log.getMoneyOut(StartDate=self.start_date1,
-                                                                                            EndDate=self.end_date1)) * 100)
+            CurrentValue = self.Log.getMoneyOut(StartDate=self.start_date,
+                                                EndDate=self.end_date)
+            PrevValue = self.Log.getMoneyOut(StartDate=self.start_date1,
+                                             EndDate=self.end_date1)
+            PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
+            self.MoneyOutChange.setText(str(PercentageIncrease))
 
         if self.Statement.getInvestmentCount(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.InvestmentSoldChange.setText(str(""))
         else:
-            self.InvestmentSoldChange.setText(str((self.Statement.getInvestmentCount(StartDate=self.start_date,
-                                                                                     EndDate=self.end_date) - self.Statement.getInvestmentCount(
-                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getInvestmentCount(
-                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
+            CurrentValue = self.Statement.getInvestmentCount(StartDate=self.start_date,
+                                                             EndDate=self.end_date)
+            PrevValue = self.Statement.getInvestmentCount(StartDate=self.start_date1,
+                                                          EndDate=self.end_date1)
+            PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
+            self.InvestmentSoldChange.setText(str(PercentageIncrease))
 
         if self.Statement.getSum("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.GoldSoldChange.setText(str(""))
         else:
-            self.GoldSoldChange.setText(str((self.Statement.getSum("Gold", StartDate=self.start_date,
-                                                                   EndDate=self.end_date) - self.Statement.getSum(
-                "Gold", StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getSum("Gold",
-                                                                                                     StartDate=self.start_date1,
-                                                                                                     EndDate=self.end_date1)) * 100)
-        if self.Statement.getAvgProfitLoss(StartDate=self.start_date1, EndDate=self.end_date1) ==0:
+            CurrentValue = self.Statement.getSum("Gold", StartDate=self.start_date,
+                                                 EndDate=self.end_date)
+            PrevValue = self.Statement.getSum("Gold", StartDate=self.start_date1,
+                                              EndDate=self.end_date1)
+            PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
+            self.GoldSoldChange.setText(str(PercentageIncrease))
+
+        if self.Statement.getAvgProfitLoss(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.AverageProfitLossChange.setText(str(""))
         else:
-            self.AverageProfitLossChange.setText(str((self.Statement.getAvgProfitLoss(StartDate=self.start_date,
-                                                                                     EndDate=self.end_date) - self.Statement.getAvgProfitLoss(
-                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getAvgProfitLoss(
-                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
+            CurrentValue = self.Statement.getAvgProfitLoss(StartDate=self.start_date,
+                                                           EndDate=self.end_date)
+            PrevValue = self.Statement.getAvgProfitLoss(StartDate=self.start_date1,
+                                                        EndDate=self.end_date1)
+            PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
+            self.AverageProfitLossChange.setText(str(PercentageIncrease))
+
+    def getPercentageIncrease(self, CurrentValue, PrevValue):
+        return ((CurrentValue - PrevValue) / abs(PrevValue)) * 100
 
     def BarGraph(self):
         self.canvas.axes.clear()
@@ -371,10 +392,12 @@ class Ui_Form(QObject):
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
 
+
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
 
 if __name__ == "__main__":
     import sys
