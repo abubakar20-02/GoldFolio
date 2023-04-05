@@ -530,10 +530,16 @@ class Statement:
         self.__SetUpConnection()
         self.c.execute(sql, (self.Profile,))
         sum = self.c.fetchone()[0]
+        if sum is None:
+            sum = 0
         self.conn.close()
         return sum
 
     def getAvgProfitLoss(self, StartDate=None, EndDate=None):
-        return self.getSum("Value_Change", StartDate=StartDate, EndDate=EndDate) / self.getSum("Gold",
-                                                                                               StartDate=StartDate,
-                                                                                               EndDate=EndDate)
+        Sum = self.getSum("Value_Change", StartDate=StartDate, EndDate=EndDate)
+        Gold = self.getSum("Gold", StartDate=StartDate, EndDate=EndDate)
+        if Sum == 0:
+            return 0
+        if Gold == 0:
+            return 0
+        return Sum / Gold

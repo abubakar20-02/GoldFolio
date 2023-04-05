@@ -111,7 +111,7 @@ class Ui_Form(QObject):
             print("load admin page")
             self.openAdminPage()
             return
-        self.UserName.text()
+        #self.UserName.text()
         isPassCorrect = verify_password(self.Password.text(), self.User.getHashedPassword(self.UserName.text()))
         print(isPassCorrect)
         if isPassCorrect is False:

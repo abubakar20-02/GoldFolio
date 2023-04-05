@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'FinalStatistics1.ui'
+# Form implementation generated from reading ui file 'Statistics2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -14,7 +14,7 @@ from datetime import datetime
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QDate
-from PyQt5.QtWidgets import QCalendarWidget
+from PyQt5.QtWidgets import QCalendarWidget, QDesktopWidget
 
 from Database import Statement, Log, Investment
 
@@ -36,19 +36,19 @@ class MplCanvas(FigureCanvas):
 class Ui_Form(QObject):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1040, 710)
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(Form)
-        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        Form.resize(1110, 792)
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.Mode_Text = QtWidgets.QLabel(Form)
-        self.Mode_Text.setObjectName("Mode_Text")
-        self.horizontalLayout.addWidget(self.Mode_Text)
-        self.Mode = QtWidgets.QComboBox(Form)
-        self.Mode.setObjectName("Mode")
-        self.horizontalLayout.addWidget(self.Mode)
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        self.comboBox = QtWidgets.QComboBox(Form)
+        self.comboBox.setObjectName("comboBox")
+        self.horizontalLayout.addWidget(self.comboBox)
 
         self.Date = QtWidgets.QDateEdit()
         self.Date.setDisplayFormat("MM-yyyy")
@@ -57,205 +57,196 @@ class Ui_Form(QObject):
         self.Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.horizontalLayout.addWidget(self.Date)
 
-        self.verticalLayout_6.addLayout(self.horizontalLayout)
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setContentsMargins(-1, 10, 10, -1)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.LayoutForMoney = QtWidgets.QVBoxLayout()
-        self.LayoutForMoney.setContentsMargins(10, 10, 10, 10)
-        self.LayoutForMoney.setSpacing(10)
-        self.LayoutForMoney.setObjectName("LayoutForMoney")
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.LayoutForMoney.addItem(spacerItem1)
-        self.LayoutMoneyDeposited = QtWidgets.QHBoxLayout()
-        self.LayoutMoneyDeposited.setObjectName("LayoutMoneyDeposited")
-        self.MoneyDeposited_Text = QtWidgets.QLabel(Form)
-        self.MoneyDeposited_Text.setObjectName("MoneyDeposited_Text")
-        self.LayoutMoneyDeposited.addWidget(self.MoneyDeposited_Text)
-        self.MoneyDeposited = QtWidgets.QLabel(Form)
-        self.MoneyDeposited.setObjectName("MoneyDeposited")
-        self.LayoutMoneyDeposited.addWidget(self.MoneyDeposited)
-        self.MoneyDepositedChange = QtWidgets.QLabel(Form)
-        self.MoneyDepositedChange.setObjectName("MoneyDepositedChange")
-        self.LayoutMoneyDeposited.addWidget(self.MoneyDepositedChange)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.LayoutMoneyDeposited.addItem(spacerItem2)
-        self.LayoutForMoney.addLayout(self.LayoutMoneyDeposited)
-        self.LayoutMoneyWithdrawn = QtWidgets.QHBoxLayout()
-        self.LayoutMoneyWithdrawn.setObjectName("LayoutMoneyWithdrawn")
-        self.MoneyWithdrawn_Text = QtWidgets.QLabel(Form)
-        self.MoneyWithdrawn_Text.setObjectName("MoneyWithdrawn_Text")
-        self.LayoutMoneyWithdrawn.addWidget(self.MoneyWithdrawn_Text)
-        self.MoneyWithdrawn = QtWidgets.QLabel(Form)
-        self.MoneyWithdrawn.setObjectName("MoneyWithdrawn")
-        self.LayoutMoneyWithdrawn.addWidget(self.MoneyWithdrawn)
-        self.MoneyWithdrawnChange = QtWidgets.QLabel(Form)
-        self.MoneyWithdrawnChange.setObjectName("MoneyWithdrawnChange")
-        self.LayoutMoneyWithdrawn.addWidget(self.MoneyWithdrawnChange)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.LayoutMoneyWithdrawn.addItem(spacerItem3)
-        self.LayoutForMoney.addLayout(self.LayoutMoneyWithdrawn)
-        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.LayoutForMoney.addItem(spacerItem4)
-        self.horizontalLayout_3.addLayout(self.LayoutForMoney)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem5)
-
+        self.verticalLayout_5.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setContentsMargins(10, -1, 10, -1)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.widget = QtWidgets.QWidget(Form)
+        self.widget.setMinimumSize(QtCore.QSize(300, 300))
+        self.widget.setObjectName("widget")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.canvas = MplCanvas(self, height=300, width=600, dpi=100)
         self.canvas.setMinimumSize(QtCore.QSize(600, 300))
+        # set the maximum height for the canvas to 40% of the page size
+        desktop = QDesktopWidget()
+        height = int(desktop.availableGeometry().height() * 0.4)
+        self.canvas.setMaximumHeight(height)
+
+        self.canvas.setStyleSheet('border: 2px solid black;')
+
         self.canvas.setObjectName("canvas")
-        self.horizontalLayout_3.addWidget(self.canvas)
-
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem6)
-        self.verticalLayout_6.addLayout(self.horizontalLayout_3)
-        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_4.setContentsMargins(-1, 10, 10, -1)
-        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.LayoutForMoney_ = QtWidgets.QVBoxLayout()
-        self.LayoutForMoney_.setContentsMargins(10, 10, 10, 10)
-        self.LayoutForMoney_.setSpacing(10)
-        self.LayoutForMoney_.setObjectName("LayoutForMoney_")
-        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.LayoutForMoney_.addItem(spacerItem7)
-        self.InvestmentMadeLoayout = QtWidgets.QHBoxLayout()
-        self.InvestmentMadeLoayout.setObjectName("InvestmentMadeLoayout")
-        self.InvestmentMade_Text = QtWidgets.QLabel(Form)
-        self.InvestmentMade_Text.setObjectName("InvestmentMade_Text")
-        self.InvestmentMadeLoayout.addWidget(self.InvestmentMade_Text)
-        self.InvestmentMade = QtWidgets.QLabel(Form)
-        self.InvestmentMade.setObjectName("InvestmentMade")
-        self.InvestmentMadeLoayout.addWidget(self.InvestmentMade)
-        self.InvestmentMadeChange = QtWidgets.QLabel(Form)
-        self.InvestmentMadeChange.setObjectName("InvestmentMadeChange")
-        self.InvestmentMadeLoayout.addWidget(self.InvestmentMadeChange)
-        spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.InvestmentMadeLoayout.addItem(spacerItem8)
-        self.LayoutForMoney_.addLayout(self.InvestmentMadeLoayout)
-        self.InvestmentSoldLayout = QtWidgets.QHBoxLayout()
-        self.InvestmentSoldLayout.setObjectName("InvestmentSoldLayout")
-        self.InvestmentSold_Text = QtWidgets.QLabel(Form)
-        self.InvestmentSold_Text.setObjectName("InvestmentSold_Text")
-        self.InvestmentSoldLayout.addWidget(self.InvestmentSold_Text)
-        self.InvestmentSold = QtWidgets.QLabel(Form)
-        self.InvestmentSold.setObjectName("InvestmentSold")
-        self.InvestmentSoldLayout.addWidget(self.InvestmentSold)
-        self.InvestmentSoldChange = QtWidgets.QLabel(Form)
-        self.InvestmentSoldChange.setObjectName("InvestmentSoldChange")
-        self.InvestmentSoldLayout.addWidget(self.InvestmentSoldChange)
-        spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.InvestmentSoldLayout.addItem(spacerItem9)
-        self.LayoutForMoney_.addLayout(self.InvestmentSoldLayout)
-        self.line_2 = QtWidgets.QFrame(Form)
-        self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_2.setObjectName("line_2")
-        self.LayoutForMoney_.addWidget(self.line_2)
-        self.GoldBoughtLayout = QtWidgets.QHBoxLayout()
-        self.GoldBoughtLayout.setObjectName("GoldBoughtLayout")
-        self.GoldBought_Text = QtWidgets.QLabel(Form)
-        self.GoldBought_Text.setObjectName("GoldBought_Text")
-        self.GoldBoughtLayout.addWidget(self.GoldBought_Text)
-        self.GoldBought = QtWidgets.QLabel(Form)
-        self.GoldBought.setObjectName("GoldBought")
-        self.GoldBoughtLayout.addWidget(self.GoldBought)
-        self.GoldBoughtChange = QtWidgets.QLabel(Form)
-        self.GoldBoughtChange.setObjectName("GoldBoughtChange")
-        self.GoldBoughtLayout.addWidget(self.GoldBoughtChange)
-        spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.GoldBoughtLayout.addItem(spacerItem10)
-        self.LayoutForMoney_.addLayout(self.GoldBoughtLayout)
-        self.GoldSoldLayout = QtWidgets.QHBoxLayout()
-        self.GoldSoldLayout.setObjectName("GoldSoldLayout")
-        self.GoldSold_Text = QtWidgets.QLabel(Form)
-        self.GoldSold_Text.setObjectName("GoldSold_Text")
-        self.GoldSoldLayout.addWidget(self.GoldSold_Text)
-        self.GoldSold = QtWidgets.QLabel(Form)
-        self.GoldSold.setObjectName("GoldSold")
-        self.GoldSoldLayout.addWidget(self.GoldSold)
-        self.GoldSoldChange = QtWidgets.QLabel(Form)
-        self.GoldSoldChange.setObjectName("GoldSoldChange")
-        self.GoldSoldLayout.addWidget(self.GoldSoldChange)
-        spacerItem11 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.GoldSoldLayout.addItem(spacerItem11)
-        self.LayoutForMoney_.addLayout(self.GoldSoldLayout)
-        self.line = QtWidgets.QFrame(Form)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
-        self.LayoutForMoney_.addWidget(self.line)
-        self.AverageProfitLossLayout = QtWidgets.QHBoxLayout()
-        self.AverageProfitLossLayout.setObjectName("AverageProfitLossLayout")
-        self.AverageProfitLoss_Text = QtWidgets.QLabel(Form)
-        self.AverageProfitLoss_Text.setObjectName("AverageProfitLoss_Text")
-        self.AverageProfitLossLayout.addWidget(self.AverageProfitLoss_Text)
-        self.AverageProfitLoss = QtWidgets.QLabel(Form)
-        self.AverageProfitLoss.setObjectName("AverageProfitLoss")
-        self.AverageProfitLossLayout.addWidget(self.AverageProfitLoss)
-        self.AverageProfitLossChange = QtWidgets.QLabel(Form)
-        self.AverageProfitLossChange.setObjectName("AverageProfitLossChange")
-        self.AverageProfitLossLayout.addWidget(self.AverageProfitLossChange)
-        spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.AverageProfitLossLayout.addItem(spacerItem12)
-        self.LayoutForMoney_.addLayout(self.AverageProfitLossLayout)
-        spacerItem13 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.LayoutForMoney_.addItem(spacerItem13)
-        self.horizontalLayout_4.addLayout(self.LayoutForMoney_)
-        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem14)
-        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout_6.addWidget(self.canvas)
+        self.horizontalLayout_2.addWidget(self.widget)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem1)
+        self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_8.addItem(spacerItem2)
+        self.widget_2 = QtWidgets.QWidget(Form)
+        self.widget_2.setObjectName("widget_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.widget_2)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem15 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem15)
-        self.yaxis_text = QtWidgets.QLabel(Form)
-        self.yaxis_text.setObjectName("yaxis_text")
-        self.horizontalLayout_2.addWidget(self.yaxis_text)
-        self.yaxis = QtWidgets.QComboBox(Form)
-        self.yaxis.setObjectName("yaxis")
-        self.horizontalLayout_2.addWidget(self.yaxis)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
-
-        self.canvas1 = MplCanvas(self, height=300, width=600, dpi=100)
-        self.canvas1.setMinimumSize(QtCore.QSize(600, 300))
-        self.canvas1.setObjectName("canvas")
-        self.verticalLayout.addWidget(self.canvas1)
-
-        spacerItem16 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem16)
-        self.horizontalLayout_4.addLayout(self.verticalLayout)
-        spacerItem17 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem17)
-        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+        self.MoneyLayout = QtWidgets.QVBoxLayout()
+        self.MoneyLayout.setContentsMargins(10, 10, 10, -1)
+        self.MoneyLayout.setObjectName("MoneyLayout")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_10.addItem(spacerItem3)
+        self.label_18 = QtWidgets.QLabel(self.widget_2)
+        self.label_18.setObjectName("label_18")
+        self.horizontalLayout_10.addWidget(self.label_18)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_10.addItem(spacerItem4)
+        self.MoneyLayout.addLayout(self.horizontalLayout_10)
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.MoneyLayout.addItem(spacerItem5)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.MoneyIn_Text = QtWidgets.QLabel(self.widget_2)
+        self.MoneyIn_Text.setObjectName("MoneyIn_Text")
+        self.horizontalLayout_4.addWidget(self.MoneyIn_Text)
+        self.MoneyIn = QtWidgets.QLabel(self.widget_2)
+        self.MoneyIn.setObjectName("MoneyIn")
+        self.horizontalLayout_4.addWidget(self.MoneyIn)
+        self.MoneyInChange = QtWidgets.QLabel(self.widget_2)
+        self.MoneyInChange.setObjectName("MoneyInChange")
+        self.horizontalLayout_4.addWidget(self.MoneyInChange)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem6)
+        self.MoneyLayout.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.MoneyOut_Text = QtWidgets.QLabel(self.widget_2)
+        self.MoneyOut_Text.setObjectName("MoneyOut_Text")
+        self.horizontalLayout_3.addWidget(self.MoneyOut_Text)
+        self.MoneyOut = QtWidgets.QLabel(self.widget_2)
+        self.MoneyOut.setObjectName("MoneyOut")
+        self.horizontalLayout_3.addWidget(self.MoneyOut)
+        self.MoneyOutChange = QtWidgets.QLabel(self.widget_2)
+        self.MoneyOutChange.setObjectName("MoneyOutChange")
+        self.horizontalLayout_3.addWidget(self.MoneyOutChange)
+        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem7)
+        self.MoneyLayout.addLayout(self.horizontalLayout_3)
+        spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.MoneyLayout.addItem(spacerItem8)
+        self.verticalLayout.addLayout(self.MoneyLayout)
+        self.horizontalLayout_8.addWidget(self.widget_2)
+        self.widget_3 = QtWidgets.QWidget(Form)
+        self.widget_3.setObjectName("widget_3")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget_3)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.InvestmentLayout = QtWidgets.QVBoxLayout()
+        self.InvestmentLayout.setContentsMargins(10, 10, 10, -1)
+        self.InvestmentLayout.setObjectName("InvestmentLayout")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem9)
+        self.label_17 = QtWidgets.QLabel(self.widget_3)
+        self.label_17.setObjectName("label_17")
+        self.horizontalLayout_9.addWidget(self.label_17)
+        spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem10)
+        self.InvestmentLayout.addLayout(self.horizontalLayout_9)
+        spacerItem11 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.InvestmentLayout.addItem(spacerItem11)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.InvestmentSold_Text = QtWidgets.QLabel(self.widget_3)
+        self.InvestmentSold_Text.setObjectName("InvestmentSold_Text")
+        self.horizontalLayout_5.addWidget(self.InvestmentSold_Text)
+        self.InvestmentSold = QtWidgets.QLabel(self.widget_3)
+        self.InvestmentSold.setObjectName("InvestmentSold")
+        self.horizontalLayout_5.addWidget(self.InvestmentSold)
+        self.InvestmentSoldChange = QtWidgets.QLabel(self.widget_3)
+        self.InvestmentSoldChange.setObjectName("InvestmentSoldChange")
+        self.horizontalLayout_5.addWidget(self.InvestmentSoldChange)
+        spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem12)
+        self.InvestmentLayout.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.GoldSold_Text = QtWidgets.QLabel(self.widget_3)
+        self.GoldSold_Text.setObjectName("GoldSold_Text")
+        self.horizontalLayout_6.addWidget(self.GoldSold_Text)
+        self.GoldSold = QtWidgets.QLabel(self.widget_3)
+        self.GoldSold.setObjectName("GoldSold")
+        self.horizontalLayout_6.addWidget(self.GoldSold)
+        self.GoldSoldChange = QtWidgets.QLabel(self.widget_3)
+        self.GoldSoldChange.setObjectName("GoldSoldChange")
+        self.horizontalLayout_6.addWidget(self.GoldSoldChange)
+        spacerItem13 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem13)
+        self.InvestmentLayout.addLayout(self.horizontalLayout_6)
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.AverageProfitLoss_Text = QtWidgets.QLabel(self.widget_3)
+        self.AverageProfitLoss_Text.setObjectName("AverageProfitLoss_Text")
+        self.horizontalLayout_7.addWidget(self.AverageProfitLoss_Text)
+        self.AverageProfitLoss = QtWidgets.QLabel(self.widget_3)
+        self.AverageProfitLoss.setObjectName("AverageProfitLoss")
+        self.horizontalLayout_7.addWidget(self.AverageProfitLoss)
+        self.AverageProfitLossChange = QtWidgets.QLabel(self.widget_3)
+        self.AverageProfitLossChange.setObjectName("AverageProfitLossChange")
+        self.horizontalLayout_7.addWidget(self.AverageProfitLossChange)
+        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem14)
+        self.InvestmentLayout.addLayout(self.horizontalLayout_7)
+        spacerItem15 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.InvestmentLayout.addItem(spacerItem15)
+        self.verticalLayout_2.addLayout(self.InvestmentLayout)
+        self.horizontalLayout_8.addWidget(self.widget_3)
+        spacerItem16 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_8.addItem(spacerItem16)
+        self.horizontalLayout_11.addLayout(self.horizontalLayout_8)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_11)
+        spacerItem17 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem17)
+        self.verticalLayout_5.addLayout(self.verticalLayout_4)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-        self.Mode.currentIndexChanged.connect(self.updateDateEdit)
-        self.Date.dateChanged.connect(self.updateGraph)
+        self.widget.setStyleSheet(
+            'QWidget#widget { border: 2px solid black; border-radius: 10px; background-color: white; }')
+        self.widget_2.setStyleSheet(
+            'QWidget#widget_2 { border: 2px solid black; border-radius: 10px; background-color: white; }')
+        self.widget_3.setStyleSheet(
+            'QWidget#widget_3 { border: 2px solid black; border-radius: 10px; background-color: white; }')
+
         self.SetupPage()
+        self.Date.dateChanged.connect(self.updateGraph)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.Mode_Text.setText(_translate("Form", "Mode: "))
-        self.MoneyDeposited_Text.setText(_translate("Form", "Money deposited:"))
-        self.MoneyWithdrawn_Text.setText(_translate("Form", "Money withdrawn:"))
-        self.MoneyWithdrawnChange.setText(_translate("Form", "+50.1"))
-        self.InvestmentMade_Text.setText(_translate("Form", "Investment made : "))
-        self.InvestmentMadeChange.setText(_translate("Form", "+50.1"))
-        self.InvestmentSold_Text.setText(_translate("Form", "Investment sold : "))
-        self.InvestmentSoldChange.setText(_translate("Form", "+50.1"))
-        self.GoldBought_Text.setText(_translate("Form", "Gold bought : "))
-        self.GoldBought.setText(_translate("Form", "12000"))
-        self.GoldBoughtChange.setText(_translate("Form", "+50.1"))
-        self.GoldSold_Text.setText(_translate("Form", "Gold sold : "))
-        self.GoldSoldChange.setText(_translate("Form", "+50.1"))
-        self.AverageProfitLoss_Text.setText(_translate("Form", "Average profit/loss : "))
-        self.AverageProfitLoss.setText(_translate("Form", "12000"))
-        self.AverageProfitLossChange.setText(_translate("Form", "+50.1"))
-        self.yaxis_text.setText(_translate("Form", "TextLabel"))
+        self.label.setText(_translate("Form", "TextLabel"))
+        self.label_18.setText(_translate("Form", "Money"))
+        self.MoneyIn_Text.setText(_translate("Form", "Money in: "))
+        self.MoneyIn.setText(_translate("Form", "TextLabel"))
+        self.MoneyInChange.setText(_translate("Form", "TextLabel"))
+        self.MoneyOut_Text.setText(_translate("Form", "Money out:"))
+        self.MoneyOut.setText(_translate("Form", "TextLabel"))
+        self.MoneyOutChange.setText(_translate("Form", "TextLabel"))
+        self.label_17.setText(_translate("Form", "Investment"))
+        self.InvestmentSold_Text.setText(_translate("Form", "Investment sold: "))
+        self.InvestmentSold.setText(_translate("Form", "TextLabel"))
+        self.InvestmentSoldChange.setText(_translate("Form", "TextLabel"))
+        self.GoldSold_Text.setText(_translate("Form", "Gold sold: "))
+        self.GoldSold.setText(_translate("Form", "TextLabel"))
+        self.GoldSoldChange.setText(_translate("Form", "TextLabel"))
+        self.AverageProfitLoss_Text.setText(_translate("Form", "Average profit/loss: "))
+        self.AverageProfitLoss.setText(_translate("Form", "TextLabel"))
+        self.AverageProfitLossChange.setText(_translate("Form", "TextLabel"))
 
     def updateDateEdit(self):
         if self.Mode.currentIndex() == 0:
@@ -270,10 +261,17 @@ class Ui_Form(QObject):
     def updateGraph(self):
         self.BarGraph()
         self.canvas.draw()
-        self.Line("Value_Change")
-        self.canvas1.draw()
+        # go back 1 month instead of using date
+        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month())[1]
+        self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
+        self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
 
+        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month() - 1)[1]
+        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, 1).date()
+        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, days_in_month).date()
         self.updateVariables()
+
+        # for year set start start date to year-1-1 end date= year-12-31
 
     def SetupPage(self):
         with open("my_variable.pickle", "rb") as f:
@@ -289,33 +287,66 @@ class Ui_Form(QObject):
         self.start_date = datetime(self.Date.date().year(), self.Date.date().month(), 1).date()
         self.end_date = datetime(self.Date.date().year(), self.Date.date().month(), days_in_month).date()
 
-        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month()-1)[1]
-        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month()-1, 1).date()
-        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month()-1, days_in_month).date()
+        days_in_month = calendar.monthrange(self.Date.date().year(), self.Date.date().month() - 1)[1]
+        self.start_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, 1).date()
+        self.end_date1 = datetime(self.Date.date().year(), self.Date.date().month() - 1, days_in_month).date()
 
-        #increase = ((current value - previous value) / previous value) * 100
-
-
+        # increase = ((current value - previous value) / previous value) * 100
 
         self.updateVariables()
 
         self.BarGraph()
-        self.Line("Value_Change",StartDate=self.start_date,EndDate=self.end_date)
 
     def updateVariables(self):
-        self.MoneyDeposited.setText(str(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)))
-        self.MoneyWithdrawn.setText(str(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date)))
+        self.MoneyIn.setText(str(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)))
+        self.MoneyOut.setText(str(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date)))
         # use MoneyLog to get count.
-        self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
+        # self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
         self.InvestmentSold.setText(
             str(self.Statement.getInvestmentCount(StartDate=self.start_date, EndDate=self.end_date)))
         self.GoldSold.setText(str(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)))
         self.AverageProfitLoss.setText(
-            str(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)))
-        if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) ==0:
-            self.MoneyDepositedChange.setText(str(""))
+            str(round(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date), 2)))
+
+        if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
+            self.MoneyInChange.setText(str(""))
         else:
-            self.MoneyDepositedChange.setText(str((self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date)-self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1))/self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1))*100)
+            self.MoneyInChange.setText(str((self.Log.getMoneyAdded(StartDate=self.start_date,
+                                                                   EndDate=self.end_date) - self.Log.getMoneyAdded(
+                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Log.getMoneyAdded(
+                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
+
+        if self.Log.getMoneyOut(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
+            self.MoneyOutChange.setText(str(""))
+        else:
+            self.MoneyOutChange.setText(str((self.Log.getMoneyOut(StartDate=self.start_date,
+                                                                  EndDate=self.end_date) - self.Log.getMoneyOut(
+                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Log.getMoneyOut(StartDate=self.start_date1,
+                                                                                            EndDate=self.end_date1)) * 100)
+
+        if self.Statement.getInvestmentCount(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
+            self.InvestmentSoldChange.setText(str(""))
+        else:
+            self.InvestmentSoldChange.setText(str((self.Statement.getInvestmentCount(StartDate=self.start_date,
+                                                                                     EndDate=self.end_date) - self.Statement.getInvestmentCount(
+                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getInvestmentCount(
+                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
+
+        if self.Statement.getSum("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
+            self.GoldSoldChange.setText(str(""))
+        else:
+            self.GoldSoldChange.setText(str((self.Statement.getSum("Gold", StartDate=self.start_date,
+                                                                   EndDate=self.end_date) - self.Statement.getSum(
+                "Gold", StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getSum("Gold",
+                                                                                                     StartDate=self.start_date1,
+                                                                                                     EndDate=self.end_date1)) * 100)
+        if self.Statement.getAvgProfitLoss(StartDate=self.start_date1, EndDate=self.end_date1) ==0:
+            self.AverageProfitLossChange.setText(str(""))
+        else:
+            self.AverageProfitLossChange.setText(str((self.Statement.getAvgProfitLoss(StartDate=self.start_date,
+                                                                                     EndDate=self.end_date) - self.Statement.getAvgProfitLoss(
+                StartDate=self.start_date1, EndDate=self.end_date1)) / self.Statement.getAvgProfitLoss(
+                StartDate=self.start_date1, EndDate=self.end_date1)) * 100)
 
     def BarGraph(self):
         self.canvas.axes.clear()
@@ -337,51 +368,10 @@ class Ui_Form(QObject):
                            Patch(facecolor='r', edgecolor='black', label='Money Withdrawn')]
         self.canvas.axes.legend(handles=legend_elements)
 
-    def Line(self, ValueSelect, StartDate=None, EndDate=None):
-        self.canvas1.axes.clear()
-
-        # self.canvas.axes.xaxis.set_major_locator(MaxNLocator(nbins=5))
-        # self.canvas.axes.xaxis.set_major_locator(FixedLocator([15500, 16500, 17500, 18500, 19500]))
-
-        data = self.Statement.Overall(ValueSelect, StartDate, EndDate)
-        if data is None:
-            return
-        x = list(data.keys())
-        # xv = range(0,len(x))
-        y = list(data.values())
-        print(x)
-        print(y)
-        self.canvas1.axes.plot(x, y, '-o')
-        # self.canvas1.axes.grid(True)
-        self.canvas1.axes.set_xlabel('Date')
-        self.canvas1.axes.set_ylabel(ValueSelect)
-
-        # # # # Format the x-axis ticks as dates
-        if self.check_date_format(x[0]) == '000000':
-            # set the x-axis tick labels as dates
-            date_format = mdates.DateFormatter('%Y-%m-%d')
-            self.canvas1.axes.xaxis.set_major_formatter(date_format)
-
-            # set the x-axis major tick locations to every week
-            self.canvas1.axes.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
-        else:
-            self.canvas1.axes.xaxis.set_major_locator(ticker.MultipleLocator(3))
-        print("inside")
-
-    def check_date_format(self, date_str):
-        try:
-            format_str = date_str.strftime('%f')
-            print(format_str)
-        except:
-            return "a"
-        return format_str
-
-
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
 
 if __name__ == "__main__":
     import sys
