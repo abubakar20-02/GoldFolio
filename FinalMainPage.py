@@ -37,6 +37,8 @@ from GoldRate import Gold
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
+from keras.models import load_model
+from sklearn.preprocessing import MinMaxScaler
 
 
 class MplCanvas(FigureCanvas):
@@ -289,6 +291,7 @@ class Ui_MainWindow(QObject):
         self.AddCashButton.clicked.connect(lambda: self.addCash())
         self.LogOutButton.clicked.connect(lambda: self.LogOut())
         self.SellButton.clicked.connect(lambda: self.openSell())
+        self.loadModel()
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -330,7 +333,7 @@ class Ui_MainWindow(QObject):
         self.window = QtWidgets.QWidget()
         self.window = FinalStatistics1.MyWindow()
         self.window.showMaximized()
-        #self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
+        # self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
         self.window.show()
 
     def openGoldCalculator(self):
@@ -514,73 +517,99 @@ class Ui_MainWindow(QObject):
         self.canvas.axes.clear()
         self.canvas.draw()
 
-    # def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):
-    #     n_vars = 1 if type(data) is list else data.shape[1]
-    #     dff = pd.DataFrame(data)
-    #     cols, names = list(), list()
-    #     # input sequence (t-n, ... t-1)
-    #     for i in range(n_in, 0, -1):
-    #         cols.append(dff.shift(i))
-    #         names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
-    #     # forecast sequence (t, t+1, ... t+n)
-    #     for i in range(0, n_out):
-    #         cols.append(dff.shift(-i))
-    #         if i == 0:
-    #             names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
-    #         else:
-    #             names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
-    #     # put it all together
-    #     agg = pd.concat(cols, axis=1)
-    #     agg.columns = names
-    #     # drop rows with NaN values
-    #     if dropnan:
-    #         agg.dropna(inplace=True)
-    #     return agg
-    #
-    # df = pd.read_excel("gold_data.xlsx")
-    # df = df.iloc[:, 1:]
-    #
-    # reframed = series_to_supervised(df, 1, 1)
-    # values = reframed.values
-    # n_train_time = 80
-    # test = values[n_train_time:, :]
-    # test_X, test_y = test[:, :-1], test[:, -1]
-    # test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
-    #
-    # def recursive_forecast(self, model, input_data, n_days):
-    #     forecast = []
-    #     current_input = input_data[-1].copy()
-    #
-    #     for _ in range(n_days):
-    #         prediction = model.predict(current_input.reshape(1, 1, -1))
-    #         forecast.append(prediction[0, 0])
-    #         current_input = np.roll(current_input, -1)
-    #         current_input[-1] = prediction
-    #
-    #     return np.array(forecast)
-    #
-    # n_days = 7
-    # yhat = recursive_forecast(model, test_X, n_days)
-    # # Reshape yhat to (1, n_days)
-    # yhat = yhat.reshape(-1, 1)
-    #
-    # inv_yhat = np.concatenate((test_X[:n_days, -10:], yhat), axis=1)
-    # # inv_yhat = scaler.inverse_transform(inv_yhat)
-    # inv_yhat = inv_yhat[:, -1]
-    #
-    # interval = 60
-    # predictinterval = interval + n_days
-    # aa = [x for x in range(interval)]
-    # bb = [x for x in range(interval - 1, predictinterval)]
-    # print(bb)
-    #
-    # plt.plot(aa, inv_y[len(inv_y) - interval:], marker='.', label="actual")
-    # inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
-    # plt.plot(bb, inv_yhat[:], 'r', marker='.', label="predicition")
-    # # plt.plot(aa, inv_yhat[:interval], 'r', label="prediction")
-    # plt.ylabel('Price', size=15)
-    # plt.xlabel('Time step', size=15)
-    # plt.legend(fontsize=15)
+    def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):
+        n_vars = 1 if type(data) is list else data.shape[1]
+        dff = pd.DataFrame(data)
+        cols, names = list(), list()
+        # input sequence (t-n, ... t-1)
+        for i in range(n_in, 0, -1):
+            cols.append(dff.shift(i))
+            names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
+        # forecast sequence (t, t+1, ... t+n)
+        for i in range(0, n_out):
+            cols.append(dff.shift(-i))
+            if i == 0:
+                names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
+            else:
+                names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
+        # put it all together
+        agg = pd.concat(cols, axis=1)
+        agg.columns = names
+        # drop rows with NaN values
+        if dropnan:
+            agg.dropna(inplace=True)
+        return agg
+
+
+    def loadModel(self):
+        from joblib import load
+
+        model = load_model('model.h5')
+
+        df = pd.read_excel("gold_data.xlsx")
+        df = df.iloc[:, 1:]
+        df = pd.DataFrame(df)
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        df = scaler.fit_transform(df)
+
+        reframed = self.series_to_supervised(df, 1, 1)
+        print("-----------")
+        # split into train and test sets
+        values = reframed.values
+
+        n_train_time = 80
+        train = values[:n_train_time, :]
+        test = values[n_train_time:, :]
+        ##test = values[n_train_time:n_test_time, :]
+        # split into input and outputs
+        train_X, train_y = train[:, :-1], train[:, -1]
+        test_X, test_y = test[:, :-1], test[:, -1]
+        # reshape input to be 3D [samples, timesteps, features]
+        train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
+        test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
+        print(train_X.shape, train_y.shape, test_X.shape, test_y.shape)
+
+        test_X = test_X.reshape((test_X.shape[0], 21))
+        test_y = test_y.reshape((len(test_y), 1))
+        inv_y = np.concatenate((test_X[:, -10:], test_y), axis=1)
+        inv_y = scaler.inverse_transform(inv_y)
+        inv_y = inv_y[:, -1]
+
+        n_days = 7
+        yhat = self.recursive_forecast(model, test_X, n_days)
+        # Reshape yhat to (1, n_days)
+        yhat = yhat.reshape(-1, 1)
+        print(yhat)
+
+        inv_yhat = np.concatenate((test_X[:n_days, -10:], yhat), axis=1)
+        inv_yhat = scaler.inverse_transform(inv_yhat)
+        inv_yhat = inv_yhat[:, -1]
+
+        print(inv_yhat)
+
+        interval = 60
+        predictinterval = interval + n_days
+        aa = [x for x in range(interval)]
+        bb = [x for x in range(interval - 1, predictinterval)]
+        print(bb)
+
+        self.canvas.axes.plot(aa, inv_y[len(inv_y) - interval:], marker='.', label="actual")
+        inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
+        self.canvas.axes.plot(bb, inv_yhat[:], 'r', marker='.', label="predicition")
+
+
+    def recursive_forecast(self, model, input_data, n_days):
+        # load model.
+        forecast = []
+        current_input = input_data[-1].copy()
+
+        for _ in range(n_days):
+            prediction = model.predict(current_input.reshape(1, 1, -1))
+            forecast.append(prediction[0, 0])
+            current_input = np.roll(current_input, -1)
+            current_input[-1] = prediction
+
+        return np.array(forecast)
 
     # closeExcelFile()
 
@@ -616,6 +645,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.setProfile(self.UserID)
         self.window.SaveButton.clicked.connect(self.loadSettings)
         self.window.SaveButton.clicked.connect(self.restartThread)
+        # self.window.SaveButton.clicked.connect(
+        #     lambda: self.restartThread() if self.window.updatefreqchanged() else None)
         self.window.show()
 
     def openBuyInvestment(self):

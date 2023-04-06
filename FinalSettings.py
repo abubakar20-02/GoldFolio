@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from Database import User
+import GoldUnits
 
 
 class Ui_Form(QObject):
@@ -98,23 +99,37 @@ class Ui_Form(QObject):
     def setProfile(self, Profile):
         self.Profile = Profile
         self.User.SelectProfile(self.Profile)
-        MinimumProfit, dp, updatefreq, GoldUnit = self.User.GetSettings()
-        print(f"MPM {MinimumProfit},dp {dp} , uf {updatefreq}")
+        MinimumProfit, dp, self.updatefreq, GoldUnit = self.User.GetSettings()
+        print(f"MPM {MinimumProfit},dp {dp} , uf {self.updatefreq}")
         self.MinimumProfitMargin.setValue(MinimumProfit)
-        self.UpdateFrequency.setValue(updatefreq)
+        self.UpdateFrequency.setValue(self.updatefreq)
         self.DecimalPoints.setValue(dp)
-        if GoldUnit == "Gram":
+        if GoldUnit == GoldUnits.gram:
             self.GoldUnit.setCurrentIndex(0)
-        elif GoldUnit == "Tola":
+        elif GoldUnit == GoldUnits.tola:
             self.GoldUnit.setCurrentIndex(1)
-        elif GoldUnit == "Troy ounce":
+        elif GoldUnit == GoldUnits.troyounce:
             self.GoldUnit.setCurrentIndex(2)
-        elif GoldUnit == "Kilogram":
+        elif GoldUnit == GoldUnits.kilogram:
             self.GoldUnit.setCurrentIndex(3)
 
     def Save(self):
+        if self.GoldUnit.currentIndex() == 0:
+            unit = GoldUnits.gram
+        elif self.GoldUnit.currentIndex() == 1:
+            unit = GoldUnits.tola
+        elif self.GoldUnit.currentIndex() == 2:
+            unit = GoldUnits.troyounce
+        elif self.GoldUnit.currentIndex() == 3:
+            unit = GoldUnits.kilogram
         self.User.ChangeSettings(self.MinimumProfitMargin.value(), self.DecimalPoints.value(),
-                                 self.UpdateFrequency.value(), self.GoldUnit.currentText())
+                                 self.UpdateFrequency.value(), unit)
+
+    def updatefreqchanged(self):
+        if self.updatefreq == self.UpdateFrequency.value():
+            return False
+        else:
+            return True
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
