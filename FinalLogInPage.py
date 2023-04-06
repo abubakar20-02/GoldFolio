@@ -124,7 +124,7 @@ class Ui_Form(QObject):
 
     def OpenMainPage(self):
         self.close()
-        self.window = QtWidgets.QWidget()
+        self.window = QtWidgets.QMainWindow()
         self.window = FinalMainPage.MyWindow()
         self.window.show()
 

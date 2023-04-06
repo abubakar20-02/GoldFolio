@@ -17,6 +17,7 @@ import pandas as pd
 import FinalAddInvestment
 import FinalAddMoney
 import FinalGoldPortfolio
+import FinalImport
 import FinalMoneyLog
 import FinalSellScreen
 import FinalSettings
@@ -28,8 +29,8 @@ import SetupFile
 from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDate, QObject, pyqtSignal, QThread, Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QTableWidget
+from PyQt5.QtGui import QColor, QPixmap
+from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QTableWidget, QSplashScreen
 
 from Database.Investment import Investment
 from GoldRate import Gold
@@ -253,6 +254,8 @@ class Ui_MainWindow(QObject):
 
         self.actionImport_Data = QtWidgets.QAction(MainWindow)
         self.actionImport_Data.setObjectName("actionImport_Data")
+        self.actionImport_Data.triggered.connect(self.openImportData)
+
         self.actionExport_Data = QtWidgets.QAction(MainWindow)
         self.actionExport_Data.setObjectName("actionExport_Data")
 
@@ -328,6 +331,14 @@ class Ui_MainWindow(QObject):
         self.actionCash.setText(_translate("MainWindow", "Cash "))
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Graphs"))
+
+    def openImportData(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalImport.MyWindow()
+        self.window.setProfile(self.UserID)
+        self.window.show()
+        #should update only if value added
+        self.window.ImportButton.clicked.connect(lambda:self.updateTable(Rate=self.Gold.getBidinGrams()))
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
@@ -617,11 +628,14 @@ class Ui_MainWindow(QObject):
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def __init__(self):
-        print("init")
         self.value = 0
         super().__init__()
+        pixmap = QPixmap("Aesthetic-boy-pfp.jpeg")
+        splash = QSplashScreen(pixmap)
+        splash.show()
         self.setupUi(self)
         self.StartThread()
+        print("ready")
 
         self.actionSettings.triggered.connect(self.openSettings)
         self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())

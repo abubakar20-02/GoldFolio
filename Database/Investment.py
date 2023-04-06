@@ -33,9 +33,19 @@ class Investment:
         self.MoneyLog = Log.Log.Money()
         self.Statement = Statement.Statement()
 
-    def ImportFromExcel(self):
+    def createExcelTemplate(self):
+        column_names = ['Date_Added', 'Gold', 'BoughtFor']
+
+        # Create an empty DataFrame with the column names
+        df = pd.DataFrame(columns=column_names)
+
+        # Save the DataFrame to an Excel file
+        df.to_excel('Investment.xlsx', index=False)
+
+    def ImportFromExcel(self, FilePath):
+        column_names = ['Date_Added', 'Gold', 'BoughtFor']
         # source = 'UserTemplate.xlsx'
-        target = 'Investment.xlsx'
+        target = FilePath
         # shutil.copyfile(source,target)
         # os.system(target)
 
@@ -46,39 +56,29 @@ class Investment:
         # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-        from Database import User
-        User = User.User()
+        columnnames = df.columns
+        for col in columnnames:
+            if not col in column_names:
+                return "Fail"
 
-        # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
+                # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
         # date_added to be a date.
 
         # Define the SQL query to insert the data into the table
-        table_name = "Investment"
-        columns = ','.join(df.columns)
-        placeholders = ','.join(['?' for _ in range(len(df.columns))])
-        print(placeholders)
-        sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-        print(sql)
         # Loop through the rows in the DataFrame and insert them into the table
         for _, row in df.iterrows():
             values = tuple(row)
             # check if user id exists in user db.
-            if not User.isUserExist(values[1]):
-                # if user doesnt exist in profile then dont add them.
-                continue
 
             # check if the data is correct. Gold, Purity and Bought for have to be numbers and not empty whereas
             # profit loss only needs to be a number, but it can be None.
             if not (self.CorrectNumberFormat(values[2]) and self.CorrectNumberFormat(
-                    values[3]) and self.CorrectNumberFormat(values[4]) and isinstance(values[5], (float, int))):
+                    values[1])):
                 continue
-
-            # if it reaches here, then user is in the list, so we can set profile.
-            self.setProfile(values[1])
 
             # checks if time is none or date is empty.
             if isinstance(values[0], datetime) and values[0] is pd.NaT or self.isEmpty(values[0]):
-                self.insertIntoTable(values[2], values[3], values[4], ProfitLoss=values[5], LogChanges=False)
+                self.insertIntoTable(values[1], 0.0, values[2], LogChanges=False, IgnoreMoney=True)
             else:
                 if isinstance(values[0], datetime):
                     # if date is in the future then don't add it.
@@ -86,8 +86,9 @@ class Investment:
                     #     print("future")
                     #     continue
                     # convert date to Y-m-d format
-                    self.insertIntoTable(values[2], values[3], values[4], Date=values[0].strftime("%Y-%m-%d"),
-                                         ProfitLoss=values[5], LogChanges=False, IgnoreMoney=True)
+                    self.insertIntoTable(values[1], 0.0, values[2], Date=values[0].strftime("%Y-%m-%d"),
+                                         LogChanges=False, IgnoreMoney=True)
+        return "Success"
 
     def isEmpty(self, value):
         # value is a number and it is not none.

@@ -19,6 +19,15 @@ class Statement:
     def setProfile(self, user):
         self.Profile = user
 
+    def createExcelTemplate(self):
+        column_names = ['Date_Added', 'Gold', 'BoughtFor', 'ProfitLoss','Value_Change']
+
+        # Create an empty DataFrame with the column names
+        df = pd.DataFrame(columns=column_names)
+
+        # Save the DataFrame to an Excel file
+        df.to_excel('Statement.xlsx', index=False)
+
     # can't handle empty lines at the moment
     def ImportFromExcel(self):
         # source = 'UserTemplate.xlsx'
