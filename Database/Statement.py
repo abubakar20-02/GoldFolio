@@ -1,12 +1,16 @@
 import math
+import os
 import sqlite3
+import subprocess
 import uuid
 from datetime import datetime, timedelta
 import calendar
 
+import openpyxl
 import pandas as pd
 
 from Database import DBFunctions, SetUpFile
+import win32com.client as win32
 
 
 class Statement:
@@ -224,8 +228,22 @@ class Statement:
         self.conn.close()
         return Data
 
-    def convertToExcel(self):
-        DBFunctions.convertToExcel("Statement", SetUpFile.DBName)
+    def convertToExcel(self, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
+        self.__SetUpConnection()
+        # Define the parameters for the query
+        params = (self.Profile,)
+
+        # Query the database and create a DataFrame
+        sql = 'SELECT Date_added,Gold,BoughtFor,ProfitLoss,Value_Change FROM Statement WHERE User_ID= ?'
+        if StartDate is not None:
+            sql += f" AND Date_Added >= '{StartDate.strftime('%Y-%m-%d')}'"
+        if EndDate is not None:
+            sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
+        df = pd.read_sql(sql, con=self.conn, params=params)
+
+        df.to_excel(FilePath, index=False)
+        self.conn.close()
+        subprocess.Popen(['start', 'excel.exe', FilePath], shell=True)
 
     def addtoTable(self, Values):
         print(Values)
