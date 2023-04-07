@@ -8,6 +8,7 @@ import calendar
 
 import openpyxl
 import pandas as pd
+from fpdf import FPDF
 
 from Database import DBFunctions, SetUpFile
 import win32com.client as win32
@@ -578,3 +579,55 @@ class Statement:
         if Gold == 0:
             return 0
         return Sum / Gold
+
+    def PDF(self, FilePath, StartDate=None, EndDate=None):
+        self.__SetUpConnection()
+        # Define the parameters for the query
+        params = (self.Profile,)
+
+        # Query the database and create a DataFrame
+        sql = 'SELECT Date_added,Gold,BoughtFor,ProfitLoss,Value_Change FROM Statement WHERE User_ID= ?'
+        if StartDate is not None:
+            sql += f" AND Date_Added >= '{StartDate.strftime('%Y-%m-%d')}'"
+        if EndDate is not None:
+            sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
+        df = pd.read_sql(sql, con=self.conn, params=params)
+
+        # Create a PDF document using the fpdf library
+        pdf = MyPDF()
+        pdf.add_page()
+        pdf.alias_nb_pages()
+
+        # Set the font and size of the text in the PDF document
+        pdf.set_font("Arial", size=12)
+
+        # Calculate the maximum width of the data in each column
+        column_width = pdf.w / len(df.columns)
+
+        # Create a list of equal column widths that fill the width of the page
+        column_widths = [column_width] * len(df.columns)
+
+        # Set the left margin to 0 to stretch the table to take the entire width of the page
+        left_margin = 0
+
+        # Add the DataFrame to the PDF document as a table
+        pdf.set_x(left_margin)
+        for i, column in enumerate(df.columns):
+            pdf.cell(column_widths[i], 10, str(column), border=1)
+        for index, row in df.iterrows():
+            pdf.ln()
+            pdf.set_x(left_margin)
+            for i, column in enumerate(df.columns):
+                pdf.cell(column_widths[i], 10, str(row[column]), border=1)
+
+        # Save the PDF document to a file
+        pdf.output(FilePath)
+        self.conn.close()
+
+
+class MyPDF(FPDF):
+    def footer(self):
+        # Add a footer to the bottom center of each page
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')

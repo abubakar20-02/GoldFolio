@@ -340,6 +340,7 @@ class Ui_Form(QObject):
             self.closeExcel(filepath)
             self.Statement.convertToExcel(StartDate=self.Startdate, EndDate=self.Enddate,FilePath=filepath)
         else:
+            self.Statement.PDF(filepath,StartDate=self.Startdate,EndDate=self.Enddate)
             print("User did not select Excel file type")
 
     def check_date_format(self, date_str):
