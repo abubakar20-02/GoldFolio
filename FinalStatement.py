@@ -330,7 +330,7 @@ class Ui_Form(QObject):
         # # Quit the Excel application
         # excel.Quit()
 
-    def convertToExcel(self):
+    def export(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         filepath,_ = QFileDialog.getSaveFileName(None, 'Investment',
@@ -341,7 +341,6 @@ class Ui_Form(QObject):
             self.Statement.convertToExcel(StartDate=self.Startdate, EndDate=self.Enddate,FilePath=filepath)
         else:
             self.Statement.PDF(filepath,StartDate=self.Startdate,EndDate=self.Enddate)
-            print("User did not select Excel file type")
 
     def check_date_format(self, date_str):
         try:
@@ -379,7 +378,7 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.loadDataFromTable(StartDate=self.Startdate, EndDate=self.Enddate)
         self.tableWidget.setColumnHidden(0, True)
         self.line(self.YAxisValue, StartDate=self.Startdate, EndDate=self.Enddate)
-        self.ExportButton.clicked.connect(self.convertToExcel)
+        self.ExportButton.clicked.connect(self.export)
 
 
 if __name__ == "__main__":
