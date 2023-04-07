@@ -42,7 +42,7 @@ class Investment:
         # Save the DataFrame to an Excel file
         df.to_excel('Investment.xlsx', index=False)
 
-    def ImportFromExcel(self, FilePath):
+    def isFileFormatCorrect(self,FilePath):
         column_names = ['Date_Added', 'Gold', 'BoughtFor']
         # source = 'UserTemplate.xlsx'
         target = FilePath
@@ -59,7 +59,20 @@ class Investment:
         columnnames = df.columns
         for col in columnnames:
             if not col in column_names:
-                return "Fail"
+                return False
+        return True
+    def ImportFromExcel(self, FilePath):
+        # source = 'UserTemplate.xlsx'
+        target = FilePath
+        # shutil.copyfile(source,target)
+        # os.system(target)
+
+        sheet_name = 'Sheet1'
+
+        path = target
+
+        # Read the Excel file into a DataFrame
+        df = pd.read_excel(path, sheet_name=sheet_name)
 
                 # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
         # date_added to be a date.
@@ -88,7 +101,6 @@ class Investment:
                     # convert date to Y-m-d format
                     self.insertIntoTable(values[1], 0.0, values[2], Date=values[0].strftime("%Y-%m-%d"),
                                          LogChanges=False, IgnoreMoney=True)
-        return "Success"
 
     def isEmpty(self, value):
         # value is a number and it is not none.
