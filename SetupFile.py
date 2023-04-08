@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QPushButton
+
 Background = "background-color: rgb(255, 244, 230)"
 
 Banner = "background-color:  rgb(75, 56, 50);image: url(Resources/logo.png);"
@@ -112,3 +114,28 @@ Rate = ("QLabel{\n"
 GoldColor = '#FFD700'
 
 BlueColor = '#1AA7EC'
+
+Button = ("QPushButton {\n"
+          "    background-color: rgb(107, 0, 0);\n"
+          "    border-style: outset;\n"
+          "    border-width: 1px;\n"
+          "    border-radius: 10px;\n"
+          "    border-color:white;\n"
+          "    color: rgb(255, 241, 171);\n"
+          "    font: bold 12px;\n"
+          "    min-width: 10em;\n"
+          "    padding: 6px;\n"
+          "}\n"
+          "QPushButton:hover {\n"
+          "    color: white;\n"
+          "}")
+
+DateEdit = ("""
+            QDateEdit {
+                background-color: white;
+            }
+            """)
+
+
+
+

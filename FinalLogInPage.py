@@ -124,9 +124,9 @@ class Ui_Form(QObject):
 
     def OpenMainPage(self):
         self.close()
-        self.window = QtWidgets.QMainWindow()
         self.window = FinalMainPage.MyWindow()
         self.window.show()
+        self.window.showMaximized()
 
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
@@ -141,6 +141,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     if os.path.isfile("my_variable.pickle"):
         window = FinalMainPage.MyWindow()
+        window.showMaximized()
         window.show()
     else:
         window = MyWindow()
