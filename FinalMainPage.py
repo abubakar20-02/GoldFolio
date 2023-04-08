@@ -16,6 +16,8 @@ import pandas as pd
 
 import FinalAddInvestment
 import FinalAddMoney
+import FinalAddMoney1
+import FinalDialogBox
 import FinalGoldPortfolio
 import FinalImport
 import FinalMoneyLog
@@ -413,8 +415,12 @@ class Ui_MainWindow(object):
         self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
 
     def LogOut(self):
-        os.remove("my_variable.pickle")
-        self.close()
+        self.window = QtWidgets.QWidget()
+        self.window = FinalDialogBox.MyWindow()
+        self.window.setText("Are you sure you want to log out?")
+        self.window.show()
+        self.window.OkButton.clicked.connect(lambda: os.remove("my_variable.pickle"))
+        self.window.OkButton.clicked.connect(lambda: self.close())
 
     def openMoneyLog(self):
         self.window = QtWidgets.QWidget()
@@ -429,8 +435,8 @@ class Ui_MainWindow(object):
     def addCash(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddMoney.MyWindow()
+        self.window.setUserID(self.UserID)
         self.window.show()
-        self.window.AddMoney.clicked.connect(lambda: self.UserProfile.addMoney(self.window.Money.value()))
         self.window.AddMoney.clicked.connect(self.window.close)
         self.window.AddMoney.clicked.connect(self.getUserData)
         # self.window.AddButton.clicked.connect(self.loadDataFromTable)
@@ -450,8 +456,10 @@ class Ui_MainWindow(object):
             self.StartDate.setEnabled(False)
             self.EndDate.setEnabled(False)
         self.loadDataFromTable(StartDate=startDate, EndDate=endDate)
-        #get rate required
-        self.RateRequired.setText(self.Currency + " " + str(round(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=startDate,EndDate=endDate)), self.DecimalPoints)) + f" /{self.GoldUnit}")
+        # get rate required
+        self.RateRequired.setText(self.Currency + " " + str(
+            round(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=startDate, EndDate=endDate)),
+                  self.DecimalPoints)) + f" /{self.GoldUnit}")
 
     def loadDataFromTable(self, StartDate=None, EndDate=None):
         with open("my_variable.pickle", "rb") as f:
