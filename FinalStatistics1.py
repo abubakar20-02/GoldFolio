@@ -40,6 +40,7 @@ class Ui_Form(QObject):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1110, 792)
+        Form.setStyleSheet(SetupFile.Background)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -53,10 +54,12 @@ class Ui_Form(QObject):
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("Month")
         self.comboBox.addItem("Year")
+        self.comboBox.setStyleSheet(SetupFile.ComboBox)
         self.horizontalLayout.addWidget(self.comboBox)
 
         self.Date = QtWidgets.QDateEdit()
         self.Date.setDisplayFormat("MM-yyyy")
+        self.Date.setStyleSheet(SetupFile.DateEdit)
         # self.Date.setCalendarPopup(True)
         self.Date.setMaximumDate(QDate.currentDate())
         self.Date.setDateTime(QtCore.QDateTime.currentDateTime())
@@ -78,7 +81,6 @@ class Ui_Form(QObject):
         height = int(desktop.availableGeometry().height() * 0.4)
         self.canvas.setMaximumHeight(height)
 
-        self.canvas.setStyleSheet('border: 2px solid black;')
 
         self.canvas.setObjectName("canvas")
         self.verticalLayout_6.addWidget(self.canvas)
@@ -105,9 +107,12 @@ class Ui_Form(QObject):
         self.horizontalLayout_10.setObjectName("horizontalLayout_10")
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_10.addItem(spacerItem3)
-        self.label_18 = QtWidgets.QLabel(self.widget_2)
-        self.label_18.setObjectName("label_18")
-        self.horizontalLayout_10.addWidget(self.label_18)
+
+        self.MoneyTitle = QtWidgets.QLabel(self.widget_2)
+        self.MoneyTitle.setObjectName("MoneyTitle")
+        self.MoneyTitle.setStyleSheet(SetupFile.Title)
+        self.horizontalLayout_10.addWidget(self.MoneyTitle)
+
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_10.addItem(spacerItem4)
         self.MoneyLayout.addLayout(self.horizontalLayout_10)
@@ -115,29 +120,41 @@ class Ui_Form(QObject):
         self.MoneyLayout.addItem(spacerItem5)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+
         self.MoneyIn_Text = QtWidgets.QLabel(self.widget_2)
         self.MoneyIn_Text.setObjectName("MoneyIn_Text")
+        self.MoneyIn_Text.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_4.addWidget(self.MoneyIn_Text)
+
         self.MoneyIn = QtWidgets.QLabel(self.widget_2)
         self.MoneyIn.setObjectName("MoneyIn")
+        self.MoneyIn.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_4.addWidget(self.MoneyIn)
+
         self.MoneyInChange = QtWidgets.QLabel(self.widget_2)
         self.MoneyInChange.setObjectName("MoneyInChange")
         self.horizontalLayout_4.addWidget(self.MoneyInChange)
+
         spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem6)
         self.MoneyLayout.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+
         self.MoneyOut_Text = QtWidgets.QLabel(self.widget_2)
         self.MoneyOut_Text.setObjectName("MoneyOut_Text")
+        self.MoneyOut_Text.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_3.addWidget(self.MoneyOut_Text)
+
         self.MoneyOut = QtWidgets.QLabel(self.widget_2)
         self.MoneyOut.setObjectName("MoneyOut")
+        self.MoneyOut.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_3.addWidget(self.MoneyOut)
+
         self.MoneyOutChange = QtWidgets.QLabel(self.widget_2)
         self.MoneyOutChange.setObjectName("MoneyOutChange")
         self.horizontalLayout_3.addWidget(self.MoneyOutChange)
+
         spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem7)
         self.MoneyLayout.addLayout(self.horizontalLayout_3)
@@ -156,9 +173,12 @@ class Ui_Form(QObject):
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem9)
-        self.label_17 = QtWidgets.QLabel(self.widget_3)
-        self.label_17.setObjectName("label_17")
-        self.horizontalLayout_9.addWidget(self.label_17)
+
+        self.InvestmentTitle = QtWidgets.QLabel(self.widget_3)
+        self.InvestmentTitle.setObjectName("InvestmentTitle")
+        self.InvestmentTitle.setStyleSheet(SetupFile.Title)
+        self.horizontalLayout_9.addWidget(self.InvestmentTitle)
+
         spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem10)
         self.InvestmentLayout.addLayout(self.horizontalLayout_9)
@@ -166,40 +186,57 @@ class Ui_Form(QObject):
         self.InvestmentLayout.addItem(spacerItem11)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+
         self.InvestmentSold_Text = QtWidgets.QLabel(self.widget_3)
         self.InvestmentSold_Text.setObjectName("InvestmentSold_Text")
+        self.InvestmentSold_Text.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_5.addWidget(self.InvestmentSold_Text)
+
         self.InvestmentSold = QtWidgets.QLabel(self.widget_3)
         self.InvestmentSold.setObjectName("InvestmentSold")
+        self.InvestmentSold.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_5.addWidget(self.InvestmentSold)
+
         self.InvestmentSoldChange = QtWidgets.QLabel(self.widget_3)
         self.InvestmentSoldChange.setObjectName("InvestmentSoldChange")
         self.horizontalLayout_5.addWidget(self.InvestmentSoldChange)
+
         spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem12)
         self.InvestmentLayout.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+
         self.GoldSold_Text = QtWidgets.QLabel(self.widget_3)
         self.GoldSold_Text.setObjectName("GoldSold_Text")
+        self.GoldSold_Text.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_6.addWidget(self.GoldSold_Text)
+
         self.GoldSold = QtWidgets.QLabel(self.widget_3)
         self.GoldSold.setObjectName("GoldSold")
+        self.GoldSold.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_6.addWidget(self.GoldSold)
+
         self.GoldSoldChange = QtWidgets.QLabel(self.widget_3)
         self.GoldSoldChange.setObjectName("GoldSoldChange")
         self.horizontalLayout_6.addWidget(self.GoldSoldChange)
+
         spacerItem13 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_6.addItem(spacerItem13)
         self.InvestmentLayout.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+
         self.AverageProfitLoss_Text = QtWidgets.QLabel(self.widget_3)
         self.AverageProfitLoss_Text.setObjectName("AverageProfitLoss_Text")
+        self.AverageProfitLoss_Text.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_7.addWidget(self.AverageProfitLoss_Text)
+
         self.AverageProfitLoss = QtWidgets.QLabel(self.widget_3)
         self.AverageProfitLoss.setObjectName("AverageProfitLoss")
+        self.AverageProfitLoss.setStyleSheet(SetupFile.Label)
         self.horizontalLayout_7.addWidget(self.AverageProfitLoss)
+
         self.AverageProfitLossChange = QtWidgets.QLabel(self.widget_3)
         self.AverageProfitLossChange.setObjectName("AverageProfitLossChange")
         self.horizontalLayout_7.addWidget(self.AverageProfitLossChange)
@@ -236,14 +273,14 @@ class Ui_Form(QObject):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", "TextLabel"))
-        self.label_18.setText(_translate("Form", "Money"))
+        self.MoneyTitle.setText(_translate("Form", "Money"))
         self.MoneyIn_Text.setText(_translate("Form", "Money in: "))
         self.MoneyIn.setText(_translate("Form", "TextLabel"))
         self.MoneyInChange.setText(_translate("Form", "TextLabel"))
         self.MoneyOut_Text.setText(_translate("Form", "Money out:"))
         self.MoneyOut.setText(_translate("Form", "TextLabel"))
         self.MoneyOutChange.setText(_translate("Form", "TextLabel"))
-        self.label_17.setText(_translate("Form", "Investment"))
+        self.InvestmentTitle.setText(_translate("Form", "Investment"))
         self.InvestmentSold_Text.setText(_translate("Form", "Investment sold: "))
         self.InvestmentSold.setText(_translate("Form", "TextLabel"))
         self.InvestmentSoldChange.setText(_translate("Form", "TextLabel"))
@@ -402,7 +439,7 @@ class Ui_Form(QObject):
         elif PercentageIncrease < 0:
             a.setStyleSheet(SetupFile.NegativeChange)
         else:
-            a.setStyleSheet("")
+            a.setStyleSheet(SetupFile.Label)
 
     def getPercentageIncrease(self, CurrentValue, PrevValue):
         return ((CurrentValue - PrevValue) / abs(PrevValue)) * 100

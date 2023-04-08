@@ -95,11 +95,13 @@ NoChangeTextColor = ("QLabel{\n"
                      "     }")
 
 PositiveChange = ("QLabel{\n"
-                  "color: rgb(31,255,15) "
+                  "color: rgb(31,255,15);\n"
+                  "background-color: white;\n"
                   "     }")
 
 NegativeChange = ("QLabel{\n"
-                  "color: rgb(238,75,43) "
+                  "color: rgb(238,75,43);\n"
+                  "background-color: white;\n"
                   "     }")
 
 Rate = ("QLabel{\n"
@@ -143,3 +145,15 @@ DoubleSpinBox = ("QDoubleSpinBox{\n"
                  "    color: solid black;\n"
                  "    background-color: white;\n"
                  "    }")
+
+Title = ("""
+        QLabel {\n
+        font-size: 24px;\n
+        font-weight: bold;\n
+        background-color: white;\n
+        }""")
+
+Label = ("""
+        QLabel {\n
+        background-color: white;\n
+        }""")
