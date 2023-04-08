@@ -171,8 +171,11 @@ class Ui_MainWindow(object):
         self.RateRequired_Text = QtWidgets.QLabel(self.centralwidget)
         self.RateRequired_Text.setObjectName("RateRequired_Text")
         self.horizontalLayout.addWidget(self.RateRequired_Text)
+
         self.RateRequired = QtWidgets.QLabel(self.centralwidget)
         self.RateRequired.setObjectName("RateRequired")
+        self.RateRequired.setStyleSheet(SetupFile.NoChangeTextColor)
+
         self.horizontalLayout.addWidget(self.RateRequired)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
@@ -361,7 +364,7 @@ class Ui_MainWindow(object):
         self.AddCashButton.setText(_translate("MainWindow", "Manage Cash"))
         self.StartDate_Text.setText(_translate("MainWindow", "Start Date:"))
         self.EndDate_Text.setText(_translate("MainWindow", "End Date:"))
-        self.RateRequired_Text.setText(_translate("MainWindow", "Rate required to not lose profit:"))
+        self.RateRequired_Text.setText(_translate("MainWindow", "Rate required to break even :"))
         self.RateRequired.setText(_translate("MainWindow", "TextLabel"))
         self.Bid_Text.setText(_translate("MainWindow", "   Bid: "))
         self.Bid.setText(_translate("MainWindow", "TextLabel"))
@@ -447,6 +450,8 @@ class Ui_MainWindow(object):
             self.StartDate.setEnabled(False)
             self.EndDate.setEnabled(False)
         self.loadDataFromTable(StartDate=startDate, EndDate=endDate)
+        #get rate required
+        self.RateRequired.setText(self.Currency + " " + str(round(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=startDate,EndDate=endDate)), self.DecimalPoints)) + f" /{self.GoldUnit}")
 
     def loadDataFromTable(self, StartDate=None, EndDate=None):
         with open("my_variable.pickle", "rb") as f:

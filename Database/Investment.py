@@ -42,7 +42,7 @@ class Investment:
         # Save the DataFrame to an Excel file
         df.to_excel('Investment.xlsx', index=False)
 
-    def isFileFormatCorrect(self,FilePath):
+    def isFileFormatCorrect(self, FilePath):
         column_names = ['Date_Added', 'Gold', 'BoughtFor']
         # source = 'UserTemplate.xlsx'
         target = FilePath
@@ -61,6 +61,7 @@ class Investment:
             if not col in column_names:
                 return False
         return True
+
     def ImportFromExcel(self, FilePath):
         # source = 'UserTemplate.xlsx'
         target = FilePath
@@ -74,7 +75,7 @@ class Investment:
         # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-                # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
+        # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
         # date_added to be a date.
 
         # Define the SQL query to insert the data into the table
@@ -740,11 +741,11 @@ class Investment:
 
     def getRateRequired(self, StartDate=None, EndDate=None):
         try:
-            Rate = (self.getSUM("BoughtFor", StartDate=StartDate, EndDate=EndDate) / self.getTotalGold(
-                StartDate=StartDate,
-                EndDate=EndDate))
+            Rate = (self.getSUM("BoughtFor", StartDate=StartDate, EndDate=EndDate) / self.getSUM("Gold",
+                                                                                                 StartDate=StartDate,
+                                                                                                 EndDate=EndDate))
         except:
-            Rate = None
+            Rate = 0
         return Rate
 
     def getGoldAcquisitionCost(self):
