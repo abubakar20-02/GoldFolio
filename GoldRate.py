@@ -82,8 +82,11 @@ class Gold:
         # # return str(round(self.bid, 2)) + " BD"  # per gram cost
 
     def convertRateTo(self, Rate, Currency):
-        c = CurrencyRates()
-        Rate = c.get_rate('USD', Currency) * Rate
+        try:
+            c = CurrencyRates()
+            Rate = c.get_rate('USD', Currency) * Rate
+        except:
+            Rate = 0
         return Rate
 
     def getAsk(self):

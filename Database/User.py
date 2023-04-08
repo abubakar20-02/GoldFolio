@@ -115,7 +115,7 @@ class User:
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
-              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL DEFAULT "USD",[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] INTEGER NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30,[GoldUnit] VARCHAR NOT NULL DEFAULT "g")
+              ([User_ID] VARCHAR PRIMARY KEY, [FirstName]  TEXT NOT NULL , [LastName] TEXT NOT NULL, [Money] REAL NOT NULL, [Password] BINARY(60) NOT NULL,[Currency] VARCHAR NOT NULL ,[MinimumProfitMargin] REAL NOT NULL DEFAULT 0,[DecimalPoint] INTEGER NOT NULL DEFAULT 2, [UpdateFrequency] INTEGER NOT NULL DEFAULT 30,[GoldUnit] VARCHAR NOT NULL DEFAULT "g")
               ''')
         self.conn.commit()
         self.conn.close()
@@ -181,17 +181,17 @@ class User:
         # mention this was updated
         self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
-    def insertIntoTable(self, FName, LName, Money, Password, LogChanges=True, UserID=None):
+    def insertIntoTable(self, FName, LName, Money, Password, Currency, LogChanges=True, UserID=None):
         """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         if UserID is None:
             UserID = self.generate_unique_initials(FName, LName)
         self.c.execute('''
-          INSERT INTO User (User_ID, FirstName,LastName,Money,Password)
+          INSERT INTO User (User_ID, FirstName,LastName,Money,Password,Currency)
 
                 VALUES
-                (?,?,?,?,?)
-          ''', (UserID, FName, LName, Money, hash_password(Password)))
+                (?,?,?,?,?,?)
+          ''', (UserID, FName, LName, Money, hash_password(Password), Currency))
         self.conn.commit()
         if LogChanges is True:
             self.Log.SelectProfile(UserID)
@@ -335,7 +335,8 @@ class User:
     def GetSettings(self):
         self.__SetUpConnection()
         self.c.execute('''
-        SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency,GoldUnit FROM User  WHERE User_ID = ?''', (self.Profile,))
+        SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency,GoldUnit,Currency FROM User  WHERE User_ID = ?''',
+                       (self.Profile,))
         values = self.c.fetchone()
         self.conn.close()
         print(values)

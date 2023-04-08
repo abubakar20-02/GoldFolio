@@ -43,7 +43,6 @@ if __name__ == "__main__":
     User.createTable()
 
     User.insertIntoTable("Muhammad", "Abubakar", 1000, "123", "$")
-    User.UpdatePassword("ma", "trial2")
     time.sleep(1)
     User.SelectProfile("ma")
     User.addMoney(1000)
@@ -54,6 +53,7 @@ if __name__ == "__main__":
     time.sleep(1)
     Investment.PDF()
     User.insertIntoTable("Hamza", "Rizwan", 1000, "123","£")
+    User.insertIntoTable("Muhammad", "Abubakar", 1000, "123", "€")
     time.sleep(1)
     User.SelectProfile("hr")
     User.addMoney(100)
