@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from forex_python.converter import CurrencyRates
 
 Kilo = 1000
 
@@ -60,9 +61,10 @@ class Gold:
         elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
-        if self.Currency == "Bahraini Dinars":
-            c = Curreny()
-            Rate = c.GetRateinBHD(Rate)
+        if self.Currency == "£":
+            Rate = self.convertRateTo(Rate, "GBP")
+        elif self.Currency == "€":
+            Rate = self.convertRateTo(Rate, "EUR")
         return str(round(Rate, 2))
 
         # if self.Currency == "BHD":
@@ -78,6 +80,11 @@ class Gold:
         #     Rate = RatePerGram
         # return str(round(Rate, 2)) + Currency
         # # return str(round(self.bid, 2)) + " BD"  # per gram cost
+
+    def convertRateTo(self, Rate, Currency):
+        c = CurrencyRates()
+        Rate = c.get_rate('USD', Currency) * Rate
+        return Rate
 
     def getAsk(self):
         PerGram = getPureGoldPerGramInDollars(self.ask)
@@ -95,9 +102,11 @@ class Gold:
         elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
-        if self.Currency == "Bahraini Dinars":
-            c = Curreny()
-            Rate = c.GetRateinBHD(Rate)
+        if self.Currency == "£":
+            Rate = self.convertRateTo(Rate, "GBP")
+        elif self.Currency == "€":
+            Rate = self.convertRateTo(Rate, "EUR")
+
         return round(Rate, 2)
 
     def changeUnit(self, Unit):
@@ -109,6 +118,10 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
+        if self.Currency == "£":
+            Rate = self.convertRateTo(Rate, "GBP")
+        elif self.Currency == "€":
+            Rate = self.convertRateTo(Rate, "EUR")
         return Rate
 
     def getBidinGrams(self):
@@ -117,6 +130,10 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
+        if self.Currency == "£":
+            Rate = self.convertRateTo(Rate, "GBP")
+        elif self.Currency == "€":
+            Rate = self.convertRateTo(Rate, "EUR")
         return Rate
 
     def convertRate(self, RateInGram):

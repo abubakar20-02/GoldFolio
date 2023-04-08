@@ -522,7 +522,7 @@ class Ui_MainWindow(QObject):
         self.getUserData()
 
     def getUserData(self):
-        self.Cash.setText(str(round(self.UserProfile.getMoney(), 2)))
+        self.Cash.setText(f"{self.Currency} {str(round(self.UserProfile.getMoney(), 2))}")
         # add function in user to get user name.
         self.User.setText(self.UserProfile.getName())
 
