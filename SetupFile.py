@@ -136,6 +136,13 @@ DateEdit = ("""
             }
             """)
 
+DoubleSpinBox = ("QDoubleSpinBox{\n"
+           "    border-style: outset;\n"
+           "    border-width: 1px;\n"
+           "    border-color:black;\n"
+           "    color: solid black;\n"
+           "    background-color: white;\n"
+           "    }")
 
 
 

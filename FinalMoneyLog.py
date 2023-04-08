@@ -321,6 +321,8 @@ class Ui_Form(QObject):
         self.ExportButton.setText(_translate("Form", "Export"))
 
 
+
+
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
