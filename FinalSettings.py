@@ -99,7 +99,7 @@ class Ui_Form(QObject):
     def setProfile(self, Profile):
         self.Profile = Profile
         self.User.SelectProfile(self.Profile)
-        MinimumProfit, dp, self.updatefreq, GoldUnit = self.User.GetSettings()
+        MinimumProfit, dp, self.updatefreq, GoldUnit,_ = self.User.GetSettings()
         print(f"MPM {MinimumProfit},dp {dp} , uf {self.updatefreq}")
         self.MinimumProfitMargin.setValue(MinimumProfit)
         self.UpdateFrequency.setValue(self.updatefreq)

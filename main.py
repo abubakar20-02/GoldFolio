@@ -3,6 +3,7 @@ from datetime import datetime
 
 import dateutil.utils
 
+import GoldUnits
 from Database import DBFunctions
 # when selling indv inv doesnt add money.
 # selling one then sell multiple then try to reverse.
@@ -41,8 +42,8 @@ if __name__ == "__main__":
     User.deleteTable(False)
     User.createTable()
 
-    User.insertIntoTable("Muhammad", "Abubakar", 1000, "123")
-    User.UpdatePassword("ma","trial2")
+    User.insertIntoTable("Muhammad", "Abubakar", 1000, "123", "$")
+    User.UpdatePassword("ma", "trial2")
     time.sleep(1)
     User.SelectProfile("ma")
     User.addMoney(1000)
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     time.sleep(1)
     time.sleep(1)
     Investment.PDF()
-    User.insertIntoTable("Hamza", "Rizwan", 1000, "123")
+    User.insertIntoTable("Hamza", "Rizwan", 1000, "123","£")
     time.sleep(1)
     User.SelectProfile("hr")
     User.addMoney(100)
@@ -71,8 +72,9 @@ if __name__ == "__main__":
     time.sleep(1)
     Investment.setProfile("ma")
     from datetime import date
-    Investment.sellAll(Rate=10,Date=date.today())
-    User.ChangeSettings(0.01,3,45,"Kilogram")
+
+    Investment.sellAll(Rate=10, Date=date.today())
+    User.ChangeSettings(0.01, 3, 45, GoldUnits.kilogram)
     User.cashout(100)
     # Investment.sellAll(Rate=180)
     # Investment.insertIntoTable(100,1,100)

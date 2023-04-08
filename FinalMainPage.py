@@ -337,8 +337,8 @@ class Ui_MainWindow(QObject):
         self.window = FinalImport.MyWindow()
         self.window.setProfile(self.UserID)
         self.window.show()
-        #should update only if value added
-        self.window.ImportButton.clicked.connect(lambda:self.updateTable(Rate=self.Gold.getBidinGrams()))
+        # should update only if value added
+        self.window.ImportButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
@@ -407,6 +407,8 @@ class Ui_MainWindow(QObject):
         table_widget.setColumnCount(len(dataframe.columns))
 
         # Add the headers for the table columns
+        dataframe.columns = ["Investment_ID","Date", "Gold (g)", f"Bought for({self.Currency})", "Profit/Loss (%)",
+                             f"Value change ({self.Currency})"]
         table_widget.setHorizontalHeaderLabels(dataframe.columns)
 
         # Populate the table with data
@@ -501,8 +503,8 @@ class Ui_MainWindow(QObject):
     #     self.window.pushButton.clicked.connect(self.updateTable)
     #     self.window.pushButton.clicked.connect(self.window.close)
     def loadSettings(self):
-        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit = self.UserProfile.GetSettings()
-        self.Gold = Gold(24, self.GoldUnit, "USD")
+        self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit, self.Currency = self.UserProfile.GetSettings()
+        self.Gold = Gold(24, self.GoldUnit, self.Currency)
         # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
@@ -550,7 +552,6 @@ class Ui_MainWindow(QObject):
         if dropnan:
             agg.dropna(inplace=True)
         return agg
-
 
     def loadModel(self):
         from joblib import load
@@ -607,7 +608,6 @@ class Ui_MainWindow(QObject):
         self.canvas.axes.plot(aa, inv_y[len(inv_y) - interval:], marker='.', label="actual")
         inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
         self.canvas.axes.plot(bb, inv_yhat[:], 'r', marker='.', label="predicition")
-
 
     def recursive_forecast(self, model, input_data, n_days):
         # load model.
@@ -683,8 +683,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Ask.setText("")
 
     def ApplyChanges(self, rates):
-        Ask = str(rates.getAsk())
-        Bid = str(rates.getBid())
+        Ask = str(f"{rates.getCurrency()} {rates.getAsk()}")
+        Bid = str(f"{rates.getCurrency()} {rates.getBid()}")
 
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)

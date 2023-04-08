@@ -147,6 +147,9 @@ class Gold:
             Weight = WeightInGram
         return Weight
 
+    def getCurrency(self):
+        return self.Currency
+
 
 class Curreny:
     def __init__(self):

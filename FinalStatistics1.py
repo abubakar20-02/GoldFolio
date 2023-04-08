@@ -300,8 +300,6 @@ class Ui_Form(QObject):
         self.Log.setProfile(UserID)
 
         self.loadSettings()
-
-        self.currency = "$"
         self.Gold = Gold()
         self.Gold.changeUnit(self.GoldUnit)
 
@@ -323,19 +321,19 @@ class Ui_Form(QObject):
         self.BarGraph()
 
     def loadSettings(self):
-        _, self.DecimalPoints, _, self.GoldUnit = self.User.GetSettings()
+        _, self.DecimalPoints, _, self.GoldUnit, self.Currency = self.User.GetSettings()
 
     def updateVariables(self):
         self.MoneyIn.setText(
-            self.currency + " " + str(round(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
-        self.MoneyOut.setText(self.currency + " " + str(round(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
+            self.Currency + " " + str(round(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
+        self.MoneyOut.setText(self.Currency + " " + str(round(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
         # use MoneyLog to get count.
         # self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
         self.InvestmentSold.setText(
             str(self.Statement.getInvestmentCount(StartDate=self.start_date, EndDate=self.end_date)))
         self.GoldSold.setText(str(round(self.Gold.convertWeight(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + " " + self.GoldUnit)
         self.AverageProfitLoss.setText(
-            self.currency + " " + str(round(self.Gold.convertRate(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + f" /{self.GoldUnit}")
+            self.Currency + " " + str(round(self.Gold.convertRate(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + f" /{self.GoldUnit}")
 
         if self.Log.getMoneyAdded(StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.MoneyInChange.setText("")
