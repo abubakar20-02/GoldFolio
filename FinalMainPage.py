@@ -427,7 +427,7 @@ class Ui_MainWindow(object):
         self.window = FinalDeletePage.MyWindow()
         self.window.setProfile(self.UserID)
         # self.window.setProfile(self.UserID)
-        self.window.pushButton.clicked.connect(lambda: self.__deleteAccount(self.window))
+        self.window.deleteButton.clicked.connect(lambda: self.__deleteAccount(self.window))
         self.window.show()
 
     def __deleteAccount(self, window):
