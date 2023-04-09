@@ -1,16 +1,26 @@
 import os
+import shutil
 import sqlite3
 
 from xlsxwriter import Workbook
 from Database import SetUpFile
 
 
-def saveSnapshot():
+def saveSnapshot(FolderName):
+    folder_name = os.path.basename(FolderName)
+    if os.path.exists(FolderName):
+        # Use shutil.rmtree() to delete the directory and all its contents
+        shutil.rmtree(FolderName)
+
+    os.makedirs(FolderName)
+    os.makedirs(os.path.join(FolderName, "DBSupportFiles"))
     # take snapshot before importing files.
     conn = sqlite3.connect(SetUpFile.DBName)
 
     # Create a file object to store the snapshot
-    snapshot_file = sqlite3.connect(SetUpFile.Snap_DB)
+    FilePath = f"{FolderName}/{folder_name}{SetUpFile.DBName}"
+    print(FilePath)
+    snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
     conn.backup(snapshot_file)
@@ -22,7 +32,8 @@ def saveSnapshot():
     conn = sqlite3.connect(SetUpFile.DBArchiveName)
 
     # Create a file object to store the snapshot
-    snapshot_file = sqlite3.connect(SetUpFile.Snap_Archive)
+    FilePath = f"{FolderName}/{SetUpFile.DBArchiveName}"
+    snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
     conn.backup(snapshot_file)
@@ -34,7 +45,8 @@ def saveSnapshot():
     conn = sqlite3.connect(SetUpFile.DBLog)
 
     # Create a file object to store the snapshot
-    snapshot_file = sqlite3.connect(SetUpFile.Snap_DBLog)
+    FilePath = f"{FolderName}/{SetUpFile.DBLog}"
+    snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
     conn.backup(snapshot_file)

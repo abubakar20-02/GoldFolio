@@ -32,7 +32,7 @@ from Database import User, DBFunctions
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDate, QObject, pyqtSignal, QThread, Qt
 from PyQt5.QtGui import QColor, QPixmap
-from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QTableWidget, QSplashScreen, QDesktopWidget
+from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QTableWidget, QSplashScreen, QDesktopWidget, QFileDialog
 
 from Database.Investment import Investment
 from GoldRate import Gold
@@ -293,8 +293,10 @@ class Ui_MainWindow(object):
 
         self.actionSettings = QtWidgets.QAction(MainWindow)
         self.actionSettings.setObjectName("actionSettings")
+
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
+        self.actionSave.triggered.connect(self.Save)
 
         self.actionImport_Data = QtWidgets.QAction(MainWindow)
         self.actionImport_Data.setObjectName("actionImport_Data")
@@ -400,6 +402,11 @@ class Ui_MainWindow(object):
         self.window.show()
         # should update only if value added
         self.window.ImportButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
+
+    def Save(self):
+        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        path = filename
+        DBFunctions.saveSnapshot(path)
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()

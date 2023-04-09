@@ -14,4 +14,4 @@ Snap_DBLog = 'DBSnapshot/SnapDBLog.db'
 
 AdminUser = "Admin"
 
-AdminPass= "Admin"
+AdminPass = "Admin"
