@@ -317,8 +317,11 @@ class Ui_MainWindow(object):
 
         self.actionGold_Portfolio = QtWidgets.QAction(MainWindow)
         self.actionGold_Portfolio.setObjectName("actionGold_Portfolio")
+
         self.actionLoad = QtWidgets.QAction(MainWindow)
         self.actionLoad.setObjectName("actionLoad")
+        self.actionLoad.triggered.connect(self.Load)
+
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionImport_Data)
@@ -405,6 +408,13 @@ class Ui_MainWindow(object):
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
         DBFunctions.saveSnapshot(path)
+
+    def Load(self):
+        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        path = filename
+        print(DBFunctions.IsFileCorrect(path))
+        DBFunctions.Load(path)
+        self.updateTable(Rate=self.Gold.getBidinGrams())
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()

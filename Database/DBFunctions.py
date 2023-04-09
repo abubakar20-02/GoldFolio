@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import shutil
 import sqlite3
@@ -46,6 +47,95 @@ def saveSnapshot(FolderName):
 
     # Create a file object to store the snapshot
     FilePath = f"{FolderName}/{SetUpFile.DBLog}"
+    snapshot_file = sqlite3.connect(FilePath)
+
+    # Take a snapshot of the database
+    conn.backup(snapshot_file)
+
+    # Close the file object and the database connection
+    snapshot_file.close()
+    conn.close()
+
+
+def IsFileCorrect(FolderName):
+    # Specify the directory path and directory name to check
+    parent_directory_path = FolderName
+    directory_name = "DBSupportFiles"
+
+    # use os.path.join() to create the path to the directory you want to check for
+    dir_path = os.path.join(parent_directory_path, directory_name)
+
+    # use os.path.isdir() to check if the directory exists
+    if os.path.isdir(dir_path):
+        print("The directory exists.")
+    else:
+        return False
+
+    # print(os.path.join(parent_directory_path, directory_name))
+    # # Check if the directory exists and is a directory
+    # if os.path.exists(os.path.join(parent_directory_path, directory_name)) and os.path.isdir(
+    #         os.path.join(parent_directory_path, directory_name)):
+    #    return False
+
+    file_extension = "*.db"
+    # Use a loop to iterate over all files in the directory and its subdirectories
+    for root, dirs, files in os.walk(FolderName):
+        for file in files:
+            # Check if the file has the specified extension
+            if not fnmatch.fnmatch(file, file_extension):
+                return False
+    return True
+
+
+def Load(FolderName):
+    if not IsFileCorrect(FolderName):
+        return
+
+    # remove files that exist
+    os.remove("Database.db")
+    dir_path = "DBSupportFiles"
+    for item in os.listdir(dir_path):
+        item_path = os.path.join(dir_path, item)
+        if os.path.isfile(item_path):
+            os.remove(item_path)
+        else:
+            shutil.rmtree(item_path)
+
+    file = [f for f in os.listdir(FolderName) if
+            fnmatch.fnmatch(f, "*.db") and os.path.isfile(os.path.join(FolderName, f))]
+    print(file[0])
+
+    conn = sqlite3.connect(f"{FolderName}/{file[0]}")
+
+    # Create a file object to store the snapshot
+    FilePath = f"{SetUpFile.DBName}"
+    print(FilePath)
+    snapshot_file = sqlite3.connect(FilePath)
+
+    # Take a snapshot of the database
+    conn.backup(snapshot_file)
+
+    # Close the file object and the database connection
+    snapshot_file.close()
+    conn.close()
+    #
+    conn = sqlite3.connect(f"{FolderName}/{SetUpFile.DBArchiveName}")
+
+    # Create a file object to store the snapshot
+    FilePath = f"{SetUpFile.DBArchiveName}"
+    snapshot_file = sqlite3.connect(FilePath)
+
+    # Take a snapshot of the database
+    conn.backup(snapshot_file)
+
+    # Close the file object and the database connection
+    snapshot_file.close()
+    conn.close()
+
+    conn = sqlite3.connect(f"{FolderName}/{SetUpFile.DBLog}")
+
+    # Create a file object to store the snapshot
+    FilePath = f"{SetUpFile.DBLog}"
     snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
@@ -117,7 +207,7 @@ def ClearTables():
     __ClearArchive()
 
 
-def previousStage(UserID,num=None):
+def previousStage(UserID, num=None):
     from Database import Log
     Log = Log.Log()
     print(f"UserID: {UserID}")
