@@ -56,6 +56,12 @@ class Statement:
                 return False
         return True
 
+    def deleteUser(self):
+        self.__SetUpConnection()
+        self.c.execute("DELETE FROM Statement WHERE User_ID=?", (self.Profile,))
+        self.conn.commit()
+        self.conn.close()
+
     # can't handle empty lines at the moment
     def ImportFromExcel(self, FilePath):
         # source = 'UserTemplate.xlsx'

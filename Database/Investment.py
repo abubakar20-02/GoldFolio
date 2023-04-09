@@ -62,6 +62,12 @@ class Investment:
                 return False
         return True
 
+    def deleteUser(self):
+        self.__SetUpConnection()
+        self.c.execute("DELETE FROM Investment WHERE User_ID=?", (self.Profile,))
+        self.conn.commit()
+        self.conn.close()
+
     def ImportFromExcel(self, FilePath):
         # source = 'UserTemplate.xlsx'
         target = FilePath

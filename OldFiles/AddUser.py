@@ -48,7 +48,7 @@ class Ui_MainWindow(QObject):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setObjectName("label_3")
+        self.label_3.setObjectName("password_Text")
         self.horizontalLayout_3.addWidget(self.label_3)
         self.Money = QtWidgets.QLineEdit(self.centralwidget)
         self.Money.setObjectName("Money")

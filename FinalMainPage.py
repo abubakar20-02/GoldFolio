@@ -16,10 +16,12 @@ import pandas as pd
 
 import FinalAddInvestment
 import FinalAddMoney
+import FinalDeletePage
 import FinalDialogBox
 import FinalGoldPortfolio
 import FinalImport
 import FinalLogInPage
+import FinalManageAccount
 import FinalMoneyLog
 import FinalSellScreen
 import FinalSettings
@@ -277,6 +279,8 @@ class Ui_MainWindow(object):
         self.menuStatistics.setObjectName("menuStatistics")
         self.menuStatements = QtWidgets.QMenu(self.menubar)
         self.menuStatements.setObjectName("menuStatements")
+        self.menuManage = QtWidgets.QMenu(self.menubar)
+        self.menuManage.setObjectName("menuStatements")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -323,6 +327,14 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.actionLoad.triggered.connect(self.Load)
 
+        self.actionManageCash = QtWidgets.QAction(MainWindow)
+        self.actionManageCash.setObjectName("actionManageCash")
+        self.actionManageCash.triggered.connect(self.manageCash)
+
+        self.actionManageAccount = QtWidgets.QAction(MainWindow)
+        self.actionManageAccount.setObjectName("actionManageAccount")
+        self.actionManageAccount.triggered.connect(self.openManageAccountScreen)
+
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionImport_Data)
@@ -333,12 +345,15 @@ class Ui_MainWindow(object):
         self.menuStatistics.addAction(self.actionGold_Portfolio)
         self.menuStatements.addAction(self.actionCash)
         self.menuStatements.addAction(self.actionInvestment)
+        self.menuManage.addAction(self.actionManageAccount)
+        self.menuManage.addAction(self.actionManageCash)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuStatistics.menuAction())
         self.menubar.addAction(self.menuStatements.menuAction())
+        self.menubar.addAction(self.menuManage.menuAction())
 
         self.User.setStyleSheet(SetupFile.NoChangeTextColor)
         self.Cash.setStyleSheet(SetupFile.NoChangeTextColor)
@@ -346,7 +361,7 @@ class Ui_MainWindow(object):
         self.Graph.setStyleSheet(
             'QWidget#Graph { border: 2px solid black; border-radius: 10px; background-color: white; }')
         self.getUserData()
-        self.AddCashButton.clicked.connect(lambda: self.addCash())
+        self.AddCashButton.clicked.connect(lambda: self.manageCash())
         self.ChangeUserButton.clicked.connect(lambda: self.LogOut())
         self.SellButton.clicked.connect(lambda: self.openSell())
         self.radioButton.clicked.connect(lambda: self.updateTable())
@@ -365,7 +380,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.User_Text.setText(_translate("MainWindow", "User: "))
-        self.ChangeUserButton.setText(_translate("MainWindow", "Manage Account"))
+        self.ChangeUserButton.setText(_translate("MainWindow", "Log out"))
         self.Cash_Text.setText(_translate("MainWindow", "Cash: "))
         self.AddCashButton.setText(_translate("MainWindow", "Manage Cash"))
         self.StartDate_Text.setText(_translate("MainWindow", "Start Date:"))
@@ -385,6 +400,7 @@ class Ui_MainWindow(object):
         self.menuTools.setTitle(_translate("MainWindow", "Tools"))
         self.menuStatistics.setTitle(_translate("MainWindow", "Statistics"))
         self.menuStatements.setTitle(_translate("MainWindow", "Statements"))
+        self.menuManage.setTitle(_translate("MainWindow", "Manage"))
         self.actionUndo.setText(_translate("MainWindow", "Undo"))
         self.actionGold_Calculator.setText(_translate("MainWindow", "Gold Calculator"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
@@ -396,6 +412,28 @@ class Ui_MainWindow(object):
         self.actionGraphs.setText(_translate("MainWindow", "Statistics"))
         self.actionGold_Portfolio.setText(_translate("MainWindow", "Gold Portfolio"))
         self.actionLoad.setText(_translate("MainWindow", "Load"))
+        self.actionManageAccount.setText(_translate("MainWindow", "Manage Account"))
+        self.actionManageCash.setText(_translate("MainWindow", "Manage Cash"))
+
+    def openManageAccountScreen(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalManageAccount.MyWindow()
+        self.window.show()
+        self.window.LogOutButton.clicked.connect(lambda: self.__logOut())
+        self.window.DeleteAccountButton.clicked.connect(lambda: self.openDeleteAccountScreen())
+
+    def openDeleteAccountScreen(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalDeletePage.MyWindow()
+        self.window.setProfile(self.UserID)
+        # self.window.setProfile(self.UserID)
+        self.window.pushButton.clicked.connect(lambda: self.__deleteAccount(self.window))
+        self.window.show()
+
+    def __deleteAccount(self, window):
+        if window.passwordCorrect():
+            self.__logOut()
+            self.UserProfile.deleteUser()
 
     def openImportData(self):
         self.window = QtWidgets.QWidget()
@@ -423,14 +461,17 @@ class Ui_MainWindow(object):
         if not path == "":
             self.window = QtWidgets.QWidget()
             self.window = FinalDialogBox.MyWindow()
-            self.window.setText("User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
+            self.window.setText(
+                "User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
             self.window.show()
             self.window.OkButton.clicked.connect(lambda: self.__LoadFile(path))
 
-
-    def __LoadFile(self,path):
+    def __LoadFile(self, path):
         DBFunctions.Load(path)
         self.updateTable(Rate=self.Gold.getBidinGrams())
+        self.__logOut()
+
+    def __logOut(self):
         self.close()
         os.remove("my_variable.pickle")
         self.openLogInScreen()
@@ -462,7 +503,6 @@ class Ui_MainWindow(object):
         self.window.OkButton.clicked.connect(lambda: self.close())
         self.window.OkButton.clicked.connect(lambda: self.openLogInScreen())
 
-
     def openMoneyLog(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalMoneyLog.MyWindow()
@@ -473,7 +513,7 @@ class Ui_MainWindow(object):
         self.window = FinalStatement.MyWindow()
         self.window.show()
 
-    def addCash(self):
+    def manageCash(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddMoney.MyWindow()
         self.window.setUserID(self.UserID)

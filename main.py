@@ -91,6 +91,9 @@ if __name__ == "__main__":
     MoneyLog.setProfile("ma")
     # DBFunctions.saveSnapshot("Trial")
     DBFunctions.Load("Trial")
+
+    # User.SelectProfile("ma")
+    # User.deleteUser()
     # MoneyLog.convertToExcel()
     # MoneyLog.dataforgraph(EndDate=strToDate("2023-02-24"))
     # Statement.ImportFromExcel()

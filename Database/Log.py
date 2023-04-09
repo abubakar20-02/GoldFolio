@@ -40,6 +40,15 @@ class Log:
         self.conn = sqlite3.connect(SetUpFile.DBLog)
         self.c = self.conn.cursor()
 
+    def deleteUser(self):
+        self.MoneyLog.deleteUser(self.Profile)
+        self.InvestmentLog.deleteUser(self.Profile)
+        self.UserLog.deleteUser(self.Profile)
+        self.__SetUpConnection()
+        self.c.execute("DELETE FROM Log WHERE User_ID=?", (self.Profile,))
+        self.conn.commit()
+        self.conn.close()
+
     def createTable(self):
         self.__SetUpConnection()
         self.c.execute('''
@@ -122,6 +131,12 @@ class Log:
                   ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [User_ID] VARCHAR DEFAULT ""  ,[FirstName] TEXT DEFAULT "" , [LastName] TEXT DEFAULT "", [Money] REAL DEFAULT 0.0,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
+            self.conn.commit()
+            self.conn.close()
+
+        def deleteUser(self, UserID):
+            self.SetUpConnection()
+            self.c.execute("DELETE FROM UserLog WHERE User_ID=?", (UserID,))
             self.conn.commit()
             self.conn.close()
 
@@ -264,6 +279,12 @@ class Log:
         def SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
+
+        def deleteUser(self, UserID):
+            self.SetUpConnection()
+            self.c.execute("DELETE FROM InvestmentLog WHERE User_ID=?", (UserID,))
+            self.conn.commit()
+            self.conn.close()
 
         def __createTable(self):
             self.SetUpConnection()
@@ -446,6 +467,12 @@ class Log:
         def __SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
+
+        def deleteUser(self, UserID):
+            self.__SetUpConnection()
+            self.c.execute("DELETE FROM Money WHERE User_ID=?", (UserID,))
+            self.conn.commit()
+            self.conn.close()
 
         def createTable(self):
             self.__SetUpConnection()
@@ -839,9 +866,9 @@ class Log:
             Add = {}
             Withdrawn = {}
             for month in range(12):
-                days_in_month = calendar.monthrange(year, month+1)[1]
-                start_date = datetime(year, month+1, 1).date()
-                end_date = datetime(year, month+1, days_in_month).date()
+                days_in_month = calendar.monthrange(year, month + 1)[1]
+                start_date = datetime(year, month + 1, 1).date()
+                end_date = datetime(year, month + 1, days_in_month).date()
                 month_name = start_date.strftime("%b")
                 Add[f"{month_name}"] = self.getMoneyAdded(StartDate=start_date, EndDate=end_date)
                 Withdrawn[f"{month_name}"] = self.getMoneyOut(StartDate=start_date, EndDate=end_date)
@@ -948,6 +975,7 @@ class Log:
             # Save the PDF document to a file
             pdf.output(FilePath)
             self.conn.close()
+
 
 class MyPDF(FPDF):
     def footer(self):
