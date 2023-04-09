@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # start_date = "2013-01-01"
     start_date = "2020-01-01"
-    end_date = "2023-04-07"
+    end_date = "2023-04-08"
     getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
 
     # create a function that takes todays date and using timestamp go back in the past.

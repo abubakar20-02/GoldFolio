@@ -88,7 +88,7 @@ class Ui_MainWindow(QObject):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def add(self):
-        with open("my_variable.pickle", "rb") as f:
+        with open("../my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
         format_str = '%Y-%m-%d'
         Date = self.dateEdit.date().toPyDate()

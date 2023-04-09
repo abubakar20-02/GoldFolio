@@ -13,21 +13,16 @@ import pickle
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, QDate
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 
-import Add
+from OldFiles import Add, graph1, sellRate, Setting, UserSelect
 import AddUser
 import GoldCalculator
 import MoneyLogScreen
-import Setting
 import StatementScreen
-import UserSelect
 import graph
-import graph1
-import sellRate
 from Database import DBFunctions
 from Database.Investment import Investment
-from Database import Log
 
 from GoldRate import Gold
 
@@ -35,7 +30,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.Gold = Gold(24, "Gram", "USD")
         # Retrieve the variable from the file
-        with open("my_variable.pickle", "rb") as f:
+        with open("../my_variable.pickle", "rb") as f:
             self.UserID = pickle.load(f)
 
         self.loadSettings()
@@ -289,7 +284,7 @@ class Ui_MainWindow(object):
     def updateDateRangeForStartDate(self):
         self.StartDate.setMaximumDate(self.EndDate.date())
     def loadSettings(self):
-        with open("Settings.pickle", "rb") as f:
+        with open("../Settings.pickle", "rb") as f:
             self.ProfitMargin, self.UpdateFrequency = pickle.load(f)
             # close previous timer and start new one
             self.timer = QTimer()
@@ -353,7 +348,7 @@ class Ui_MainWindow(object):
         self.loadDataFromTable()
 
     def loadDataFromTable(self, StartDate=None, EndDate=None):
-        with open("my_variable.pickle", "rb") as f:
+        with open("../my_variable.pickle", "rb") as f:
             self.UserID = pickle.load(f)
         self.Investment.setProfile(self.UserID)
         print("yo" + str(StartDate))

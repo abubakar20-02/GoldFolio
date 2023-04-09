@@ -55,7 +55,7 @@ class Ui_MainWindow(QObject):
         text = self.UserID.text()
         # Save the variable to a file
         UserID = text
-        with open("my_variable.pickle", "wb") as f:
+        with open("../my_variable.pickle", "wb") as f:
             pickle.dump(UserID, f)
 
 

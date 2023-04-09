@@ -53,8 +53,8 @@ class Ui_MainWindow(QObject):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        if os.path.isfile("Settings.pickle"):
-            with open("Settings.pickle", "rb") as f:
+        if os.path.isfile("../Settings.pickle"):
+            with open("../Settings.pickle", "rb") as f:
                 ProfitMargin, UpdateFreq = pickle.load(f)
             self.ProfitMargin.setValue(ProfitMargin)
             self.UpdateFrequency.setValue(UpdateFreq)
@@ -72,7 +72,7 @@ class Ui_MainWindow(QObject):
         self.SubmitButton.setText(_translate("MainWindow", "Submit"))
 
     def Submit(self):
-        with open("Settings.pickle", "wb") as f:
+        with open("../Settings.pickle", "wb") as f:
             pickle.dump((self.ProfitMargin.value(), self.UpdateFrequency.value()), f)
 
 
