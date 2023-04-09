@@ -19,6 +19,7 @@ import FinalAddMoney
 import FinalDialogBox
 import FinalGoldPortfolio
 import FinalImport
+import FinalLogInPage
 import FinalMoneyLog
 import FinalSellScreen
 import FinalSettings
@@ -407,20 +408,43 @@ class Ui_MainWindow(object):
     def Save(self):
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
-        DBFunctions.saveSnapshot(path)
+        if not path == "":
+            DBFunctions.saveSnapshot(path)
 
     def Load(self):
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
-        print(DBFunctions.IsFileCorrect(path))
+        if not DBFunctions.IsFileCorrect(path):
+            self.window = QtWidgets.QWidget()
+            self.window = FinalDialogBox.MyWindow()
+            self.window.setText("The file format is wrong")
+            self.window.show()
+            return
+        if not path == "":
+            self.window = QtWidgets.QWidget()
+            self.window = FinalDialogBox.MyWindow()
+            self.window.setText("User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
+            self.window.show()
+            self.window.OkButton.clicked.connect(lambda: self.__LoadFile(path))
+
+
+    def __LoadFile(self,path):
         DBFunctions.Load(path)
         self.updateTable(Rate=self.Gold.getBidinGrams())
+        self.close()
+        os.remove("my_variable.pickle")
+        self.openLogInScreen()
 
     def openGoldPortfolio(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalStatistics.MyWindow()
         self.window.showMaximized()
         # self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
+        self.window.show()
+
+    def openLogInScreen(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalLogInPage.MyWindow()
         self.window.show()
 
     def openGoldCalculator(self):
@@ -436,6 +460,8 @@ class Ui_MainWindow(object):
         self.window.show()
         self.window.OkButton.clicked.connect(lambda: os.remove("my_variable.pickle"))
         self.window.OkButton.clicked.connect(lambda: self.close())
+        self.window.OkButton.clicked.connect(lambda: self.openLogInScreen())
+
 
     def openMoneyLog(self):
         self.window = QtWidgets.QWidget()
