@@ -37,6 +37,7 @@ class User:
         self.conn = None
         self.Profile = None
         self.a = Archive.UserArchive()
+        self.b = Archive.InvestmentArchive()
         self.Log = Log()
         self.UserLog = Log.UserLog()
         self.Investment = Investment()
@@ -53,6 +54,11 @@ class User:
         self.Investment.setProfile(self.Profile)
         self.Statement.setProfile(self.Profile)
 
+    def deleteArchiveLog(self):
+        self.Log.deleteUser()
+        self.a.deleteUser(self.Profile)
+        self.b.deleteUser(self.Profile)
+
     def deleteUser(self):
         self.Statement.deleteUser()
         self.Investment.deleteUser()
@@ -60,7 +66,7 @@ class User:
         self.c.execute("DELETE FROM User WHERE User_ID=?", (self.Profile,))
         self.conn.commit()
         self.conn.close()
-        self.Log.deleteUser()
+        self.deleteArchiveLog()
 
     def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'

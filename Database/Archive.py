@@ -28,6 +28,12 @@ class UserArchive:
         self.conn.commit()
         self.conn.close()
 
+    def deleteUser(self, UserID):
+        self.SetUpConnection()
+        self.c.execute("DELETE FROM ArchiveUser WHERE User_ID=?", (UserID,))
+        self.conn.commit()
+        self.conn.close()
+
     def Archive(self, Action, Values):
         """Take the action type and the record values in the form of UserArchive tuple."""
         Values[0] = (generateTransactionID(), Action,) + Values[0]
@@ -107,6 +113,12 @@ class InvestmentArchive:
               CREATE TABLE IF NOT EXISTS ArchiveInvestment                                                         
               ([Investment_ID] VARCHAR ,[Date_added] DATE,[User_ID] VARCHAR, [Gold] Real , [Purity] Real, [BoughtFor] REAL,[ProfitLoss] Real,[Value_Change] Real,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
               ''')
+        self.conn.commit()
+        self.conn.close()
+
+    def deleteUser(self, UserID):
+        self.__SetUpConnection()
+        self.c.execute("DELETE FROM ArchiveInvestment WHERE User_ID=?", (UserID,))
         self.conn.commit()
         self.conn.close()
 

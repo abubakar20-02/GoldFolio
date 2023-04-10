@@ -291,6 +291,10 @@ class Ui_MainWindow(object):
         self.actionUndo.setObjectName("actionUndo")
         self.actionUndo.triggered.connect(self.prevStage)
 
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionUndo")
+        self.actionSave.triggered.connect(self.SaveChanges)
+
         self.actionGold_Calculator = QtWidgets.QAction(MainWindow)
         self.actionGold_Calculator.setObjectName("actionGold_Calculator")
         self.actionGold_Calculator.triggered.connect(self.openGoldCalculator)
@@ -298,9 +302,9 @@ class Ui_MainWindow(object):
         self.actionSettings = QtWidgets.QAction(MainWindow)
         self.actionSettings.setObjectName("actionSettings")
 
-        self.actionSave = QtWidgets.QAction(MainWindow)
-        self.actionSave.setObjectName("actionSave")
-        self.actionSave.triggered.connect(self.Save)
+        self.actionSaveState = QtWidgets.QAction(MainWindow)
+        self.actionSaveState.setObjectName("actionSaveState")
+        self.actionSaveState.triggered.connect(self.Save)
 
         self.actionImport_Data = QtWidgets.QAction(MainWindow)
         self.actionImport_Data.setObjectName("actionImport_Data")
@@ -324,9 +328,9 @@ class Ui_MainWindow(object):
         self.actionGold_Portfolio = QtWidgets.QAction(MainWindow)
         self.actionGold_Portfolio.setObjectName("actionGold_Portfolio")
 
-        self.actionLoad = QtWidgets.QAction(MainWindow)
-        self.actionLoad.setObjectName("actionLoad")
-        self.actionLoad.triggered.connect(self.Load)
+        self.actionLoadState = QtWidgets.QAction(MainWindow)
+        self.actionLoadState.setObjectName("actionLoadState")
+        self.actionLoadState.triggered.connect(self.Load)
 
         self.actionManageCash = QtWidgets.QAction(MainWindow)
         self.actionManageCash.setObjectName("actionManageCash")
@@ -336,10 +340,11 @@ class Ui_MainWindow(object):
         self.actionManageAccount.setObjectName("actionManageAccount")
         self.actionManageAccount.triggered.connect(self.openManageAccountScreen)
 
-        self.menuFile.addAction(self.actionSave)
-        self.menuFile.addAction(self.actionLoad)
+        self.menuFile.addAction(self.actionSaveState)
+        self.menuFile.addAction(self.actionLoadState)
         self.menuFile.addAction(self.actionImport_Data)
         self.menuEdit.addAction(self.actionUndo)
+        self.menuEdit.addAction(self.actionSave)
         self.menuSettings.addAction(self.actionSettings)
         self.menuTools.addAction(self.actionGold_Calculator)
         self.menuStatistics.addAction(self.actionGraphs)
@@ -405,16 +410,17 @@ class Ui_MainWindow(object):
         self.actionUndo.setText(_translate("MainWindow", "Undo"))
         self.actionGold_Calculator.setText(_translate("MainWindow", "Gold Calculator"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
-        self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionSaveState.setText(_translate("MainWindow", "Save State"))
         self.actionImport_Data.setText(_translate("MainWindow", "Import Data"))
         self.actionExport_Data.setText(_translate("MainWindow", "Export Data"))
         self.actionCash.setText(_translate("MainWindow", "Cash "))
         self.actionInvestment.setText(_translate("MainWindow", "Investment"))
         self.actionGraphs.setText(_translate("MainWindow", "Statistics"))
         self.actionGold_Portfolio.setText(_translate("MainWindow", "Gold Portfolio"))
-        self.actionLoad.setText(_translate("MainWindow", "Load"))
+        self.actionLoadState.setText(_translate("MainWindow", "Load State"))
         self.actionManageAccount.setText(_translate("MainWindow", "Manage Account"))
         self.actionManageCash.setText(_translate("MainWindow", "Manage Cash"))
+        self.actionSave.setText(_translate("MainWindow","Save"))
 
     def openManageAccountScreen(self):
         self.window = QtWidgets.QWidget()
@@ -470,6 +476,9 @@ class Ui_MainWindow(object):
 
     def __LoadFile(self, path):
         # if the id of the person trying to load is same as the loaded version
+        if not DBFunctions.isFileFormatCorrect(path):
+            # tell user file format is wrong.
+            return
         if DBFunctions.getUserIDForLoadedFile(path) == self.UserID:
             DBFunctions.load(path, self.UserID)
             # DBFunctions.Load(path)
@@ -527,6 +536,13 @@ class Ui_MainWindow(object):
         self.window = GoldCalculator.MyWindow()
         self.window.show()
         self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
+
+    def SaveChanges(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalDialogBox.MyWindow()
+        self.window.setText("Are you sure you want to save changes? Once done, it cannot be undone.")
+        self.window.show()
+        self.window.OkButton.clicked.connect(lambda: self.UserProfile.deleteArchiveLog())
 
     def LogOut(self):
         self.window = QtWidgets.QWidget()
