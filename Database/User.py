@@ -1,3 +1,4 @@
+import ast
 import math
 import sqlite3
 import uuid
@@ -326,6 +327,8 @@ class User:
         self.c.execute("SELECT Password FROM USER WHERE User_ID=?", (param,))
         hashpass = self.c.fetchone()[0]
         self.conn.close()
+        if not isinstance(hashpass, bytes):
+            hashpass = ast.literal_eval(hashpass)
         return hashpass
 
     def UpdatePassword(self, User_ID, Password):

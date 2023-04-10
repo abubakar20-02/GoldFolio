@@ -20,6 +20,7 @@ import FinalDeletePage
 import FinalDialogBox
 import FinalGoldPortfolio
 import FinalImport
+import FinalLoadLogIn
 import FinalLogInPage
 import FinalManageAccount
 import FinalMoneyLog
@@ -465,14 +466,44 @@ class Ui_MainWindow(object):
             self.window.setText(
                 "User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
             self.window.show()
-            self.window.OkButton.clicked.connect(lambda:self.__LoadFile(path))
+            self.window.OkButton.clicked.connect(lambda: self.__LoadFile(path))
 
     def __LoadFile(self, path):
-        DBFunctions.load(path, self.UserID)
-        # DBFunctions.Load(path)
-        self.getUserData()
-        self.updateTable(Rate=self.Gold.getBidinGrams())
+        # if the id of the person trying to load is same as the loaded version
+        if DBFunctions.getUserIDForLoadedFile(path) == self.UserID:
+            DBFunctions.load(path, self.UserID)
+            # DBFunctions.Load(path)
+            self.getUserData()
+            self.updateTable(Rate=self.Gold.getBidinGrams())
+        else:
+            self.openLoadLogIn(path)
+
         # self.__logOut()
+
+    def openLoadLogIn(self, path):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalLoadLogIn.MyWindow()
+        profile = DBFunctions.getUserIDForLoadedFile(path)
+        Pass = DBFunctions.getUserHashedPass(path)
+        self.window.setProfile(profile, Pass)
+        self.window.loadButton.clicked.connect(lambda: self.__a(self.window, path, profile))
+        self.window.show()
+
+    def __a(self, window, path, profile):
+        # log out and log in other profile
+        if window.passwordCorrect():
+            DBFunctions.load(path, profile)
+            self.__logOut()
+            with open("my_variable.pickle", "wb") as f:
+                pickle.dump(profile, f)
+            self.reopenWindow()
+
+            # update pickle file to contain user id
+
+    def reopenWindow(self):
+        self.window = QtWidgets.QMainWindow()
+        self.window = MyWindow()
+        self.window.show()
 
     def __logOut(self):
         self.close()

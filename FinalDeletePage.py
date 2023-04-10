@@ -116,6 +116,7 @@ class Ui_Form(QObject):
             self.password.setEchoMode(QLineEdit.Password)
 
     def passwordCorrect(self):
+        print(f"look {type(self.User.getHashedPassword(self.Profile))}")
         isPassCorrect = verify_password(self.password.text(), self.User.getHashedPassword(self.Profile))
         if isPassCorrect is False:
             self.Error.setText("Wrong password!")
