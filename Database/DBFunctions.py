@@ -3,6 +3,7 @@ import os
 import shutil
 import sqlite3
 
+import pandas as pd
 from xlsxwriter import Workbook
 from Database import SetUpFile, User, Investment, Statement
 
@@ -92,7 +93,26 @@ def save(FolderName, Profile):
     MoneyLog = Log.Log.Money()
     MoneyLog.saveState(FolderName, Profile)
 
-def load(FolderName,Profile):
+
+def isFileFormatCorrect(folder_path):
+    all_entries = os.listdir(folder_path)
+    file_count = sum(os.path.isfile(os.path.join(folder_path, entry)) for entry in all_entries)
+    print(file_count)
+    if not file_count == 7:
+        return False
+    files_to_check = ['Investment.xlsx', 'InvestmentLog.xlsx', 'Log.xlsx', 'MoneyLog.xlsx', 'Statement.xlsx',
+                      'User.xlsx', 'UserLog.xlsx']
+    files_in_folder = os.listdir(folder_path)
+    if not all(file in files_in_folder for file in files_to_check):
+        return False
+    return True
+
+
+def load(FolderName, Profile):
+    if not isFileFormatCorrect(FolderName):
+        print("Wrong format")
+        return
+
     print(f"Folder name: {FolderName} Profile: {Profile}")
     User1 = User.User()
     User1.SelectProfile(Profile)
@@ -117,8 +137,19 @@ def load(FolderName,Profile):
     MoneyLog = Log.Log.Money()
     MoneyLog.loadState(FolderName)
 
-    #load for all Logs as well.
 
+def getUserIDForLoadedFile(FolderName):
+    df = pd.read_excel(f"{FolderName}/User.xlsx")
+    UserID = df["User_ID"][0]
+    return UserID
+
+
+def getUserHashedPass(FolderName):
+    df = pd.read_excel(f"{FolderName}/User.xlsx")
+    UserID = df["Password"][0]
+    return UserID
+
+    # load for all Logs as well.
 
     # os.makedirs(os.path.join(FolderName, "DBSupportFiles"))
     # # take snapshot before importing files.

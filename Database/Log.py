@@ -338,7 +338,7 @@ class Log:
             self.SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS InvestmentLog
-                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [Investment_ID] VARCHAR DEFAULT "", [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
+                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
             self.conn.commit()
@@ -427,12 +427,7 @@ class Log:
                     print(Error)
                 Transaction_Type = Data[2]
                 NoOfRecordsAffected = Data[3]
-                Investment_ID = Data[4]
-                User_ID = Data[5]
-                Gold = Data[6]
-                Purity = Data[7]
-                BoughtFor = Data[8]
-                ProfitLoss = Data[9]
+                User_ID = Data[4]
 
                 from Database.Investment import Investment
                 from Database import Archive
