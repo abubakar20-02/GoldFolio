@@ -1,6 +1,8 @@
 import sqlite3
 import uuid
 
+import pandas as pd
+
 from Database import SetUpFile
 
 
@@ -26,6 +28,22 @@ class UserArchive:
               ([Transaction_ID] VARCHAR PRIMARY KEY,[ActionType] TEXT,[User_ID] VARCHAR , [FirstName] TEXT , [LastName] TEXT, [Money] REAL,[time_stamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
               ''')
         self.conn.commit()
+        self.conn.close()
+
+    def saveState(self, FolderName, Profile):
+        self.SetUpConnection()
+        sql = "SELECT * FROM ArchiveUser WHERE User_ID=?"
+        param = (Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/ArchiveUser.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        self.SetUpConnection()
+        # Use pandas to read the data from the SQL database
+        df = pd.read_excel(f"{FolderName}/ArchiveUser.xlsx")
+        df.to_sql(name='ArchiveUser', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
     def deleteUser(self, UserID):
@@ -116,6 +134,22 @@ class InvestmentArchive:
         self.conn.commit()
         self.conn.close()
 
+    def saveState(self, FolderName, Profile):
+        self.__SetUpConnection()
+        sql = "SELECT * FROM ArchiveInvestment WHERE User_ID=?"
+        param = (Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/ArchiveInvestment.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        self.__SetUpConnection()
+        # Use pandas to read the data from the SQL database
+        df = pd.read_excel(f"{FolderName}/ArchiveInvestment.xlsx")
+        df.to_sql(name='ArchiveInvestment', con=self.conn, if_exists='append', index=False)
+        self.conn.close()
+
     def deleteUser(self, UserID):
         self.__SetUpConnection()
         self.c.execute("DELETE FROM ArchiveInvestment WHERE User_ID=?", (UserID,))
@@ -151,7 +185,6 @@ class InvestmentArchive:
         record data. """
         self.__SetUpConnection()
 
-
         self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
         # print("____________________________")
@@ -163,9 +196,6 @@ class InvestmentArchive:
             "DELETE FROM ArchiveInvestment WHERE Investment_ID = ?",
             (Data[0],))
 
-
         self.conn.commit()
         self.conn.close()
         return Data
-
-

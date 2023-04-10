@@ -7,7 +7,7 @@ import pandas as pd
 from xlsxwriter import Workbook
 from Database import SetUpFile, User, Investment, Statement
 
-from Database import Log
+from Database import Log, Archive
 
 
 def saveSnapshot(FolderName):
@@ -93,15 +93,21 @@ def save(FolderName, Profile):
     MoneyLog = Log.Log.Money()
     MoneyLog.saveState(FolderName, Profile)
 
+    ArchiveUser = Archive.UserArchive()
+    ArchiveUser.saveState(FolderName, Profile)
+
+    ArchiveInvestment = Archive.InvestmentArchive()
+    ArchiveInvestment.saveState(FolderName, Profile)
+
 
 def isFileFormatCorrect(folder_path):
     all_entries = os.listdir(folder_path)
     file_count = sum(os.path.isfile(os.path.join(folder_path, entry)) for entry in all_entries)
     print(file_count)
-    if not file_count == 7:
+    if not file_count == 9:
         return False
     files_to_check = ['Investment.xlsx', 'InvestmentLog.xlsx', 'Log.xlsx', 'MoneyLog.xlsx', 'Statement.xlsx',
-                      'User.xlsx', 'UserLog.xlsx']
+                      'User.xlsx', 'UserLog.xlsx', 'ArchiveInvestment.xlsx', 'ArchiveUser.xlsx']
     files_in_folder = os.listdir(folder_path)
     if not all(file in files_in_folder for file in files_to_check):
         return False
@@ -136,6 +142,12 @@ def load(FolderName, Profile):
 
     MoneyLog = Log.Log.Money()
     MoneyLog.loadState(FolderName)
+
+    ArchiveUser = Archive.UserArchive()
+    ArchiveUser.loadState(FolderName)
+
+    ArchiveInvestment = Archive.InvestmentArchive()
+    ArchiveInvestment.loadState(FolderName)
 
 
 def getUserIDForLoadedFile(FolderName):
