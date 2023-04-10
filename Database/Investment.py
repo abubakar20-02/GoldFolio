@@ -768,6 +768,27 @@ class Investment:
         totalgold = self.getSUM("Gold")
         return Rate * totalgold
 
+    def saveState(self, FolderName):
+        self.__SetUpConnection()
+        sql = "SELECT * FROM Investment WHERE User_ID=?"
+        param = (self.Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/Investment.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        self.__SetUpConnection()
+        # Use pandas to read the data from the SQL database
+        print("load")
+        df = pd.read_excel(f"{FolderName}/Investment.xlsx")
+        print("--------")
+        print(df)
+        print("--------")
+        print("load")
+        df.to_sql(name='Investment', con=self.conn, if_exists='append', index=False)
+        self.conn.close()
+
     def PDF(self):
         self.__SetUpConnection()
 

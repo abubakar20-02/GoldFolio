@@ -8,6 +8,7 @@ import pandas as pd
 from Database import DB_Code, DBFunctions, SetUpFile, Archive
 from Database.Investment import Investment
 from Database.Log import Log
+from Database.Statement import Statement
 
 dp = 1
 
@@ -38,6 +39,7 @@ class User:
         self.Log = Log()
         self.UserLog = Log.UserLog()
         self.Investment = Investment()
+        self.Statement = Statement()
         self.MoneyLog = Log.Money()
 
     def __SetUpConnection(self):
@@ -47,6 +49,17 @@ class User:
     def SelectProfile(self, Profile):
         self.Profile = Profile
         self.Log.SelectProfile(self.Profile)
+        self.Investment.setProfile(self.Profile)
+        self.Statement.setProfile(self.Profile)
+
+    def deleteUser(self):
+        self.Statement.deleteUser()
+        self.Investment.deleteUser()
+        self.__SetUpConnection()
+        self.c.execute("DELETE FROM User WHERE User_ID=?", (self.Profile,))
+        self.conn.commit()
+        self.conn.close()
+        self.Log.deleteUser()
 
     def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'
@@ -355,3 +368,19 @@ class User:
             self.conn.close()
             # print(df)
             return df
+
+    def saveState(self, FolderName):
+        self.__SetUpConnection()
+        sql = "SELECT * FROM User WHERE User_ID=?"
+        param = (self.Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/User.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        # Use pandas to read the data from the SQL database
+        df = pd.read_excel(f"{FolderName}/User.xlsx")
+        self.__SetUpConnection()
+        df.to_sql(name='User', con=self.conn, if_exists='append', index=False)
+        self.conn.close()

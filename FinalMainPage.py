@@ -447,29 +447,32 @@ class Ui_MainWindow(object):
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
         if not path == "":
-            DBFunctions.saveSnapshot(path)
+            DBFunctions.save(path, self.UserID)
+            # DBFunctions.saveSnapshot(path)
 
     def Load(self):
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
-        if not DBFunctions.IsFileCorrect(path):
-            self.window = QtWidgets.QWidget()
-            self.window = FinalDialogBox.MyWindow()
-            self.window.setText("The file format is wrong")
-            self.window.show()
-            return
+        # if not DBFunctions.IsFileCorrect(path):
+        #     self.window = QtWidgets.QWidget()
+        #     self.window = FinalDialogBox.MyWindow()
+        #     self.window.setText("The file format is wrong")
+        #     self.window.show()
+        #     return
         if not path == "":
             self.window = QtWidgets.QWidget()
             self.window = FinalDialogBox.MyWindow()
             self.window.setText(
                 "User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
             self.window.show()
-            self.window.OkButton.clicked.connect(lambda: self.__LoadFile(path))
+            self.window.OkButton.clicked.connect(lambda:self.__LoadFile(path))
 
     def __LoadFile(self, path):
-        DBFunctions.Load(path)
+        DBFunctions.load(path, self.UserID)
+        # DBFunctions.Load(path)
+        self.getUserData()
         self.updateTable(Rate=self.Gold.getBidinGrams())
-        self.__logOut()
+        # self.__logOut()
 
     def __logOut(self):
         self.close()

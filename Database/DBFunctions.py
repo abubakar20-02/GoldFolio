@@ -4,7 +4,9 @@ import shutil
 import sqlite3
 
 from xlsxwriter import Workbook
-from Database import SetUpFile
+from Database import SetUpFile, User, Investment, Statement
+
+from Database import Log
 
 
 def saveSnapshot(FolderName):
@@ -55,6 +57,110 @@ def saveSnapshot(FolderName):
     # Close the file object and the database connection
     snapshot_file.close()
     conn.close()
+
+
+def save(FolderName, Profile):
+    folder_name = os.path.basename(FolderName)
+    if os.path.exists(FolderName):
+        # Use shutil.rmtree() to delete the directory and all its contents
+        shutil.rmtree(FolderName)
+
+    os.makedirs(FolderName)
+
+    User1 = User.User()
+    User1.SelectProfile(Profile)
+    User1.saveState(FolderName)
+
+    Investment1 = Investment.Investment()
+    Investment1.setProfile(Profile)
+    Investment1.saveState(FolderName)
+
+    Statement1 = Statement.Statement()
+    Statement1.setProfile(Profile)
+    Statement1.saveState(FolderName)
+
+    Log1 = Log.Log()
+    Log1.SelectProfile(Profile)
+    Log1.saveState(FolderName)
+
+    InvestmentLog = Log.Log.InvestmentLog()
+    InvestmentLog.saveState(FolderName, Profile)
+
+    UserLog = Log.Log.UserLog()
+    UserLog.saveState(FolderName, Profile)
+
+    MoneyLog = Log.Log.Money()
+    MoneyLog.saveState(FolderName, Profile)
+
+def load(FolderName,Profile):
+    print(f"Folder name: {FolderName} Profile: {Profile}")
+    User1 = User.User()
+    User1.SelectProfile(Profile)
+    User1.deleteUser()
+    User1.loadState(FolderName)
+    #
+    Statement1 = Statement.Statement()
+    Statement1.loadState(FolderName)
+
+    Investment1 = Investment.Investment()
+    Investment1.loadState(FolderName)
+
+    Log1 = Log.Log()
+    Log1.loadState(FolderName)
+
+    InvestmentLog = Log.Log.InvestmentLog()
+    InvestmentLog.loadState(FolderName)
+
+    UserLog = Log.Log.UserLog()
+    UserLog.loadState(FolderName)
+
+    MoneyLog = Log.Log.Money()
+    MoneyLog.loadState(FolderName)
+
+    #load for all Logs as well.
+
+
+    # os.makedirs(os.path.join(FolderName, "DBSupportFiles"))
+    # # take snapshot before importing files.
+    # conn = sqlite3.connect(SetUpFile.DBName)
+    #
+    # # Create a file object to store the snapshot
+    # FilePath = f"{FolderName}/{folder_name}{SetUpFile.DBName}"
+    # print(FilePath)
+    # snapshot_file = sqlite3.connect(FilePath)
+    #
+    # # Take a snapshot of the database
+    # conn.backup(snapshot_file)
+    #
+    # # Close the file object and the database connection
+    # snapshot_file.close()
+    # conn.close()
+    #
+    # conn = sqlite3.connect(SetUpFile.DBArchiveName)
+    #
+    # # Create a file object to store the snapshot
+    # FilePath = f"{FolderName}/{SetUpFile.DBArchiveName}"
+    # snapshot_file = sqlite3.connect(FilePath)
+    #
+    # # Take a snapshot of the database
+    # conn.backup(snapshot_file)
+    #
+    # # Close the file object and the database connection
+    # snapshot_file.close()
+    # conn.close()
+    #
+    # conn = sqlite3.connect(SetUpFile.DBLog)
+    #
+    # # Create a file object to store the snapshot
+    # FilePath = f"{FolderName}/{SetUpFile.DBLog}"
+    # snapshot_file = sqlite3.connect(FilePath)
+    #
+    # # Take a snapshot of the database
+    # conn.backup(snapshot_file)
+    #
+    # # Close the file object and the database connection
+    # snapshot_file.close()
+    # conn.close()
 
 
 def IsFileCorrect(FolderName):

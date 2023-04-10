@@ -586,6 +586,22 @@ class Statement:
             return 0
         return Sum / Gold
 
+    def saveState(self, FolderName):
+        self.__SetUpConnection()
+        sql = "SELECT * FROM Statement WHERE User_ID=?"
+        param = (self.Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/Statement.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        self.__SetUpConnection()
+        # Use pandas to read the data from the SQL database
+        df = pd.read_excel(f"{FolderName}/Statement.xlsx")
+        df.to_sql(name='Statement', con=self.conn, if_exists='append', index=False)
+        self.conn.close()
+
     def PDF(self, FilePath, StartDate=None, EndDate=None):
         self.__SetUpConnection()
         # Define the parameters for the query

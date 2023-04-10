@@ -31,6 +31,22 @@ class Log:
         self.Profile = User
         print(self.Profile)
 
+    def saveState(self, FolderName):
+        self.__SetUpConnection()
+        sql = "SELECT * FROM Log WHERE User_ID=?"
+        param = (self.Profile,)
+        # Use pandas to read the data from the SQL database
+        df = pd.read_sql(sql, self.conn, params=param)
+        self.conn.close()
+        df.to_excel(f"{FolderName}/Log.xlsx", index=False)
+
+    def loadState(self, FolderName):
+        # Use pandas to read the data from the SQL database
+        df = pd.read_excel(f"{FolderName}/Log.xlsx")
+        self.__SetUpConnection()
+        df.to_sql(name='Log', con=self.conn, if_exists='append', index=False)
+        self.conn.close()
+
     # need refactoring
     def generateTransactionID(self):
         self.uid = str(uuid.uuid4())
@@ -123,6 +139,22 @@ class Log:
         def SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
+
+        def saveState(self, FolderName,Profile):
+            self.SetUpConnection()
+            sql = "SELECT * FROM UserLog WHERE User_ID=?"
+            param = (Profile,)
+            # Use pandas to read the data from the SQL database
+            df = pd.read_sql(sql, self.conn, params=param)
+            self.conn.close()
+            df.to_excel(f"{FolderName}/UserLog.xlsx", index=False)
+
+        def loadState(self, FolderName):
+            # Use pandas to read the data from the SQL database
+            df = pd.read_excel(f"{FolderName}/UserLog.xlsx")
+            self.SetUpConnection()
+            df.to_sql(name='UserLog', con=self.conn, if_exists='append', index=False)
+            self.conn.close()
 
         def __createTable(self):
             self.SetUpConnection()
@@ -279,6 +311,22 @@ class Log:
         def SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
+
+        def saveState(self, FolderName,Profile):
+            self.SetUpConnection()
+            sql = "SELECT * FROM InvestmentLog WHERE User_ID=?"
+            param = (Profile,)
+            # Use pandas to read the data from the SQL database
+            df = pd.read_sql(sql, self.conn, params=param)
+            self.conn.close()
+            df.to_excel(f"{FolderName}/InvestmentLog.xlsx", index=False)
+
+        def loadState(self, FolderName):
+            # Use pandas to read the data from the SQL database
+            df = pd.read_excel(f"{FolderName}/InvestmentLog.xlsx")
+            self.SetUpConnection()
+            df.to_sql(name='InvestmentLog', con=self.conn, if_exists='append', index=False)
+            self.conn.close()
 
         def deleteUser(self, UserID):
             self.SetUpConnection()
@@ -463,6 +511,22 @@ class Log:
         def setProfile(self, Profile):
             self.Profile = Profile
             print(f"profile set to: {Profile}")
+
+        def saveState(self, FolderName,Profile):
+            self.__SetUpConnection()
+            sql = "SELECT * FROM Money WHERE User_ID=?"
+            param = (Profile,)
+            # Use pandas to read the data from the SQL database
+            df = pd.read_sql(sql, self.conn, params=param)
+            self.conn.close()
+            df.to_excel(f"{FolderName}/MoneyLog.xlsx", index=False)
+
+        def loadState(self, FolderName):
+            # Use pandas to read the data from the SQL database
+            df = pd.read_excel(f"{FolderName}/MoneyLog.xlsx")
+            self.__SetUpConnection()
+            df.to_sql(name='Money', con=self.conn, if_exists='append', index=False)
+            self.conn.close()
 
         def __SetUpConnection(self):
             self.conn = sqlite3.connect(SetUpFile.DBLog)
