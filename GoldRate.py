@@ -36,6 +36,8 @@ class Gold:
         self.Purity = Purity
         self.bid = 0
         self.ask = 0
+        self.c = CurrencyRates()
+        self.code = None
 
     def getLatestRate(self):
         data = requests.get("https://www.kitco.com/charts/livegold.html")
@@ -62,9 +64,11 @@ class Gold:
             Rate = RateForDifferentKarrots
 
         if self.Currency == "£":
-            Rate = self.convertRateTo(Rate, "GBP")
+            self.code = "GBP"
+            Rate = self.convertRateTo(Rate)
         elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate, "EUR")
+            self.code = "EUR"
+            Rate = self.convertRateTo(Rate)
         return str(round(Rate, 2))
 
         # if self.Currency == "BHD":
@@ -81,13 +85,15 @@ class Gold:
         # return str(round(Rate, 2)) + Currency
         # # return str(round(self.bid, 2)) + " BD"  # per gram cost
 
-    def convertRateTo(self, Rate, Currency):
+    def getLatestExchangeRate(self):
         try:
-            c = CurrencyRates()
-            Rate = c.get_rate('USD', Currency) * Rate
+            self.Rate = self.c.get_rate('USD', self.code)
         except:
-            Rate = 0
-        return Rate
+            print("api error")
+            self.Rate=0
+
+    def convertRateTo(self, Value):
+            return self.Rate * Value
 
     def getAsk(self):
         PerGram = getPureGoldPerGramInDollars(self.ask)
@@ -106,9 +112,9 @@ class Gold:
             Rate = RateForDifferentKarrots
 
         if self.Currency == "£":
-            Rate = self.convertRateTo(Rate, "GBP")
+            Rate = self.convertRateTo(Rate)
         elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate, "EUR")
+            Rate = self.convertRateTo(Rate)
 
         return round(Rate, 2)
 
@@ -122,9 +128,9 @@ class Gold:
 
         Rate = RateForDifferentKarrots
         if self.Currency == "£":
-            Rate = self.convertRateTo(Rate, "GBP")
+            Rate = self.convertRateTo(Rate)
         elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate, "EUR")
+            Rate = self.convertRateTo(Rate)
         return Rate
 
     def getBidinGrams(self):
@@ -134,9 +140,9 @@ class Gold:
 
         Rate = RateForDifferentKarrots
         if self.Currency == "£":
-            Rate = self.convertRateTo(Rate, "GBP")
+            Rate = self.convertRateTo(Rate)
         elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate, "EUR")
+            Rate = self.convertRateTo(Rate)
         return Rate
 
     def convertRate(self, RateInGram):

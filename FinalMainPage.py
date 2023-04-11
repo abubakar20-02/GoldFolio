@@ -672,6 +672,7 @@ class Ui_MainWindow(object):
     def loadSettings(self):
         self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit, self.Currency = self.UserProfile.GetSettings()
         self.Gold = Gold(24, self.GoldUnit, self.Currency)
+        self.Gold.getLatestExchangeRate()
         # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
@@ -800,12 +801,21 @@ class Ui_MainWindow(object):
         self.canvas.axes.clear()
         for i in range(len(self.ActualData)):
             self.ActualData1[i] = self.Gold.convertRateFromTroyOunce(self.ActualData[i])
+            self.ActualData1[i] = self.convertCurrency(self.ActualData1[i])
 
         for i in range(len(self.PredictedData)):
             self.PredictedData1[i] = self.Gold.convertRateFromTroyOunce(self.PredictedData[i])
+            self.PredictedData1[i] = self.convertCurrency(self.PredictedData1[i])
 
         self.canvas.axes.plot(self.ActualDates, np.array(self.ActualData1), marker='.', label="actual")
         self.canvas.axes.plot(self.PredictedDates, np.array(self.PredictedData1), 'r', marker='.', label="predicition")
+
+    def convertCurrency(self, Rate):
+        if self.Currency == "£":
+            Rate = self.Gold.convertRateTo(Rate)
+        elif self.Currency == "€":
+            Rate = self.Gold.convertRateTo(Rate)
+        return Rate
 
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -908,6 +918,7 @@ class UpdateRatesContinuously(QObject):
 
     def getGoldRate(self, GoldRate):
         self.GoldRate = GoldRate
+        self.GoldRate.getLatestExchangeRate()
 
     def run(self):
         while True:
