@@ -153,6 +153,13 @@ class Gold:
             Rate = RateInGram
         return Rate
 
+    def convertRateFromTroyOunce(self,RateInOunce):
+        if RateInOunce is None:
+            return
+        RateInGram = RateInOunce/TroyOunce
+        print(RateInGram)
+        return self.convertRate(RateInGram)
+
     def convertWeight(self, WeightInGram):
         Weight = 0
         if WeightInGram is None:

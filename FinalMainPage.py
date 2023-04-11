@@ -420,7 +420,7 @@ class Ui_MainWindow(object):
         self.actionLoadState.setText(_translate("MainWindow", "Load State"))
         self.actionManageAccount.setText(_translate("MainWindow", "Manage Account"))
         self.actionManageCash.setText(_translate("MainWindow", "Manage Cash"))
-        self.actionSave.setText(_translate("MainWindow","Save"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
 
     def openManageAccountScreen(self):
         self.window = QtWidgets.QWidget()
@@ -770,11 +770,14 @@ class Ui_MainWindow(object):
         predictinterval = interval + n_days
         aa = [x for x in range(interval)]
         bb = [x for x in range(interval - 1, predictinterval)]
-        print(bb)
 
-        self.canvas.axes.plot(aa, inv_y[len(inv_y) - interval:], marker='.', label="actual")
+        self.ActualDates = aa
+        self.ActualData = inv_y[len(inv_y) - interval:]
         inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
-        self.canvas.axes.plot(bb, inv_yhat[:], 'r', marker='.', label="predicition")
+        self.PredictedData = inv_yhat[:]
+        self.PredictedDates = bb
+
+        self.updateGraph()
 
     def recursive_forecast(self, model, input_data, n_days):
         # load model.
@@ -790,6 +793,19 @@ class Ui_MainWindow(object):
         return np.array(forecast)
 
     # closeExcelFile()
+
+    def updateGraph(self):
+        self.ActualData1 = np.copy(self.ActualData)
+        self.PredictedData1 = np.copy(self.PredictedData)
+        self.canvas.axes.clear()
+        for i in range(len(self.ActualData)):
+            self.ActualData1[i] = self.Gold.convertRateFromTroyOunce(self.ActualData[i])
+
+        for i in range(len(self.PredictedData)):
+            self.PredictedData1[i] = self.Gold.convertRateFromTroyOunce(self.PredictedData[i])
+
+        self.canvas.axes.plot(self.ActualDates, np.array(self.ActualData1), marker='.', label="actual")
+        self.canvas.axes.plot(self.PredictedDates, np.array(self.PredictedData1), 'r', marker='.', label="predicition")
 
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -826,9 +842,14 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.setProfile(self.UserID)
         self.window.SaveButton.clicked.connect(self.loadSettings)
         self.window.SaveButton.clicked.connect(self.restartThread)
+        self.window.SaveButton.clicked.connect(self.reloadGraph)
         # self.window.SaveButton.clicked.connect(
         #     lambda: self.restartThread() if self.window.updatefreqchanged() else None)
         self.window.show()
+
+    def reloadGraph(self):
+        self.updateGraph()
+        self.canvas.draw()
 
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()

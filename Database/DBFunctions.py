@@ -161,50 +161,6 @@ def getUserHashedPass(FolderName):
     UserID = df["Password"][0]
     return UserID
 
-    # load for all Logs as well.
-
-    # os.makedirs(os.path.join(FolderName, "DBSupportFiles"))
-    # # take snapshot before importing files.
-    # conn = sqlite3.connect(SetUpFile.DBName)
-    #
-    # # Create a file object to store the snapshot
-    # FilePath = f"{FolderName}/{folder_name}{SetUpFile.DBName}"
-    # print(FilePath)
-    # snapshot_file = sqlite3.connect(FilePath)
-    #
-    # # Take a snapshot of the database
-    # conn.backup(snapshot_file)
-    #
-    # # Close the file object and the database connection
-    # snapshot_file.close()
-    # conn.close()
-    #
-    # conn = sqlite3.connect(SetUpFile.DBArchiveName)
-    #
-    # # Create a file object to store the snapshot
-    # FilePath = f"{FolderName}/{SetUpFile.DBArchiveName}"
-    # snapshot_file = sqlite3.connect(FilePath)
-    #
-    # # Take a snapshot of the database
-    # conn.backup(snapshot_file)
-    #
-    # # Close the file object and the database connection
-    # snapshot_file.close()
-    # conn.close()
-    #
-    # conn = sqlite3.connect(SetUpFile.DBLog)
-    #
-    # # Create a file object to store the snapshot
-    # FilePath = f"{FolderName}/{SetUpFile.DBLog}"
-    # snapshot_file = sqlite3.connect(FilePath)
-    #
-    # # Take a snapshot of the database
-    # conn.backup(snapshot_file)
-    #
-    # # Close the file object and the database connection
-    # snapshot_file.close()
-    # conn.close()
-
 
 def IsFileCorrect(FolderName):
     # Specify the directory path and directory name to check
@@ -220,11 +176,6 @@ def IsFileCorrect(FolderName):
     else:
         return False
 
-    # print(os.path.join(parent_directory_path, directory_name))
-    # # Check if the directory exists and is a directory
-    # if os.path.exists(os.path.join(parent_directory_path, directory_name)) and os.path.isdir(
-    #         os.path.join(parent_directory_path, directory_name)):
-    #    return False
 
     file_extension = "*.db"
     # Use a loop to iterate over all files in the directory and its subdirectories
