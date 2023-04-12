@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import yfinance as yf
 import pandas as pd
 
@@ -111,10 +113,15 @@ def getDataSet(start_date, end_date):
 if __name__ == "__main__":
     import time
 
-    # start_date = "2013-01-01"
-    start_date = "2020-01-01"
-    end_date = "2023-04-08"
-    getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
+    start_date = datetime.now().date() - timedelta(days=61)
+    end_date = datetime.now().date() - timedelta(days=1)
+    print(f"Start date: {start_date} End date: {end_date}")
+    getDataSet(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")).to_excel("gold_data.xlsx")
+
+    # # # start_date = "2013-01-01"
+    # start_date = "2022-04-08"
+    # end_date = "2023-04-08"
+    # getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
 
     # create a function that takes todays date and using timestamp go back in the past.
 

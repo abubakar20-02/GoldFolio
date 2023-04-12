@@ -9,7 +9,7 @@
 import os
 import pickle
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -28,6 +28,7 @@ import FinalSellScreen
 import FinalSettings
 import FinalStatement
 import FinalStatistics
+import GetDataSet
 import GoldCalculator
 import SetupFile
 from Database import User, DBFunctions
@@ -63,6 +64,7 @@ class Ui_MainWindow(object):
         self.UserProfile.SelectProfile(self.UserID)
         self.loadSettings()
 
+        self.DateOpenedAt = datetime.now().date()
         self.val = 0
         self.Investment = Investment()
         self.Investment.setProfile(self.UserID)
@@ -723,9 +725,8 @@ class Ui_MainWindow(object):
 
     def loadModel(self):
         from joblib import load
-
+        self.updateDataSet()
         model = load_model('model.h5')
-
         df = pd.read_excel("gold_data.xlsx")
         df = df.iloc[:, 1:]
         df = pd.DataFrame(df)
@@ -817,6 +818,12 @@ class Ui_MainWindow(object):
             Rate = self.Gold.convertRateTo(Rate)
         return Rate
 
+    def updateDataSet(self):
+        start_date = self.DateOpenedAt - timedelta(days=366)
+        end_date = self.DateOpenedAt - timedelta(days=1)
+        print(f"Start date: {start_date} End date: {end_date}")
+        GetDataSet.getDataSet(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")).to_excel("gold_data.xlsx")
+
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
@@ -835,7 +842,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def StartThread(self):
         self.my_thread = QThread()
-        self.worker = UpdateRatesContinuously(self.Gold, self.UpdateFrequency)
+        self.worker = UpdateRatesContinuously(self.Gold, self.UpdateFrequency, self.DateOpenedAt)
         # We're connecting things to the correct spots
         self.worker.moveToThread(self.my_thread)  # move worker to thread.
         # Note: Ui elements should only be updated via the main thread.
@@ -911,11 +918,12 @@ class UpdateRatesContinuously(QObject):
     values = pyqtSignal(object)
     error = pyqtSignal()
 
-    def __init__(self, Gold, TimeFreq):
+    def __init__(self, Gold, TimeFreq, DateOpenedAt):
         super(UpdateRatesContinuously, self).__init__()
         self.isRunning = True
         self.GoldRate = Gold
         self.TimeFreq = TimeFreq
+        self.DateOpenedAt = DateOpenedAt
 
     def getGoldRate(self, GoldRate):
         self.GoldRate = GoldRate
@@ -934,6 +942,12 @@ class UpdateRatesContinuously(QObject):
                 if not self.isRunning:
                     self.finished.emit()
                     return
+                CurrentDate = datetime.now().date()
+                if CurrentDate != self.DateOpenedAt:
+                    print("Date changed")
+                    #if date changed restart thread with updated graph and set Date started at to current date.
+                else:
+                    print("Date didnt change")
                 time.sleep(1)
                 # print("working")
                 # global Change

@@ -90,9 +90,7 @@ class Gold:
         try:
             self.Rate = self.c.get_rate('USD', self.code)
         except:
-            print("api error")
             self.Rate = 0
-
             base_currency = 'USD'
             target_currency = self.code
             print(target_currency)
