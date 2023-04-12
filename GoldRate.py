@@ -38,6 +38,10 @@ class Gold:
         self.ask = 0
         self.c = CurrencyRates()
         self.code = None
+        if self.Currency == "£":
+            self.code = 'GBP'
+        elif self.Currency == "€":
+            self.code = 'EUR'
 
     def getLatestRate(self):
         data = requests.get("https://www.kitco.com/charts/livegold.html")
@@ -63,12 +67,9 @@ class Gold:
         elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
-        if self.Currency == "£":
-            self.code = "GBP"
+        if self.Currency != "$":
             Rate = self.convertRateTo(Rate)
-        elif self.Currency == "€":
-            self.code = "EUR"
-            Rate = self.convertRateTo(Rate)
+
         return str(round(Rate, 2))
 
         # if self.Currency == "BHD":
@@ -90,10 +91,29 @@ class Gold:
             self.Rate = self.c.get_rate('USD', self.code)
         except:
             print("api error")
-            self.Rate=0
+            self.Rate = 0
+
+            base_currency = 'USD'
+            target_currency = self.code
+            print(target_currency)
+
+            response = requests.get(
+                f'https://www.x-rates.com/calculator/?from={base_currency}&to={target_currency}&amount=1')
+
+            if response.status_code != 200:
+                return f"Error: Couldn't fetch data. Status code: {response.status_code}"
+
+            soup = BeautifulSoup(response.content, 'html.parser')
+            rate_element = soup.find('span', {'class': 'ccOutputTrail'}).previous_sibling
+            if rate_element:
+                rate = float(rate_element.string)
+                self.Rate = rate
+                print(f"rate: {self.Rate}")
+            else:
+                return "Error: Couldn't find the exchange rate."
 
     def convertRateTo(self, Value):
-            return self.Rate * Value
+        return self.Rate * Value
 
     def getAsk(self):
         PerGram = getPureGoldPerGramInDollars(self.ask)
@@ -111,9 +131,7 @@ class Gold:
         elif self.Unit == GoldUnits.gram:
             Rate = RateForDifferentKarrots
 
-        if self.Currency == "£":
-            Rate = self.convertRateTo(Rate)
-        elif self.Currency == "€":
+        if self.Currency != "$":
             Rate = self.convertRateTo(Rate)
 
         return round(Rate, 2)
@@ -127,10 +145,9 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
-        if self.Currency == "£":
+        if self.Currency != "$":
             Rate = self.convertRateTo(Rate)
-        elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate)
+
         return Rate
 
     def getBidinGrams(self):
@@ -139,10 +156,9 @@ class Gold:
         RateForDifferentKarrots = Ratio * PerGram
 
         Rate = RateForDifferentKarrots
-        if self.Currency == "£":
+        if self.Currency != "$":
             Rate = self.convertRateTo(Rate)
-        elif self.Currency == "€":
-            Rate = self.convertRateTo(Rate)
+
         return Rate
 
     def convertRate(self, RateInGram):
@@ -159,10 +175,10 @@ class Gold:
             Rate = RateInGram
         return Rate
 
-    def convertRateFromTroyOunce(self,RateInOunce):
+    def convertRateFromTroyOunce(self, RateInOunce):
         if RateInOunce is None:
             return
-        RateInGram = RateInOunce/TroyOunce
+        RateInGram = RateInOunce / TroyOunce
         print(RateInGram)
         return self.convertRate(RateInGram)
 

@@ -881,6 +881,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Ask.setText("")
 
     def ApplyChanges(self, rates):
+        self.Gold.getLatestExchangeRate()
         Ask = str(f"{rates.getCurrency()} {rates.getAsk()}")
         Bid = str(f"{rates.getCurrency()} {rates.getBid()}")
 
@@ -918,7 +919,6 @@ class UpdateRatesContinuously(QObject):
 
     def getGoldRate(self, GoldRate):
         self.GoldRate = GoldRate
-        self.GoldRate.getLatestExchangeRate()
 
     def run(self):
         while True:
