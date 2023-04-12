@@ -851,6 +851,9 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.finished.connect(self.worker.deleteLater)
         self.worker.values.connect(self.ApplyChanges)
         self.worker.error.connect(self.ClearRates)
+        # restart thread to get latest date
+        self.worker.DateChanged.connect(self.restartThread)
+        self.worker.DateChanged.connect(self.loadModel)
         self.my_thread.start()
 
     def openSettings(self):
@@ -880,6 +883,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def restartThread(self):
         print("restart")
+        self.DateOpenedAt = datetime.now().date()
         self.worker.StopThread()
         self.StartThread()
 
@@ -917,6 +921,7 @@ class UpdateRatesContinuously(QObject):
     finished = pyqtSignal()
     values = pyqtSignal(object)
     error = pyqtSignal()
+    DateChanged = pyqtSignal()
 
     def __init__(self, Gold, TimeFreq, DateOpenedAt):
         super(UpdateRatesContinuously, self).__init__()
@@ -944,6 +949,7 @@ class UpdateRatesContinuously(QObject):
                     return
                 CurrentDate = datetime.now().date()
                 if CurrentDate != self.DateOpenedAt:
+                    self.DateChanged.emit()
                     print("Date changed")
                     #if date changed restart thread with updated graph and set Date started at to current date.
                 else:
