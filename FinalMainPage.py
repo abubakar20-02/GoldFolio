@@ -472,7 +472,7 @@ class Ui_MainWindow(object):
             self.window = QtWidgets.QWidget()
             self.window = FinalDialogBox.MyWindow()
             self.window.setText(
-                "User will be logged out. Unsaved changes will be lost. Are you sure you want to proceed?")
+                "Unsaved changes will be lost. Are you sure you want to proceed?")
             self.window.show()
             self.window.OkButton.clicked.connect(lambda: self.__LoadFile(path))
 
@@ -726,8 +726,19 @@ class Ui_MainWindow(object):
     def loadModel(self):
         from joblib import load
         self.updateDataSet()
+        interval = 60
         model = load_model('model.h5')
         df = pd.read_excel("gold_data.xlsx")
+
+        # Extract the date column as a Pandas Series
+        date_series = df['Date']
+
+        # Convert the date strings to datetime objects
+        date_list = [date_str.strftime('%Y-%m-%d') for date_str in date_series]
+
+        # Get the last 60 dates
+        aa = date_list[-interval:]
+
         df = df.iloc[:, 1:]
         df = pd.DataFrame(df)
         scaler = MinMaxScaler(feature_range=(0, 1))
@@ -768,18 +779,35 @@ class Ui_MainWindow(object):
 
         print(inv_yhat)
 
-        interval = 60
         predictinterval = interval + n_days
-        aa = [x for x in range(interval)]
-        bb = [x for x in range(interval - 1, predictinterval)]
+        bb = self.forecastdates(date_list[-1], n_days)
+        # bb = [x for x in range(interval - 1, predictinterval)]
 
+        print("-------Dates-------")
         self.ActualDates = aa
+        print(self.ActualDates)
+        self.PredictedDates = bb
+        print(self.PredictedDates)
         self.ActualData = inv_y[len(inv_y) - interval:]
         inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
         self.PredictedData = inv_yhat[:]
-        self.PredictedDates = bb
 
         self.updateGraph()
+
+    def forecastdates(self, start_date, days):
+        # Initialize an empty list to store the dates
+        dates = []
+        count = 0
+        # Loop through each day in the date range
+        current_date = datetime.strptime(start_date, '%Y-%m-%d')
+        while count <= days:
+            # If the day is not a Saturday or Sunday, add it to the list
+            if current_date.weekday() < 5:
+                dates.append(current_date.strftime('%Y-%m-%d'))
+                count = count + 1
+            # Move to the next day
+            current_date += timedelta(days=1)
+        return dates
 
     def recursive_forecast(self, model, input_data, n_days):
         # load model.
@@ -951,7 +979,7 @@ class UpdateRatesContinuously(QObject):
                 if CurrentDate != self.DateOpenedAt:
                     self.DateChanged.emit()
                     print("Date changed")
-                    #if date changed restart thread with updated graph and set Date started at to current date.
+                    # if date changed restart thread with updated graph and set Date started at to current date.
                 else:
                     print("Date didnt change")
                 time.sleep(1)
