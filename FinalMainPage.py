@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
+from matplotlib import ticker
 
 import FinalAddInvestment
 import FinalAddMoney
@@ -838,6 +839,7 @@ class Ui_MainWindow(object):
 
         self.canvas.axes.plot(self.ActualDates, np.array(self.ActualData1), marker='.', label="actual")
         self.canvas.axes.plot(self.PredictedDates, np.array(self.PredictedData1), 'r', marker='.', label="predicition")
+        self.canvas.axes.xaxis.set_major_locator(ticker.MultipleLocator(10))
 
     def convertCurrency(self, Rate):
         if self.Currency == "£":
