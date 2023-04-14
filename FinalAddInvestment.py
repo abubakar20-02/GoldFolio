@@ -105,7 +105,7 @@ class Ui_Form(QObject):
             MoneyMissing = BoughtFor - self.User.getMoney()
             self.window = QtWidgets.QWidget()
             self.window = FinalNotEnoughCash.MyWindow()
-            self.window.setUpPage(UserID,MoneyMissing)
+            self.window.setUpPage(UserID, MoneyMissing)
             self.window.show()
         else:
             self.Investment.insertIntoTable(Gold, 1, BoughtFor, Date=date)

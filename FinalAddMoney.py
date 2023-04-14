@@ -11,15 +11,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 
+import FinalDialogBox
 import SetupFile
 from Database import User
 
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
-        self.User=User.User()
+        self.User = User.User()
         Form.setObjectName("Form")
-        Form.setMaximumSize(100,100)
+        Form.setMaximumSize(100, 100)
         Form.setStyleSheet(SetupFile.Background)
 
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
@@ -96,7 +97,7 @@ class Ui_Form(QObject):
         self.Money_Text.setText(_translate("Form", "Money: "))
         self.AddMoney.setText(_translate("Form", "Add Cash"))
 
-    def setUserID(self,UserID):
+    def setUserID(self, UserID):
         self.User.SelectProfile(UserID)
         self.loadSettings()
         self.Currency.setText(self.currency)
@@ -117,18 +118,27 @@ class Ui_Form(QObject):
         self.User.addMoney(self.Money.value())
 
     def withdrawMoney(self):
-        self.User.cashout(self.Money.value())
+        if self.Money.value() > self.User.getMoney():
+            self.window = QtWidgets.QWidget()
+            self.window = FinalDialogBox.MyWindow()
+            self.window.setText("You do not have enough money!")
+            self.window.show()
+        else:
+            self.User.cashout(self.Money.value())
 
     def loadSettings(self):
         _, _, _, _, self.currency = self.User.GetSettings()
+
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

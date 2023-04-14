@@ -229,9 +229,6 @@ class Investment:
             User = User.User()
             User.SelectProfile(self.Profile)
             TotalMoney = User.getMoney()
-            if TotalMoney < BoughtFor:
-                print("not enough cash")
-                return
 
         if Date is None:
             Date = datetime.now().date()
