@@ -10,18 +10,19 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QHeaderView, QTableWidget, QAbstractItemView
+from PyQt5.QtWidgets import QHeaderView, QTableWidget, QAbstractItemView, QFileDialog
 
 import FinalChangePassword
 from Database import User
+from Database import DBFunctions
 
 
-class Ui_Form(QObject):
+class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(630, 500)
-        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
-        self.verticalLayout.setObjectName("verticalLayout")
+        Form.resize(943, 743)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.UserId_text = QtWidgets.QLabel(Form)
@@ -32,36 +33,58 @@ class Ui_Form(QObject):
         self.horizontalLayout.addWidget(self.UserID)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.SearchButton = QtWidgets.QPushButton(Form)
-        self.SearchButton.setObjectName("SearchButton")
-        self.horizontalLayout.addWidget(self.SearchButton)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.tableWidget = QtWidgets.QTableWidget(Form)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.verticalLayout.addWidget(self.tableWidget)
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem1)
-        self.DeleteUserButton = QtWidgets.QPushButton(Form)
-        self.DeleteUserButton.setObjectName("DeleteUserButton")
-        self.horizontalLayout_2.addWidget(self.DeleteUserButton)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem2)
+        self.horizontalLayout_5.addWidget(self.tableWidget)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.ChangePasswordButton = QtWidgets.QPushButton(Form)
         self.ChangePasswordButton.setObjectName("ChangePasswordButton")
-        self.horizontalLayout_2.addWidget(self.ChangePasswordButton)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem3)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3.addWidget(self.ChangePasswordButton)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem2)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.DeleteUserButton = QtWidgets.QPushButton(Form)
+        self.DeleteUserButton.setObjectName("DeleteUserButton")
+        self.horizontalLayout_4.addWidget(self.DeleteUserButton)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem3)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem4)
+        self.horizontalLayout_5.addLayout(self.verticalLayout)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.saveDatabaseStateButton = QtWidgets.QPushButton(Form)
+        self.saveDatabaseStateButton.setObjectName("saveDatabaseStateButton")
+        self.horizontalLayout_2.addWidget(self.saveDatabaseStateButton)
+        self.LoadDatabaseStateButton = QtWidgets.QPushButton(Form)
+        self.LoadDatabaseStateButton.setObjectName("LoadDatabaseStateButton")
+        self.horizontalLayout_2.addWidget(self.LoadDatabaseStateButton)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem5)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
         self.loadDataFromTable()
         # if no record selected it crashes.
         self.ChangePasswordButton.clicked.connect(lambda: self.changePassScreen(self.get_selected_row()))
 
+        self.DeleteUserButton.clicked.connect(self.deleteAccount)
+        self.saveDatabaseStateButton.clicked.connect(self.saveDatabase)
+        self.LoadDatabaseStateButton.clicked.connect(self.loadDatabase)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -69,14 +92,27 @@ class Ui_Form(QObject):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.UserId_text.setText(_translate("Form", "User ID:"))
-        self.SearchButton.setText(_translate("Form", "Search"))
-        self.DeleteUserButton.setText(_translate("Form", "Delete User"))
         self.ChangePasswordButton.setText(_translate("Form", "Change Password"))
+        self.DeleteUserButton.setText(_translate("Form", "Delete User"))
+        self.saveDatabaseStateButton.setText(_translate("Form", "Save database state"))
+        self.LoadDatabaseStateButton.setText(_translate("Form", "Load database state"))
 
+    def saveDatabase(self):
+        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        path = filename
+        if not path == "":
+            DBFunctions.saveSnapshot(path)
+
+    def loadDatabase(self):
+        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        path = filename
+        if not path == "":
+            DBFunctions.Load(path)
+            # if successful then load data from table
+            self.loadDataFromTable()
     def loadDataFromTable(self):
         self.User = User.User()
         table = self.User.getTable()
-        print(table)
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def load_dataframe_to_table(self, dataframe, table_widget):
@@ -93,6 +129,11 @@ class Ui_Form(QObject):
                 print(dataframe.iloc[row, column])
                 item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 table_widget.setItem(row, column, item)
+
+    def deleteAccount(self):
+        self.User.SelectProfile(self.get_selected_row())
+        self.User.deleteUser()
+        self.loadDataFromTable()
 
     def get_selected_row(self):
         row = self.tableWidget.currentRow()
