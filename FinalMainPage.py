@@ -905,7 +905,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
-        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams()))
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(),self.UserID))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))

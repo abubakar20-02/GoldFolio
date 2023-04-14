@@ -11,12 +11,14 @@ import pickle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject
 
-from Database import Investment
+import FinalNotEnoughCash
+from Database import Investment, User
 
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
         self.Investment = Investment.Investment()
+        self.User = User.User()
         Form.setObjectName("Form")
         Form.resize(362, 277)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
@@ -85,9 +87,7 @@ class Ui_Form(QObject):
         else:
             self.BoughtFor.setEnabled(True)
 
-    def add(self, Rate):
-        with open("my_variable.pickle", "rb") as f:
-            UserID = pickle.load(f)
+    def add(self, Rate, UserID):
         format_str = '%Y-%m-%d'
         Date = self.Date.date().toPyDate()
         date = Date.strftime(format_str)
@@ -100,7 +100,15 @@ class Ui_Form(QObject):
         print(BoughtFor)
         print(UserID)
         self.Investment.setProfile(UserID)
-        self.Investment.insertIntoTable(Gold, 1, BoughtFor, Date=date)
+        self.User.SelectProfile(UserID)
+        if BoughtFor > self.User.getMoney():
+            MoneyMissing = BoughtFor - self.User.getMoney()
+            self.window = QtWidgets.QWidget()
+            self.window = FinalNotEnoughCash.MyWindow()
+            self.window.setUpPage(UserID,MoneyMissing)
+            self.window.show()
+        else:
+            self.Investment.insertIntoTable(Gold, 1, BoughtFor, Date=date)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
