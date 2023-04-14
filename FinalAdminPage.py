@@ -81,7 +81,7 @@ class Ui_Form(object):
         self.loadDataFromTable()
         # if no record selected it crashes.
         self.ChangePasswordButton.clicked.connect(lambda: self.changePassScreen(self.get_selected_row()))
-
+        self.UserID.textChanged.connect(self.Search)
         self.DeleteUserButton.clicked.connect(self.deleteAccount)
         self.saveDatabaseStateButton.clicked.connect(self.saveDatabase)
         self.LoadDatabaseStateButton.clicked.connect(self.loadDatabase)
@@ -110,6 +110,14 @@ class Ui_Form(object):
             DBFunctions.Load(path)
             # if successful then load data from table
             self.loadDataFromTable()
+
+    def Search(self):
+        if self.UserID.text() == "":
+            self.loadDataFromTable()
+            return
+        table = self.User.searchLikeUserID(self.UserID.text())
+        self.load_dataframe_to_table(table, self.tableWidget)
+
     def loadDataFromTable(self):
         self.User = User.User()
         table = self.User.getTable()
