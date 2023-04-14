@@ -365,6 +365,42 @@ class Investment:
         print(df)
         self.conn.close()
 
+    def showSumForIndividual(self, id):
+        self.__SetUpConnection()
+        sql = "SELECT SUM(Gold),SUM(BoughtFor),SUM(Value_Change) FROM Investment WHERE Investment_ID = ?"
+        self.c.execute(sql, (id,))
+        gold_sum, bought_for_sum, value_change_sum = self.c.fetchone()
+        self.conn.close()
+        return gold_sum, bought_for_sum, value_change_sum
+
+    def showSumSale(self, StartDate=None, EndDate=None, MinimumProfitMargin=None, uniqueID=None):
+        print(uniqueID)
+        if uniqueID is not None:
+            gold_sum = bought_for_sum = value_change_sum = 0
+            for id in uniqueID:
+                indvGold_sum, indvBought_for_sum, indvValue_change_sum = self.showSumForIndividual(id)
+                gold_sum += indvGold_sum
+                bought_for_sum += indvBought_for_sum
+                value_change_sum += indvValue_change_sum
+            return gold_sum, bought_for_sum, value_change_sum
+        self.__SetUpConnection()
+        values = (self.Profile,)
+        sql = "SELECT SUM(Gold),SUM(BoughtFor),SUM(Value_Change) FROM Investment WHERE User_ID = ?"
+        if MinimumProfitMargin is not None:
+            sql += " AND ProfitLoss>=?"
+            values += (MinimumProfitMargin,)
+            # if Mode == "Custom":
+            #     # add values of sum for each ID
+        if StartDate:
+            sql += f" AND Date_Added >= '{StartDate}'"
+
+        if EndDate:
+            sql += f" AND Date_Added <= '{EndDate}'"
+        self.c.execute(sql, values)
+        gold_sum, bought_for_sum, value_change_sum = self.c.fetchone()
+        self.conn.close()
+        return gold_sum, bought_for_sum, value_change_sum
+
     # add user here
     def sellProfit(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None, ProfitMargin=None):
         if ProfitMargin is None:

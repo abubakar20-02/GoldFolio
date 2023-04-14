@@ -850,7 +850,7 @@ class Ui_MainWindow(object):
 
     def updateDataSet(self):
         start_date = self.DateOpenedAt - timedelta(days=366)
-        end_date = self.DateOpenedAt - timedelta(days=1)
+        end_date = self.DateOpenedAt
         print(f"Start date: {start_date} End date: {end_date}")
         GetDataSet.getDataSet(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")).to_excel("gold_data.xlsx")
 

@@ -96,12 +96,19 @@ class Ui_Form(QObject):
         # use user profile to get profit margin.
         self.Investment.setProfile(UserProfile)
         if self.SellMode.currentIndex() == 2:
+            Gold, Sum, Value = self.Investment.showSumSale(uniqueID=TransactionIDs)
+            print(f"gold: {Gold} sum: {Sum} value:{Value}")
             self.Investment.sell(TransactionIDs, Rate=Rate, Date=SellDate)
             print("Sell custom")
         if self.SellMode.currentIndex() == 1:
+            Gold, Sum, Value = self.Investment.showSumSale(StartDate=StartDate, EndDate=EndDate)
+            print(f"gold: {Gold} cost: {Sum} value change:{Value}")
             self.Investment.sellAll(Rate=Rate, Date=SellDate, StartDate=StartDate, EndDate=EndDate)
             print("Sell All")
         if self.SellMode.currentIndex() == 0:
+            Gold, Sum, Value = self.Investment.showSumSale(StartDate=StartDate, EndDate=EndDate,
+                                                           MinimumProfitMargin=ProfitMargin)
+            print(f"gold: {Gold} sum: {Sum} value:{Value}")
             self.Investment.sellProfit(Rate=Rate, Date=SellDate, StartDate=StartDate, EndDate=EndDate,
                                        ProfitMargin=ProfitMargin)
             print("Sell Profit")
