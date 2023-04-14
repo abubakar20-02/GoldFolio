@@ -645,6 +645,7 @@ class Ui_MainWindow(object):
             EndDate = None
         self.window = QtWidgets.QWidget()
         self.window = FinalSellScreen.MyWindow()
+        self.window.setProfile(self.UserID)
         self.window.show()
         self.window.Sell.clicked.connect(
             lambda: self.window.Sell1(self.UserID, Rate=self.Gold.getBidinGrams(),

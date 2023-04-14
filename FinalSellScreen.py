@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject
 
+import FinalShowSellInfo
 from Database import Investment
 
 
@@ -90,8 +91,17 @@ class Ui_Form(QObject):
         self.UseLiveGoldRate.setText(_translate("Form", "Use live gold rate"))
         self.Sell.setText(_translate("Form", "Sell"))
 
+    # def openMoneyLog(self):
+    #     self.window = QtWidgets.QWidget()
+    #     self.window = FinalShowSellInfo.MyWindow()
+
+    def setProfile(self,Profile):
+        self.Profile = Profile
+
     def Sell1(self, UserProfile, Rate=None, SellDate=None, TransactionIDs=None, StartDate=None, EndDate=None,
               ProfitMargin=None):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalShowSellInfo.MyWindow()
         print(Rate)
         # use user profile to get profit margin.
         self.Investment.setProfile(UserProfile)
@@ -112,6 +122,8 @@ class Ui_Form(QObject):
             self.Investment.sellProfit(Rate=Rate, Date=SellDate, StartDate=StartDate, EndDate=EndDate,
                                        ProfitMargin=ProfitMargin)
             print("Sell Profit")
+        self.window.setUpPage(self.Profile, Gold, Sum, Value)
+        self.window.show()
             # sellAll
 
 
