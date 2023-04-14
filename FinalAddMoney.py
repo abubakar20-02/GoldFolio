@@ -86,6 +86,8 @@ class Ui_Form(QObject):
 
         self.AddMoney.clicked.connect(self.AddWithdrawCash)
 
+        self.AddMoney.clicked.connect(self.close)
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -116,6 +118,7 @@ class Ui_Form(QObject):
 
     def addMoney(self):
         self.User.addMoney(self.Money.value())
+        print(f"add {self.Money.value()}")
 
     def withdrawMoney(self):
         if self.Money.value() > self.User.getMoney():

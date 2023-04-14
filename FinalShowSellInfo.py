@@ -114,7 +114,6 @@ class Ui_Form(QObject):
         self.totalBoughtFor.setText(str(round(self.Sum, self.DecimalPoints)))
         self.totalValueChange.setText(str(round(self.Value, self.DecimalPoints)))
 
-
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))

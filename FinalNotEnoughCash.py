@@ -65,8 +65,9 @@ class Ui_Form(QObject):
         self.addCashButton.setText(_translate("Form", "Add Cash"))
 
     def setUpPage(self, UserID, MoneyMissing):
+        self.UserID = UserID
         self.User = User.User()
-        self.User.SelectProfile(UserID)
+        self.User.SelectProfile(self.UserID)
         self.loadSettings()
         self.MoneyMissing = MoneyMissing
 
@@ -81,6 +82,7 @@ class Ui_Form(QObject):
     def openAddCash(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddMoney.MyWindow()
+        self.window.setUserID(self.UserID)
         self.window.Money.setValue(self.MoneyMissing)
         self.window.show()
         self.close()

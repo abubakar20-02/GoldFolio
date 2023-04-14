@@ -51,6 +51,9 @@ class Gold:
         self.ask = str(soup.find("div", class_="data-blk ask").findAll("span"))
         self.ask = FormatRates(self.ask)
 
+        self.percentageChhange = str(soup.find("span", id="sp-chg-percent").text)
+        print(f"percentage change {self.percentageChhange}")
+
     # add get bid and get ask in a thread.
     def getBid(self):
         PerGram = getPureGoldPerGramInDollars(self.bid)
@@ -112,6 +115,17 @@ class Gold:
 
     def convertRateTo(self, Value):
         return self.Rate * Value
+
+    def convertGtoDifferentUnit(self,weightInGram):
+        if self.Unit == GoldUnits.troyounce:
+            Weight = TroyOunce * weightInGram
+        elif self.Unit == GoldUnits.tola:
+            Weight = Tola * weightInGram
+        elif self.Unit == GoldUnits.kilogram:
+            Weight = Kilo * weightInGram
+        elif self.Unit == GoldUnits.gram:
+            Weight = weightInGram
+        return Weight
 
     def getAsk(self):
         PerGram = getPureGoldPerGramInDollars(self.ask)

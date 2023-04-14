@@ -577,6 +577,7 @@ class Ui_MainWindow(object):
         # self.window.AddButton.clicked.connect(self.window.close)
 
     def updateTable(self, Rate=None):
+        self.getUserData()
         startDate = endDate = None
         if Rate is not None:
             print("update table rate")
@@ -905,6 +906,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def openBuyInvestment(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
+        self.window.setUpPage(self.UserID)
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(),self.UserID))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data

@@ -306,15 +306,10 @@ class User:
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)
 
     def cashout(self, Money):
-        TotalMoney = self.getMoney()
-        if Money > TotalMoney:
-            print("not enough cash")
-            return
-        else:
-            self.updateMoney(self.getMoney() - Money)
-            Transaction_ID = generateTransactionID()
-            self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
-            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
+        self.updateMoney(self.getMoney() - Money)
+        Transaction_ID = generateTransactionID()
+        self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
+        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
     def getDataForGraph(self):
         a = ("RawCash", self.getMoney())
