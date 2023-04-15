@@ -113,6 +113,14 @@ class Ui_Form(QObject):
             self.openAdminPage()
             return
         #self.UserName.text()
+        if self.UserName.text() == "":
+            self.label.setText("Please enter a user name!")
+            self.label.setHidden(False)
+            return
+        if not self.User.isUserExist(self.UserName.text()):
+            self.label.setText("Wrong user name or password!")
+            self.label.setHidden(False)
+            return
         isPassCorrect = verify_password(self.Password.text(), self.User.getHashedPassword(self.UserName.text()))
         print(isPassCorrect)
         if isPassCorrect is False:
