@@ -14,7 +14,7 @@ from datetime import date
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject, Qt
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QTableWidget, QAbstractItemView, QFileDialog
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QTableWidget, QAbstractItemView, QFileDialog, QDesktopWidget
 from Database import Statement, User
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -24,16 +24,13 @@ import matplotlib.ticker as ticker
 import xlwings as xw
 import win32com.client as win32
 
-
 class MplCanvas(FigureCanvas):
 
-    def __init__(self, parent=None, height=4, dpi=100):
-        fig = Figure(figsize=(height, height), dpi=dpi)
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
-
-
-class Ui_Form(QObject):
+class Ui_Form(object):
     def setupUi(self, Form):
         self.Startdate = None
         self.Enddate = None
@@ -45,11 +42,9 @@ class Ui_Form(QObject):
             self.UserProfile.SelectProfile(UserID)
         self.loadSettings()
         Form.setObjectName("Form")
-        Form.resize(880, 538)
+        Form.resize(778, 602)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
@@ -61,11 +56,6 @@ class Ui_Form(QObject):
         self.horizontalLayout_11.addWidget(self.Preset_Text)
         self.PresetComboBox = QtWidgets.QComboBox(Form)
         self.PresetComboBox.setObjectName("PresetComboBox")
-        self.PresetComboBox.addItem("Month")
-        self.PresetComboBox.addItem("2 Weeks")
-        self.PresetComboBox.addItem("Year")
-        self.PresetComboBox.addItem("5 Years")
-        self.PresetComboBox.addItem("Custom")
         self.horizontalLayout_11.addWidget(self.PresetComboBox)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_11.addItem(spacerItem)
@@ -108,17 +98,17 @@ class Ui_Form(QObject):
         self.horizontalLayout_2.addWidget(self.EndDate)
         self.horizontalLayout_4.addLayout(self.horizontalLayout_2)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
-
         self.tableWidget = QtWidgets.QTableWidget(Form)
         self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
-
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.verticalLayout_2.addWidget(self.tableWidget)
         self.horizontalLayout_5.addLayout(self.verticalLayout_2)
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -132,30 +122,54 @@ class Ui_Form(QObject):
         self.YAxis.addItem("Gold")
         self.YAxis.addItem("Bought For")
         self.horizontalLayout_6.addWidget(self.YAxis)
-        self.verticalLayout.addLayout(self.horizontalLayout_6)
-
-        self.canvas = MplCanvas(self, height=650, dpi=100)
-        self.canvas.setMinimumSize(QtCore.QSize(650, 650))
+        self.verticalLayout_3.addLayout(self.horizontalLayout_6)
+        self.Graph = QtWidgets.QWidget(Form)
+        self.Graph.setStyleSheet(
+            'QWidget#Graph { border: 2px solid black; border-radius: 10px; background-color: white; }')
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Graph.sizePolicy().hasHeightForWidth())
+        self.Graph.setSizePolicy(sizePolicy)
+        self.Graph.setMinimumSize(QtCore.QSize(300, 300))
+        self.Graph.setObjectName("Graph")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.Graph)
+        self.verticalLayout.setObjectName("verticalLayout")
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.canvas = MplCanvas(self, height=2, width=4, dpi=100)
+        desktop = QDesktopWidget()
+        width = int(desktop.availableGeometry().width() * 0.5)
+        self.canvas.setMaximumWidth(width)
+        sizePolicy.setHeightForWidth(self.canvas.sizePolicy().hasHeightForWidth())
+        self.canvas.setMinimumSize(QtCore.QSize(300, 300))
         self.canvas.setObjectName("canvas")
+        self.canvas.setSizePolicy(sizePolicy)
         self.verticalLayout.addWidget(self.canvas)
-
-        self.horizontalLayout_5.addLayout(self.verticalLayout)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+        self.verticalLayout_3.addWidget(self.Graph)
+        self.horizontalLayout_5.addLayout(self.verticalLayout_3)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_12.addItem(spacerItem5)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_12.addItem(spacerItem3)
         self.ExportButton = QtWidgets.QPushButton(Form)
         self.ExportButton.setObjectName("ExportButton")
         self.horizontalLayout_12.addWidget(self.ExportButton)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_12)
-        self.verticalLayout_4.addLayout(self.verticalLayout_3)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_12)
 
         self.PresetComboBox.currentIndexChanged.connect(self.checkIfCustom)
+        self.PresetComboBox.addItem("Month")
+        self.PresetComboBox.addItem("2 Weeks")
+        self.PresetComboBox.addItem("Year")
+        self.PresetComboBox.addItem("5 Years")
+        self.PresetComboBox.addItem("Custom")
         self.YAxis.currentIndexChanged.connect(self.changeYAxis)
         self.radioButton.setEnabled(False)
         self.EnableDates(False)
         self.radioButton.clicked.connect(self.checkRadioButton)
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -365,8 +379,10 @@ class Ui_Form(QObject):
         self.label_2.setText(_translate("Form", "Start Date: "))
         self.EndDate_Text.setText(_translate("Form", "End Date: "))
         self.YAxis_Text.setText(_translate("Form", "Y axis:"))
+        self.YAxis.setItemText(0, _translate("Form", "ProfitLoss"))
+        self.YAxis.setItemText(1, _translate("Form", "Gold"))
+        self.YAxis.setItemText(2, _translate("Form", "BoughtFor"))
         self.ExportButton.setText(_translate("Form", "Export"))
-
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
@@ -380,12 +396,11 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.line(self.YAxisValue, StartDate=self.Startdate, EndDate=self.Enddate)
         self.ExportButton.clicked.connect(self.export)
 
-
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
-    Form = MyWindow()
+    ui = Ui_Form()
+    ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())
