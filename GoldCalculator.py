@@ -11,6 +11,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 
+from GoldRate import Gold
+
 
 class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
@@ -97,7 +99,8 @@ class Ui_MainWindow(QObject):
         self.Cost.setText(_translate("MainWindow", "0"))
         self.Check.setText(_translate("MainWindow", "Check"))
 
-    def getRate(self, Rate):
+    def getRate(self, Rate, Currency, Unit, DecimalPoint):
+        self.Gold1 = Gold(Currency=Currency, Unit=Unit)
         if self.Purity.currentIndex() == 0:
             Purity = 24
         if self.Purity.currentIndex() == 1:
@@ -116,7 +119,12 @@ class Ui_MainWindow(QObject):
             Purity = 10
         if self.Purity.currentIndex() == 8:
             Purity = 9
-        self.Cost.setText(str(Rate * self.Gold.value() * (Purity / 24)))
+        self.Gold1.getLatestExchangeRate()
+        # if Currency != "$":
+        #     Rate = self.Gold1.convertRateTo(Rate)
+        self.Cost.setText(str(round(
+            Rate*self.Gold1.convertGtoDifferentUnit(self.Gold.value()) * (Purity / 24),
+            DecimalPoint)))
 
 
 class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):

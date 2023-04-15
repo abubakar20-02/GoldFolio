@@ -545,7 +545,8 @@ class Ui_MainWindow(object):
         self.window = QtWidgets.QWidget()
         self.window = GoldCalculator.MyWindow()
         self.window.show()
-        self.window.Check.clicked.connect(lambda: self.window.getRate(self.Gold.getAsk()))
+        self.window.Check.clicked.connect(
+            lambda: self.window.getRate(self.Gold.getAskinGrams(), self.Currency, self.GoldUnit, self.DecimalPoints))
 
     def SaveChanges(self):
         self.window = QtWidgets.QWidget()
@@ -914,7 +915,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
         self.window.setUpPage(self.UserID)
-        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(),self.UserID))
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(), self.UserID))
         self.window.Add.clicked.connect(self.window.close)
         # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
