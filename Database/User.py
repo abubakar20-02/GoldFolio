@@ -68,6 +68,13 @@ class User:
         self.conn.close()
         self.deleteArchiveLog()
 
+    def searchLikeUserID(self, UserID):
+        self.__SetUpConnection()
+        sql = "SELECT User_ID,FirstName,LastName,Currency FROM User WHERE User_ID LIKE '%{}%'".format(UserID)
+        df = pd.read_sql(sql, self.conn)
+        self.conn.close()
+        return df
+
     def ImportFromExcel(self):
         source = 'UserTemplate.xlsx'
         target = 'User.xlsx'
@@ -362,10 +369,9 @@ class User:
     def getTable(self):
         self.__SetUpConnection()
         try:
-            sql = "SELECT * FROM User"
+            sql = "SELECT User_ID,FirstName,LastName,Currency FROM User"
             print(sql)
             df = pd.read_sql(sql, self.conn)
-            df = df.drop('Password', axis=1)
         except sqlite3.Error as error:
             print(error)
         finally:

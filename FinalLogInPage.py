@@ -109,6 +109,7 @@ class Ui_Form(QObject):
         print(SetUpFile.AdminUser)
         if self.UserName.text() == SetUpFile.AdminUser and self.Password.text() == SetUpFile.AdminPass:
             print("load admin page")
+            self.close()
             self.openAdminPage()
             return
         #self.UserName.text()
