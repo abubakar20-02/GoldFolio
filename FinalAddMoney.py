@@ -125,6 +125,8 @@ class Ui_Form(QObject):
             self.window = QtWidgets.QWidget()
             self.window = FinalDialogBox.MyWindow()
             self.window.setText("You do not have enough money!")
+            self.window.OkButton.setHidden(True)
+            self.window.CancelButton.setText("Close")
             self.window.show()
         else:
             self.User.cashout(self.Money.value())

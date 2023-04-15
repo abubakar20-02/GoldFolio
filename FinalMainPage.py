@@ -657,7 +657,11 @@ class Ui_MainWindow(object):
         self.window = QtWidgets.QWidget()
         self.window = FinalSellScreen.MyWindow()
         self.window.setProfile(self.UserID)
+        self.window.setUpPage(self.Currency,self.GoldUnit)
         self.window.show()
+        # if more than 2 transaction id selected then have preset to custom
+        if len(self.getTransactionID()) > 1:
+            self.window.SellMode.setCurrentIndex(2)
         self.window.Sell.clicked.connect(
             lambda: self.window.Sell1(self.UserID, Rate=self.Gold.getBidinGrams(),
                                       SellDate=self.window.Date.date().toPyDate(),
@@ -919,7 +923,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.setUpPage(self.UserID)
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(), self.UserID))
         self.window.Add.clicked.connect(self.window.close)
-        self.window.Gold.textChanged.connect(lambda:self.window.updateRate(self.Gold.getAskinGrams()))
+        self.window.Gold.textChanged.connect(lambda: self.window.updateRate(self.Gold.getAskinGrams()))
         # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.Add.clicked.connect(self.getUserData)
