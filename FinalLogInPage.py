@@ -100,6 +100,7 @@ class Ui_Form(QObject):
         self.window.show()
 
     def openCreateAccount(self):
+        self.close()
         self.window = QtWidgets.QWidget()
         self.window = FinalAddUser.MyWindow()
         self.window.show()

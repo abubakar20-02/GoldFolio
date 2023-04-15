@@ -9,7 +9,9 @@
 import pickle
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QLineEdit
 
+import FinalLogInPage
 import FinalMainPage
 from Database import User
 
@@ -100,9 +102,9 @@ class Ui_Form(object):
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.radioButton = QtWidgets.QRadioButton(Form)
-        self.radioButton.setObjectName("radioButton")
-        self.horizontalLayout_7.addWidget(self.radioButton)
+        self.showPassword = QtWidgets.QRadioButton(Form)
+        self.showPassword.setObjectName("showPassword")
+        self.horizontalLayout_7.addWidget(self.showPassword)
         spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem7)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
@@ -128,6 +130,9 @@ class Ui_Form(object):
         self.horizontalLayout_6.addWidget(self.CreateButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
+        self.Error.setHidden(True)
+        self.checkbutton()
+        self.showPassword.clicked.connect(self.checkbutton)
         self.currency.currentIndexChanged.connect(self.updateCurrencyText)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -148,9 +153,16 @@ class Ui_Form(object):
         self.currencySymbol.setText(_translate("Form", "$"))
         self.Password_Text.setText(_translate("Form", "Password: "))
         self.ReEnterPassword_Text.setText(_translate("Form", "Re-enter Password:"))
-        self.radioButton.setText(_translate("Form", "RadioButton"))
-        self.Error.setText(_translate("Form", "TextLabel"))
+        self.showPassword.setText(_translate("Form", "Show password"))
         self.CreateButton.setText(_translate("Form", "Create"))
+
+    def checkbutton(self):
+        if self.showPassword.isChecked():
+            self.Password.setEchoMode(QLineEdit.Normal)
+            self.ReEnterPassword.setEchoMode(QLineEdit.Normal)
+        else:
+            self.Password.setEchoMode(QLineEdit.Password)
+            self.ReEnterPassword.setEchoMode(QLineEdit.Password)
 
     def getCurrency(self):
         if self.currency.currentIndex() == 0:
@@ -174,17 +186,30 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.CreateButton.clicked.connect(self.AddUser)
 
     def AddUser(self):
-        if self.Password.text() == self.ReEnterPassword.text():
-            UserID = self.User.generate_unique_initials(self.FirstName.text(), self.LastName.text())
-            self.User.insertIntoTable(self.FirstName.text(), self.LastName.text(), self.Money.value(),
-                                      self.Password.text(), self.getCurrency(), LogChanges=False)
-            # log user in
-            with open("my_variable.pickle", "wb") as f:
-                pickle.dump(UserID, f)
-            self.close()
-            self.openMainPage()
-        else:
+        if self.FirstName.text() == "" or self.LastName.text() == "":
+            self.Error.setText("User credentials are incorrect")
+            self.Error.setHidden(False)
+            return
+        if not self.Password.text() == self.ReEnterPassword.text():
             self.Error.setText("password does not match")
+            self.Error.setHidden(False)
+            return
+        UserID = self.User.generate_unique_initials(self.FirstName.text(), self.LastName.text())
+        self.User.insertIntoTable(self.FirstName.text(), self.LastName.text(), self.Money.value(),
+                                  self.Password.text(), self.getCurrency(), LogChanges=False)
+        # log user in
+        with open("my_variable.pickle", "wb") as f:
+            pickle.dump(UserID, f)
+        self.close()
+        self.openMainPage()
+
+    def closeEvent(self, event):
+        self.openLogInScreen()
+
+    def openLogInScreen(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalLogInPage.MyWindow()
+        self.window.show()
 
 
 if __name__ == "__main__":
