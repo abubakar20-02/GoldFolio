@@ -90,6 +90,16 @@ class Ui_Form(QObject):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
+    def updateRate(self, RateinGram):
+        GoldinGram = self.Gold1.convertGtoDifferentUnit(self.Gold.value())
+        if not self.UseLiveGoldRate.isChecked():
+            self.goldUnit.setText(f"{self.GoldUnit}")
+            return
+        if GoldinGram > 0:
+            self.goldUnit.setText(f"{self.GoldUnit}  {self.Currency}{str(round(GoldinGram * RateinGram,2))}")
+        else:
+            self.goldUnit.setText(f"{self.GoldUnit}")
+
     def dateChanged(self):
         if not (self.Date.date().toPyDate() == datetime.date.today()):
             self.UseLiveGoldRate.setChecked(False)
@@ -99,11 +109,13 @@ class Ui_Form(QObject):
             self.UseLiveGoldRate.setEnabled(True)
             self.UseLiveGoldRate.setChecked(True)
             self.useLiveGoldRate()
+
     def useLiveGoldRate(self):
         if self.UseLiveGoldRate.isChecked():
             self.BoughtFor.setEnabled(False)
         else:
             self.BoughtFor.setEnabled(True)
+            self.goldUnit.setText(f"{self.GoldUnit}")
 
     def add(self, Rate, UserID):
         format_str = '%Y-%m-%d'
@@ -143,7 +155,6 @@ class Ui_Form(QObject):
         self.currency.setText(self.Currency)
         self.goldUnit.setText(self.GoldUnit)
 
-
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -153,13 +164,16 @@ class Ui_Form(QObject):
         self.UseLiveGoldRate.setText(_translate("Form", "Use live gold rate"))
         self.Add.setText(_translate("Form", "Add"))
 
+
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

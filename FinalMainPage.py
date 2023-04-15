@@ -19,6 +19,7 @@ import FinalAddInvestment
 import FinalAddMoney
 import FinalDeletePage
 import FinalDialogBox
+import FinalGoldCalculator
 import FinalGoldPortfolio
 import FinalImport
 import FinalLoadLogIn
@@ -543,10 +544,11 @@ class Ui_MainWindow(object):
 
     def openGoldCalculator(self):
         self.window = QtWidgets.QWidget()
-        self.window = GoldCalculator.MyWindow()
+        self.window = FinalGoldCalculator.MyWindow()
         self.window.show()
+        self.window.setUpPage(self.Currency, self.GoldUnit, self.DecimalPoints)
         self.window.Check.clicked.connect(
-            lambda: self.window.getRate(self.Gold.getAskinGrams(), self.Currency, self.GoldUnit, self.DecimalPoints))
+            lambda: self.window.getRate(self.Gold.getAskinGrams()))
 
     def SaveChanges(self):
         self.window = QtWidgets.QWidget()
@@ -917,6 +919,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window.setUpPage(self.UserID)
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(), self.UserID))
         self.window.Add.clicked.connect(self.window.close)
+        self.window.Gold.textChanged.connect(lambda:self.window.updateRate(self.Gold.getAskinGrams()))
         # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.Add.clicked.connect(self.getUserData)
@@ -993,8 +996,6 @@ class UpdateRatesContinuously(QObject):
                     self.DateChanged.emit()
                     print("Date changed")
                     # if date changed restart thread with updated graph and set Date started at to current date.
-                else:
-                    print("Date didnt change")
                 time.sleep(1)
                 # print("working")
                 # global Change
