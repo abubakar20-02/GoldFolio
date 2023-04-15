@@ -116,7 +116,7 @@ class Gold:
     def convertRateTo(self, Value):
         return self.Rate * Value
 
-    def convertGtoDifferentUnit(self,weightInGram):
+    def convertGtoDifferentUnit(self, weightInGram):
         if self.Unit == GoldUnits.troyounce:
             Weight = TroyOunce * weightInGram
         elif self.Unit == GoldUnits.tola:
@@ -185,6 +185,20 @@ class Gold:
             Rate = Kilo * RateInGram
         elif self.Unit == GoldUnits.gram:
             Rate = RateInGram
+        return Rate
+
+    def converttToRateInGram(self, RateInUnit):
+        Rate = 0
+        if RateInUnit is None:
+            return
+        if self.Unit == GoldUnits.troyounce:
+            Rate = RateInUnit / TroyOunce
+        elif self.Unit == GoldUnits.tola:
+            Rate = RateInUnit / Tola
+        elif self.Unit == GoldUnits.kilogram:
+            Rate = RateInUnit / Kilo
+        elif self.Unit == GoldUnits.gram:
+            Rate = RateInUnit
         return Rate
 
     def convertRateFromTroyOunce(self, RateInOunce):

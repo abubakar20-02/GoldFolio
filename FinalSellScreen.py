@@ -13,6 +13,7 @@ from PyQt5.QtCore import QDate, QObject
 
 import FinalShowSellInfo
 from Database import Investment
+from GoldRate import Gold
 
 
 class Ui_Form(QObject):
@@ -59,6 +60,7 @@ class Ui_Form(QObject):
 
         self.Rate = QtWidgets.QDoubleSpinBox(Form)
         self.Rate.setObjectName("Rate")
+        self.Rate.setMaximum(100000)
         self.horizontalLayout_2.addWidget(self.Rate)
         self.RateUnit = QtWidgets.QLabel(Form)
         self.RateUnit.setObjectName("RateUnit")
@@ -111,6 +113,7 @@ class Ui_Form(QObject):
         self.GoldUnit = Unit
         self.RateCurrency.setText(self.Currency)
         self.RateUnit.setText(f"/{self.GoldUnit}")
+        self.Gold = Gold(Unit=self.GoldUnit)
 
     def setProfile(self, Profile):
         self.Profile = Profile
@@ -122,7 +125,7 @@ class Ui_Form(QObject):
         print(Rate)
         StartRate = Rate
         if not self.UseLiveGoldRate.isChecked():
-            Rate = self.Rate.value()
+            Rate = self.Gold.converttToRateInGram(self.Rate.value())
         # use user profile to get profit margin.
         self.Investment.setProfile(UserProfile)
         self.Investment.updateProfitLoss(Rate)
