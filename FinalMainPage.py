@@ -326,10 +326,11 @@ class Ui_MainWindow(object):
 
         self.actionGraphs = QtWidgets.QAction(MainWindow)
         self.actionGraphs.setObjectName("actionGraphs")
-        self.actionGraphs.triggered.connect(self.openGoldPortfolio)
+        self.actionGraphs.triggered.connect(self.openStatistics)
 
         self.actionGold_Portfolio = QtWidgets.QAction(MainWindow)
         self.actionGold_Portfolio.setObjectName("actionGold_Portfolio")
+        self.actionGold_Portfolio.triggered.connect(self.openGoldPortfolio)
 
         self.actionLoadState = QtWidgets.QAction(MainWindow)
         self.actionLoadState.setObjectName("actionLoadState")
@@ -440,6 +441,12 @@ class Ui_MainWindow(object):
         self.window.deleteButton.clicked.connect(lambda: self.__deleteAccount(self.window))
         self.window.show()
 
+    def openGoldPortfolio(self):
+        self.window = QtWidgets.QWidget()
+        self.window = FinalGoldPortfolio.MyWindow()
+        self.window.setCurrentGoldRate(Rate=self.Gold.getBidinGrams())
+        self.window.show()
+
     def __deleteAccount(self, window):
         if window.passwordCorrect():
             self.__logOut()
@@ -522,7 +529,7 @@ class Ui_MainWindow(object):
         os.remove("my_variable.pickle")
         self.openLogInScreen()
 
-    def openGoldPortfolio(self):
+    def openStatistics(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalStatistics.MyWindow()
         self.window.showMaximized()

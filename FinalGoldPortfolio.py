@@ -12,6 +12,7 @@ import matplotlib.dates as mdates
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
+from GoldRate import Gold
 
 import SetupFile
 from Database import Investment, User
@@ -131,18 +132,14 @@ class Ui_Form(QObject):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.Summary_Text.setText(_translate("Form", "Summary"))
-        self.Gold_Text.setText(_translate("Form", "Gold: "))
-        self.CurrentGoldValue.setText(_translate("Form", "$1234"))
+        self.Gold_Text.setText(_translate("Form", "Gold value: "))
         self.TotalAcquisition_Text.setText(_translate("Form", "Total Acquisition Cost: "))
-        self.GoldCost.setText(_translate("Form", "$1234"))
         self.TotalOwned_Text.setText(_translate("Form", "Total Owned: "))
-        self.TotalGoldWeight.setText(_translate("Form", "1234 oz"))
         self.CashBalance_Text.setText(_translate("Form", "Cash Balance: "))
-        self.Cash.setText(_translate("Form", "$405123"))
 
     def setCurrentGoldRate(self, Rate):
         self.Rate = Rate
-        self.CurrentGoldValue.setText(str(round(self.Investment.getTotalGold() * self.Rate, self.DecimalPoints)))
+        self.CurrentGoldValue.setText(f"{self.Currency} " + str(round(self.Investment.getSUM("Gold") * self.Rate, self.DecimalPoints)))
         self.pie()
 
     def setupPage(self):
@@ -150,14 +147,15 @@ class Ui_Form(QObject):
             self.UserID = pickle.load(f)
         self.Investment.setProfile(self.UserID)
         self.User.SelectProfile(self.UserID)
-        _, self.DecimalPoints, _, self.GoldUnit = self.User.GetSettings()
-        self.GoldCost.setText(str(round(self.Investment.getGoldAcquisitionCost(), self.DecimalPoints)))
-        self.TotalGoldWeight.setText(str(round(self.Investment.getTotalGold(), self.DecimalPoints)))
-        self.Cash.setText(str(round(self.User.getMoney(), self.DecimalPoints)))
+        _, self.DecimalPoints, _, self.GoldUnit, self.Currency = self.User.GetSettings()
+        self.Gold = Gold(Unit=self.GoldUnit)
+        self.GoldCost.setText(f"{self.Currency} " + str(round(self.Investment.getGoldAcquisitionCost(), self.DecimalPoints)))
+        self.TotalGoldWeight.setText(str(round(self.Gold.convertWeight(self.Investment.getSUM("Gold")), self.DecimalPoints)) + f" {self.GoldUnit}")
+        self.Cash.setText(f"{self.Currency} " + str(round(self.User.getMoney(), self.DecimalPoints)))
 
     def pie(self):
         a = ("RawCash", round(self.User.getMoney(), self.DecimalPoints))
-        b = ("GoldMoney", round(self.Investment.getTotalGold() * self.Rate, self.DecimalPoints))
+        b = ("GoldMoney", round(self.Investment.getSUM("Gold") * self.Rate, self.DecimalPoints))
         data = dict([a, b])
         colors = [SetupFile.BlueColor, SetupFile.GoldColor]
         print(data)
