@@ -24,12 +24,15 @@ import matplotlib.ticker as ticker
 import xlwings as xw
 import win32com.client as win32
 
+
 class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
+
+
 class Ui_Form(object):
     def setupUi(self, Form):
         self.Startdate = None
@@ -174,7 +177,7 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def loadSettings(self):
-        _, self.DecimalPoints, _, _,self.Currency = self.UserProfile.GetSettings()
+        _, self.DecimalPoints, _, _, self.Currency = self.UserProfile.GetSettings()
 
     def changeYAxis(self):
         if self.YAxis.currentIndex() == 0:
@@ -259,6 +262,9 @@ class Ui_Form(object):
         table_widget.setRowCount(len(dataframe))
         table_widget.setColumnCount(len(dataframe.columns))
 
+        dataframe.columns = ["Investment_ID", "Date", "Gold (g)", f"Bought for({self.Currency})", "Profit/Loss (%)",
+                             f"Value change ({self.Currency})"]
+
         # Add the headers for the table columns
         table_widget.setHorizontalHeaderLabels(dataframe.columns)
 
@@ -316,7 +322,7 @@ class Ui_Form(object):
             self.canvas.axes.xaxis.set_major_locator(ticker.MultipleLocator(3))
         print("inside")
 
-    def closeExcel(self,FilePath):
+    def closeExcel(self, FilePath):
         # Connect to the Excel application
         if not os.path.exists(FilePath):
             return
@@ -340,21 +346,22 @@ class Ui_Form(object):
 
         # Do something with the workbook...
 
-
         # # Quit the Excel application
         # excel.Quit()
 
     def export(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
-        filepath,_ = QFileDialog.getSaveFileName(None, 'Investment',
-                                               "", "Excel Work Book(*.xlsx);; PDF(*.pdf)", options=options)
+        filepath, _ = QFileDialog.getSaveFileName(None, 'Investment',
+                                                  "", "Excel Work Book(*.xlsx);; PDF(*.pdf)", options=options)
         # Check if the file extension is ".xlsx"
         if filepath.lower().endswith('.xlsx'):
             self.closeExcel(filepath)
-            self.Statement.convertToExcel(StartDate=self.Startdate, EndDate=self.Enddate,FilePath=filepath)
+            self.Statement.convertToExcel(self.Currency, self.DecimalPoints, StartDate=self.Startdate,
+                                          EndDate=self.Enddate, FilePath=filepath)
         else:
-            self.Statement.PDF(filepath,StartDate=self.Startdate,EndDate=self.Enddate)
+            self.Statement.PDF(filepath, self.Currency, self.DecimalPoints, StartDate=self.Startdate,
+                               EndDate=self.Enddate)
 
     def check_date_format(self, date_str):
         try:
@@ -384,6 +391,7 @@ class Ui_Form(object):
         self.YAxis.setItemText(2, _translate("Form", "BoughtFor"))
         self.ExportButton.setText(_translate("Form", "Export"))
 
+
 class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
@@ -396,8 +404,10 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.line(self.YAxisValue, StartDate=self.Startdate, EndDate=self.Enddate)
         self.ExportButton.clicked.connect(self.export)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

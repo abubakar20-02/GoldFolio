@@ -235,7 +235,7 @@ class Statement:
         self.conn.close()
         return Data
 
-    def convertToExcel(self, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
+    def convertToExcel(self, Currency, DecimalPoint, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
         self.__SetUpConnection()
         # Define the parameters for the query
         params = (self.Profile,)
@@ -247,6 +247,12 @@ class Statement:
         if EndDate is not None:
             sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
         df = pd.read_sql(sql, con=self.conn, params=params)
+        df.columns = ["Date", "Gold (g)", f"Bought for({Currency})", "Profit/Loss (%)",
+                      f"Value change ({Currency})"]
+        # Define lambda function to round only numerical values to 2 decimal places
+        round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
+        # Apply lambda function to DataFrame using applymap()
+        df = df.applymap(round_num)
 
         df.to_excel(FilePath, index=False)
         self.conn.close()
@@ -602,7 +608,7 @@ class Statement:
         df.to_sql(name='Statement', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
-    def PDF(self, FilePath, StartDate=None, EndDate=None):
+    def PDF(self, FilePath, Currency, DecimalPoint, StartDate=None, EndDate=None):
         self.__SetUpConnection()
         # Define the parameters for the query
         params = (self.Profile,)
@@ -614,7 +620,12 @@ class Statement:
         if EndDate is not None:
             sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
         df = pd.read_sql(sql, con=self.conn, params=params)
-
+        df.columns = ["Date", "Gold (g)", f"Bought for({Currency})", "Profit/Loss (%)",
+                      f"Value change ({Currency})"]
+        # Define lambda function to round only numerical values to 2 decimal places
+        round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
+        # Apply lambda function to DataFrame using applymap()
+        df = df.applymap(round_num)
         # Create a PDF document using the fpdf library
         pdf = MyPDF()
         pdf.add_page()
@@ -645,6 +656,7 @@ class Statement:
         # Save the PDF document to a file
         pdf.output(FilePath)
         self.conn.close()
+        os.startfile(FilePath)
 
 
 class MyPDF(FPDF):

@@ -1,4 +1,5 @@
 # create UserArchive function that can convert excel file to db.
+import os
 import sqlite3
 import subprocess
 import uuid
@@ -140,7 +141,7 @@ class Log:
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
 
-        def saveState(self, FolderName,Profile):
+        def saveState(self, FolderName, Profile):
             self.SetUpConnection()
             sql = "SELECT * FROM UserLog WHERE User_ID=?"
             param = (Profile,)
@@ -312,7 +313,7 @@ class Log:
             self.conn = sqlite3.connect(SetUpFile.DBLog)
             self.c = self.conn.cursor()
 
-        def saveState(self, FolderName,Profile):
+        def saveState(self, FolderName, Profile):
             self.SetUpConnection()
             sql = "SELECT * FROM InvestmentLog WHERE User_ID=?"
             param = (Profile,)
@@ -507,7 +508,7 @@ class Log:
             self.Profile = Profile
             print(f"profile set to: {Profile}")
 
-        def saveState(self, FolderName,Profile):
+        def saveState(self, FolderName, Profile):
             self.__SetUpConnection()
             sql = "SELECT * FROM Money WHERE User_ID=?"
             param = (Profile,)
@@ -974,7 +975,7 @@ class Log:
             # self.conn.close()
             # return value
 
-        def convertToExcel(self, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
+        def convertToExcel(self, Currency, DecimalPoint, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
             self.__SetUpConnection()
             # Define the parameters for the query
             params = (self.Profile,)
@@ -986,12 +987,18 @@ class Log:
             if EndDate is not None:
                 sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
             df = pd.read_sql(sql, con=self.conn, params=params)
+            df.columns = ["Date", "Action", f"Change({Currency})",
+                          f"Trade cost ({Currency})"]
+            # Define lambda function to round only numerical values to 2 decimal places
+            round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
+            # Apply lambda function to DataFrame using applymap()
+            df = df.applymap(round_num)
 
             df.to_excel(FilePath, index=False)
             self.conn.close()
             subprocess.Popen(['start', 'excel.exe', FilePath], shell=True)
 
-        def PDF(self, FilePath, StartDate=None, EndDate=None):
+        def PDF(self, FilePath, Currency, DecimalPoint, StartDate=None, EndDate=None):
             self.__SetUpConnection()
             # Define the parameters for the query
             params = (self.Profile,)
@@ -1003,6 +1010,13 @@ class Log:
             if EndDate is not None:
                 sql += f" AND Date_Added <= '{EndDate.strftime('%Y-%m-%d')}'"
             df = pd.read_sql(sql, con=self.conn, params=params)
+
+            df.columns = ["Date", "Action", f"Change({Currency})",
+                          f"Trade cost ({Currency})"]
+            # Define lambda function to round only numerical values to 2 decimal places
+            round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
+            # Apply lambda function to DataFrame using applymap()
+            df = df.applymap(round_num)
 
             # Create a PDF document using the fpdf library
             pdf = MyPDF()
@@ -1034,6 +1048,7 @@ class Log:
             # Save the PDF document to a file
             pdf.output(FilePath)
             self.conn.close()
+            os.startfile(FilePath)
 
 
 class MyPDF(FPDF):
