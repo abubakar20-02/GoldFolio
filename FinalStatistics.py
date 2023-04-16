@@ -461,7 +461,7 @@ class Ui_Form(QObject):
         self.canvas.axes.bar(labels, y, width=0.3, align='center', label='Data 1', color="Green")
         self.canvas.axes.bar(labels, y1, width=0.3, align='center', label='Data 2', color="Red")
 
-        self.canvas.axes.set_ylabel('Money')
+        self.canvas.axes.set_ylabel(f"Money ({self.Currency})")
 
         # Create a custom legend
         legend_elements = [Patch(facecolor='g', edgecolor='black', label='Money Added'),
@@ -473,6 +473,7 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Statistics")
 
 
 if __name__ == "__main__":

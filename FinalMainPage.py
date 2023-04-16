@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 from matplotlib import ticker
+from matplotlib.patches import Patch
 
 import FinalAddInvestment
 import FinalAddMoney
@@ -399,7 +400,6 @@ class Ui_MainWindow(object):
         self.Ask.setText(_translate("MainWindow", "TextLabel"))
         self.BuyButton.setText(_translate("MainWindow", "Buy"))
         self.SellButton.setText(_translate("MainWindow", "Sell"))
-        self.label_7.setText(_translate("MainWindow", "TextLabel"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
@@ -652,7 +652,7 @@ class Ui_MainWindow(object):
         self.window = QtWidgets.QWidget()
         self.window = FinalSellScreen.MyWindow()
         self.window.setProfile(self.UserID)
-        self.window.setUpPage(self.Currency,self.GoldUnit)
+        self.window.setUpPage(self.Currency, self.GoldUnit)
         self.window.show()
         # if more than 2 transaction id selected then have preset to custom
         if len(self.getTransactionID()) > 1:
@@ -848,8 +848,16 @@ class Ui_MainWindow(object):
             self.PredictedData1[i] = self.Gold.convertRateFromTroyOunce(self.PredictedData[i])
             self.PredictedData1[i] = self.convertCurrency(self.PredictedData1[i])
 
-        self.canvas.axes.plot(self.ActualDates, np.array(self.ActualData1), marker='.', label="actual")
+        self.canvas.axes.plot(self.ActualDates, np.array(self.ActualData1), 'b', marker='.', label="actual")
         self.canvas.axes.plot(self.PredictedDates, np.array(self.PredictedData1), 'r', marker='.', label="predicition")
+
+        legend_elements = [Patch(facecolor='b', edgecolor='black', label='Closing price'),
+                           Patch(facecolor='r', edgecolor='black', label='Predicted closing price')]
+        self.canvas.axes.legend(handles=legend_elements)
+
+        self.canvas.axes.set_ylabel(f"Price ({self.Currency})")
+        self.canvas.axes.set_xlabel("Date")
+
         self.canvas.axes.xaxis.set_major_locator(ticker.MultipleLocator(10))
 
     def convertCurrency(self, Rate):
