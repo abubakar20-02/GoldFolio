@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QLineEdit
 
+import SetupFile
 from Database import User
 
 
@@ -127,6 +128,12 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        self.setWindowTitle("Change password")
+        self.setStyleSheet(SetupFile.Background)
+        self.Password.setStyleSheet(SetupFile.QLineEdit)
+        self.ReEnterPassword.setStyleSheet(SetupFile.QLineEdit)
+        self.SaveButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":

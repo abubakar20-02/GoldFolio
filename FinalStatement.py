@@ -15,6 +15,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QTableWidget, QAbstractItemView, QFileDialog, QDesktopWidget
+
+import SetupFile
 from Database import Statement, User
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -403,6 +405,15 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.tableWidget.setColumnHidden(0, True)
         self.line(self.YAxisValue, StartDate=self.Startdate, EndDate=self.Enddate)
         self.ExportButton.clicked.connect(self.export)
+
+        self.setWindowTitle("Statement")
+        self.setStyleSheet(SetupFile.Background)
+        self.tableWidget.setStyleSheet(SetupFile.QTable)
+        self.EndDate.setStyleSheet(SetupFile.DateEdit)
+        self.StartDate.setStyleSheet(SetupFile.DateEdit)
+        self.PresetComboBox.setStyleSheet(SetupFile.ComboBox)
+        self.YAxis.setStyleSheet(SetupFile.ComboBox)
+        self.ExportButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QLineEdit
 import FinalAddUser
 import FinalAdminPage
 import FinalMainPage
+import SetupFile
 from Database import User, SetUpFile
 
 
@@ -143,6 +144,12 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Log in")
+        self.setStyleSheet(SetupFile.Background)
+        self.UserName.setStyleSheet(SetupFile.QLineEdit)
+        self.Password.setStyleSheet(SetupFile.QLineEdit)
+        self.LogInButton.setStyleSheet(SetupFile.Button)
+        self.CreateNewAccountButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":

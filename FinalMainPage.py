@@ -167,12 +167,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        self.tableWidget.setStyleSheet(
-            """
-            QTableWidget {
-                background-color: white;
-            }
-            """)
+        self.tableWidget.setStyleSheet(SetupFile.QTable)
         self.LeftSideLayout.addWidget(self.tableWidget)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")

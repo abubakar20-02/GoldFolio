@@ -11,6 +11,8 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QFileDialog
+
+import SetupFile
 from Database import Investment,Statement
 
 
@@ -20,7 +22,9 @@ class Ui_Form(QObject):
         Form.resize(681, 430)
         self.Investment = Investment.Investment()
         self.Statement= Statement.Statement()
-        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -29,8 +33,6 @@ class Ui_Form(QObject):
         self.horizontalLayout_5.addWidget(self.GenerateTemplateFor_Text)
         self.GenerateTemplateFor = QtWidgets.QComboBox(Form)
         self.GenerateTemplateFor.setObjectName("GenerateTemplateFor")
-        self.GenerateTemplateFor.addItem("Investment")
-        self.GenerateTemplateFor.addItem("Statement")
         self.horizontalLayout_5.addWidget(self.GenerateTemplateFor)
         self.GenerateButton = QtWidgets.QPushButton(Form)
         self.GenerateButton.setObjectName("GenerateButton")
@@ -38,6 +40,8 @@ class Ui_Form(QObject):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.ImportInvestment_Text = QtWidgets.QLabel(Form)
@@ -48,9 +52,10 @@ class Ui_Form(QObject):
         self.horizontalLayout.addWidget(self.ImportInvestment)
         self.InvestmentPath = QtWidgets.QLabel(Form)
         self.InvestmentPath.setObjectName("InvestmentPath")
+        self.InvestmentPath.setMinimumWidth(200)
         self.horizontalLayout.addWidget(self.InvestmentPath)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem2)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -62,29 +67,36 @@ class Ui_Form(QObject):
         self.horizontalLayout_2.addWidget(self.ImportStatement)
         self.StatementPath = QtWidgets.QLabel(Form)
         self.StatementPath.setObjectName("StatementPath")
+        self.StatementPath.setMinimumWidth(200)
         self.horizontalLayout_2.addWidget(self.StatementPath)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem2)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem3)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem4)
+        self.verticalLayout_2.addLayout(self.verticalLayout)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem3)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem5)
         self.ImportButton = QtWidgets.QPushButton(Form)
         self.ImportButton.setObjectName("ImportButton")
         self.horizontalLayout_3.addWidget(self.ImportButton)
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem4)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem6)
         self.Action = QtWidgets.QLabel(Form)
         self.Action.setObjectName("Action")
         self.horizontalLayout_4.addWidget(self.Action)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem5)
-        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem7)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
 
+        self.Action.setHidden(True)
+        self.GenerateTemplateFor.addItem("Investment")
+        self.GenerateTemplateFor.addItem("Statement")
         self.ImportStatement.clicked.connect(self.ImportStatement1)
         self.ImportInvestment.clicked.connect(self.ImportInvestment1)
         self.GenerateButton.clicked.connect(self.generateTemplate)
@@ -103,6 +115,8 @@ class Ui_Form(QObject):
         self.ImportStatement_Text.setText(_translate("Form", "Import statement: "))
         self.ImportStatement.setText(_translate("Form", "Import"))
         self.ImportButton.setText(_translate("Form", "Import"))
+        self.Action.setText(_translate("Form", "TextLabel"))
+
 
     def setProfile(self,Profile):
         self.Profile= Profile
@@ -147,6 +161,7 @@ class Ui_Form(QObject):
                 self.Action.setText("")
             else:
                 self.Action.setText("Something wrong")
+                self.Action.setHidden(False)
                 return
 
         if not self.StatementPath.text() == "":
@@ -156,6 +171,7 @@ class Ui_Form(QObject):
                 self.Action.setText("")
             else:
                 self.Action.setText("Something wrong")
+                self.Action.setHidden(False)
                 return
 
         if not self.InvestmentPath.text() == "":
@@ -171,6 +187,15 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
 
+        self.setWindowTitle("Import")
+        self.setStyleSheet(SetupFile.Background)
+        self.GenerateTemplateFor.setStyleSheet(SetupFile.ComboBox)
+        self.GenerateButton.setStyleSheet(SetupFile.Button)
+        self.ImportStatement.setStyleSheet(SetupFile.Button)
+        self.ImportInvestment.setStyleSheet(SetupFile.Button)
+        self.ImportButton.setStyleSheet(SetupFile.Button)
+        self.InvestmentPath.setStyleSheet(SetupFile.NoChangeTextColor)
+        self.StatementPath.setStyleSheet(SetupFile.NoChangeTextColor)
 
 if __name__ == "__main__":
     import sys

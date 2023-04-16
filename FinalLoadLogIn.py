@@ -10,6 +10,8 @@ import bcrypt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QLineEdit
+
+import SetupFile
 from Database import User
 import ast
 
@@ -139,6 +141,10 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Load state")
+        self.setStyleSheet(SetupFile.Background)
+        self.password.setStyleSheet(SetupFile.QLineEdit)
+        self.loadButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":

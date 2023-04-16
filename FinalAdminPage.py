@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QHeaderView, QTableWidget, QAbstractItemView, QFileD
 
 import FinalChangePassword
 import FinalLogInPage
+import SetupFile
 from Database import User
 from Database import DBFunctions
 
@@ -166,6 +167,15 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        self.setWindowTitle("Admin")
+        self.setStyleSheet(SetupFile.Background)
+        self.UserID.setStyleSheet(SetupFile.QLineEdit)
+        self.tableWidget.setStyleSheet(SetupFile.QTable)
+        self.ChangePasswordButton.setStyleSheet(SetupFile.Button)
+        self.DeleteUserButton.setStyleSheet(SetupFile.Button)
+        self.LoadDatabaseStateButton.setStyleSheet(SetupFile.Button)
+        self.saveDatabaseStateButton.setStyleSheet(SetupFile.Button)
 
     def closeEvent(self, event):
         self.openLogInScreen()

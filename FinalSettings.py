@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
+
+import SetupFile
 from Database import User
 import GoldUnits
 
@@ -145,6 +147,14 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.SaveButton.clicked.connect(self.close)
+
+        self.setWindowTitle("Settings")
+        self.setStyleSheet(SetupFile.Background)
+        self.GoldUnit.setStyleSheet(SetupFile.ComboBox)
+        self.UpdateFrequency.setStyleSheet(SetupFile.SpinBox)
+        self.DecimalPoints.setStyleSheet(SetupFile.SpinBox)
+        self.MinimumProfitMargin.setStyleSheet(SetupFile.DoubleSpinBox)
+        self.SaveButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":

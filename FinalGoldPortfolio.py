@@ -119,11 +119,11 @@ class Ui_Form(QObject):
         self.verticalLayout_5.addWidget(self.SummaryWidget)
         self.verticalLayout_6.addLayout(self.verticalLayout_5)
 
-        self.Gold_Text.setStyleSheet(f"color: {SetupFile.GoldColor}")
-        self.CurrentGoldValue.setStyleSheet(f"color: {SetupFile.GoldColor}")
+        self.Gold_Text.setStyleSheet(SetupFile.GoldColorText)
+        self.CurrentGoldValue.setStyleSheet(SetupFile.GoldColorText)
 
-        self.CashBalance_Text.setStyleSheet(f"color: {SetupFile.BlueColor}")
-        self.Cash.setStyleSheet(f"color: {SetupFile.BlueColor}")
+        self.CashBalance_Text.setStyleSheet(SetupFile.BlueColorText)
+        self.Cash.setStyleSheet(SetupFile.BlueColorText)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -190,6 +190,16 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.setupUi(self)
         self.setupPage()
 
+        self.setWindowTitle("Gold portfolio")
+        self.setStyleSheet(SetupFile.Background)
+        self.SummaryWidget.setStyleSheet(
+            'QWidget#SummaryWidget { border: 2px solid black; border-radius: 10px; background-color: white; }')
+        self.Summary_Text.setStyleSheet(SetupFile.Label)
+        self.TotalAcquisition_Text.setStyleSheet(SetupFile.Label)
+        self.TotalOwned_Text.setStyleSheet(SetupFile.Label)
+        self.TotalOwned_Text.setStyleSheet(SetupFile.Label)
+        self.GoldCost.setStyleSheet(SetupFile.Label)
+        self.TotalGoldWeight.setStyleSheet(SetupFile.Label)
 
 if __name__ == "__main__":
     import sys

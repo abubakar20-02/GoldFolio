@@ -10,6 +10,8 @@ import bcrypt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QLineEdit
+
+import SetupFile
 from Database import User
 
 def verify_password(password, hashed_password):
@@ -116,7 +118,6 @@ class Ui_Form(QObject):
             self.password.setEchoMode(QLineEdit.Password)
 
     def passwordCorrect(self):
-        print(f"look {type(self.User.getHashedPassword(self.Profile))}")
         isPassCorrect = verify_password(self.password.text(), self.User.getHashedPassword(self.Profile))
         if isPassCorrect is False:
             self.Error.setText("Wrong password!")
@@ -130,6 +131,10 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Delete account")  # set the window title
+        self.setStyleSheet(SetupFile.Background)
+        self.deleteButton.setStyleSheet(SetupFile.Button)
+        self.password.setStyleSheet(SetupFile.QLineEdit)
 
 
 if __name__ == "__main__":

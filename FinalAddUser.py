@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QLineEdit
 
 import FinalLogInPage
 import FinalMainPage
+import SetupFile
 from Database import User
 
 
@@ -184,6 +185,16 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.CreateButton.clicked.connect(self.AddUser)
+
+        self.setWindowTitle("Add user")
+        self.setStyleSheet(SetupFile.Background)
+        self.FirstName.setStyleSheet(SetupFile.QLineEdit)
+        self.LastName.setStyleSheet(SetupFile.QLineEdit)
+        self.currency.setStyleSheet(SetupFile.ComboBox)
+        self.Money.setStyleSheet(SetupFile.DoubleSpinBox)
+        self.Password.setStyleSheet(SetupFile.QLineEdit)
+        self.ReEnterPassword.setStyleSheet(SetupFile.QLineEdit)
+        self.CreateButton.setStyleSheet(SetupFile.Button)
 
     def AddUser(self):
         if self.FirstName.text() == "" or self.LastName.text() == "":

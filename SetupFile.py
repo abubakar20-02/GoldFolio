@@ -117,6 +117,23 @@ GoldColor = '#FFD700'
 
 BlueColor = '#1AA7EC'
 
+GoldColorText = ("""
+        QLabel {\n
+        background-color: white;\n
+        color: rgb(255, 215, 0);\n
+        }""")
+
+BlueColorText = ("""
+        QLabel {\n
+        background-color: white;\n
+        color: rgb(26, 167, 236);\n
+        }""")
+
+Label = ("""
+        QLabel {\n
+        background-color: white;\n
+        }""")
+
 Button = ("QPushButton {\n"
           "    background-color: rgb(107, 0, 0);\n"
           "    border-style: outset;\n"
@@ -146,6 +163,14 @@ DoubleSpinBox = ("QDoubleSpinBox{\n"
                  "    background-color: white;\n"
                  "    }")
 
+SpinBox = ("QSpinBox{\n"
+           "    border-style: outset;\n"
+           "    border-width: 1px;\n"
+           "    border-color:black;\n"
+           "    color: solid black;\n"
+           "    background-color: white;\n"
+           "    }")
+
 Title = ("""
         QLabel {\n
         font-size: 24px;\n
@@ -155,5 +180,15 @@ Title = ("""
 
 Label = ("""
         QLabel {\n
+        background-color: white;\n
+        }""")
+
+QLineEdit = ("""
+        QLineEdit {\n
+        background-color: white;\n
+        }""")
+
+QTable = ("""
+        QTableWidget {\n
         background-color: white;\n
         }""")

@@ -11,6 +11,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 
+import SetupFile
+
 
 class Ui_Form(QObject):
     def setupUi(self, Form):
@@ -55,6 +57,10 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Manage account")  # set the window title
+        self.setStyleSheet(SetupFile.Background)
+        self.DeleteAccountButton.setStyleSheet(SetupFile.Button)
+        self.LogOutButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":
