@@ -133,6 +133,7 @@ class Ui_Form(object):
 
         # Add the headers for the table columns
         table_widget.setHorizontalHeaderLabels(dataframe.columns)
+        table_widget.setSelectionMode(QTableWidget.SingleSelection)
 
         for row in range(len(dataframe)):
             for column in range(len(dataframe.columns)):
@@ -142,6 +143,8 @@ class Ui_Form(object):
                 table_widget.setItem(row, column, item)
 
     def deleteAccount(self):
+        if self.get_selected_row() is None:
+            return
         if os.path.exists("my_variable.pickle"):  # Check if file exists
             os.remove("my_variable.pickle")
         self.User.SelectProfile(self.get_selected_row())
