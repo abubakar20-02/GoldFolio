@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject
 
 import FinalShowSellInfo
+import SetupFile
 from Database import Investment
 from GoldRate import Gold
 
@@ -171,6 +172,13 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Sell investment")
+        self.setStyleSheet(SetupFile.Background)
+        self.SellMode.setStyleSheet(SetupFile.ComboBox)
+        self.Date.setStyleSheet(SetupFile.DateEdit)
+        self.Rate.setStyleSheet(SetupFile.DoubleSpinBox)
+        self.Sell.setStyleSheet(SetupFile.Button)
+
 
 
 if __name__ == "__main__":

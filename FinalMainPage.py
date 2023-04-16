@@ -564,11 +564,13 @@ class Ui_MainWindow(object):
     def openMoneyLog(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalMoneyLog.MyWindow()
+        self.window.showMaximized()
         self.window.show()
 
     def openStatement(self):
         self.window = QtWidgets.QWidget()
         self.window = FinalStatement.MyWindow()
+        self.window.showMaximized()
         self.window.show()
 
     def manageCash(self):

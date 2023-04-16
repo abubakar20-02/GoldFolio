@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QPushButton
-
 Background = "background-color: rgb(255, 244, 230)"
 
 Banner = "background-color:  rgb(75, 56, 50);image: url(Resources/logo.png);"
@@ -129,10 +127,6 @@ BlueColorText = ("""
         color: rgb(26, 167, 236);\n
         }""")
 
-Label = ("""
-        QLabel {\n
-        background-color: white;\n
-        }""")
 
 Button = ("QPushButton {\n"
           "    background-color: rgb(107, 0, 0);\n"
@@ -188,7 +182,35 @@ QLineEdit = ("""
         background-color: white;\n
         }""")
 
-QTable = ("""
-        QTableWidget {\n
-        background-color: white;\n
-        }""")
+QTable = ("""QTableWidget {
+    background-color: white;
+    border: none;
+}
+
+QTableWidget::item {
+    padding: 5px;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: #f0f0f0;
+    width: 12px;
+    margin: 0px 0 0px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #888;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}""")

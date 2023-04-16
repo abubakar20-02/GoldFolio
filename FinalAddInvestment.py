@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QObject
 
 import FinalNotEnoughCash
+import SetupFile
 from Database import Investment, User
 from GoldRate import Gold
 
@@ -169,6 +170,12 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle("Buy investment")
+        self.setStyleSheet(SetupFile.Background)
+        self.Date.setStyleSheet(SetupFile.DateEdit)
+        self.Gold.setStyleSheet(SetupFile.DoubleSpinBox)
+        self.BoughtFor.setStyleSheet(SetupFile.DoubleSpinBox)
+        self.Add.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":
