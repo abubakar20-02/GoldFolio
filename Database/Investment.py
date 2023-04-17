@@ -9,7 +9,7 @@ import pandas as pd
 from Database import DB_Code, DBFunctions, SetUpFile
 from Database import Archive
 from Database import Log
-from Database import Statement
+from Database import Statement, User
 
 from fpdf import FPDF
 
@@ -294,14 +294,24 @@ class Investment:
         #
         # self.InvestmentArchive.Archive(new_data)
         # _________________________________________________
+        self.User = User.User()
+        self.User.SelectProfile(self.Profile)
+        value = self.MoneyLog.getChange(Investment_ID)
+        print(f"money1 - {value}")
+        self.User.cashout(value, LogChanges=False)
+
         self.__SetUpConnection()
         self.c.execute('''
               UPDATE Investment SET Gold = ?,BoughtFor = ? WHERE Investment_ID = ?
               ''', (Gold, BoughtFor, Investment_ID))
         self.conn.commit()
         self.conn.close()
+        # need to update value for the one stored in user
+        self.MoneyLog.updateBoughtFor(Investment_ID, BoughtFor)
         print("should be updated")
         print(f"Gold: {Gold} Bought for: {BoughtFor}, Inv id: {Investment_ID}")
+        self.User.addMoney(self.MoneyLog.getChange(Investment_ID), LogChanges=False)
+        print(f"Money2 +: {self.MoneyLog.getChange(Investment_ID)}")
 
     def getTable(self, StartDate=None, EndDate=None):
         self.__SetUpConnection()

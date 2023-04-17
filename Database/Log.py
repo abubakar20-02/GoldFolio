@@ -449,6 +449,7 @@ class Log:
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
                     print(f"{Data[1]} ,{Data[5]}, {Data[9]}")
+                    self.Investment.setProfile(User_ID)
                     self.Investment.updateRecord(Data[9], Data[5], Data[7], LogChanges=False)
                 elif Transaction_Type == DB_Code.ISP:
                     print("Use User_ID to find most recent deleted investment using count")
@@ -966,6 +967,19 @@ class Log:
             self.conn.close()
             return count
 
+        def updateBoughtFor(self, InvestmentID, BoughtFor):
+            self.__SetUpConnection()
+            self.c.execute("UPDATE Money SET Change=? WHERE Transaction_ID=?", (-BoughtFor, InvestmentID))
+            self.conn.commit()
+            self.conn.close()
+
+        def getChange(self, InvestmentID):
+            self.__SetUpConnection()
+            self.c.execute("SELECT Change FROM Money WHERE Transaction_ID=?", (InvestmentID,))
+            change = 0
+            change = self.c.fetchone()[0]
+            self.conn.close()
+            return change
             # for i, r in enumerate(self.getMonthRange(days_in_month)):
             #     print(f"Range {i + 1}: {r[0]}-{r[1]}")
             # self.__SetUpConnection()
