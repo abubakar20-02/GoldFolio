@@ -193,13 +193,13 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        def UpdateStatement(self, id, User_ID, Money):
+        def UpdateStatement(self, id, investmentID, User_ID, Money):
             self.SetUpConnection()
             self.c.execute('''
-            INSERT INTO UserLog (Transaction_ID,Transaction_Type,User_ID, Money)
+            INSERT INTO UserLog (Transaction_ID,Investment_ID,Transaction_Type,User_ID, Money)
                     VALUES 
-                    (?,?,?,?)
-                  ''', (id, DB_Code.UU, User_ID, Money))
+                    (?,?,?,?,?)
+                  ''', (id, investmentID, DB_Code.UU, User_ID, Money))
             self.conn.commit()
             self.conn.close()
 
@@ -339,7 +339,7 @@ class Log:
             self.SetUpConnection()
             self.c.execute('''
                   CREATE TABLE IF NOT EXISTS InvestmentLog
-                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,
+                  ([TimeStamp] TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[Transaction_ID] VARCHAR PRIMARY KEY, [Transaction_Type] TEXT DEFAULT "" , [NoOfRecordsAffected] INTEGER DEFAULT 0 , [User_ID] VARCHAR DEFAULT "",[Gold] REAL DEFAULT 0.0,[Purity] REAL DEFAULT 0.0, [BoughtFor] REAL DEFAULT 0.0, [ProfitLoss] REAL DEFAULT 0.0,[Investment_ID] VARCHAR,
                   FOREIGN KEY(Transaction_ID) REFERENCES Log(Transaction_ID))
                   ''')
             self.conn.commit()
@@ -390,7 +390,7 @@ class Log:
         def UpdateStatement(self, User_ID, id, Investment_ID, Gold, BoughtFor):
             self.SetUpConnection()
             self.c.execute('''
-            INSERT INTO InvestmentLog (User_ID,Transaction_ID,Transaction_Type,Transaction_ID,Gold,BoughtFor)
+            INSERT INTO InvestmentLog (User_ID,Transaction_ID,Transaction_Type,Investment_ID,Gold,BoughtFor)
                     VALUES
                     (?,?,?,?,?,?)
                   ''', (User_ID, id, DB_Code.IU, Investment_ID, Gold, BoughtFor))
@@ -448,6 +448,8 @@ class Log:
                     self.Investment.deleteRecord(User_ID, TransactionID=Data[1], LogChanges=False, Archive=False)
                 elif Transaction_Type == DB_Code.IU:
                     print("Use archive data to update using Investment ID")
+                    print(f"{Data[1]} ,{Data[5]}, {Data[9]}")
+                    self.Investment.updateRecord(Data[9], Data[5], Data[7], LogChanges=False)
                 elif Transaction_Type == DB_Code.ISP:
                     print("Use User_ID to find most recent deleted investment using count")
                     self.Investment.setProfile(User_ID)

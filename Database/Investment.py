@@ -273,13 +273,14 @@ class Investment:
         return values
 
     # need investment id to update.
-    def updateRecord(self, Investment_ID, Gold, BoughtFor):
+    def updateRecord(self, Investment_ID, Gold, BoughtFor, LogChanges=True):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
         # _________________________________________________
         my_uuid = str(uuid.uuid4())
-        InitialGold,InitialBoughtFor=self.getInvestmentDetail(Investment_ID)
-        self.Log.insert(my_uuid, DB_Code.IU)
-        self.InvestmentLog.UpdateStatement(self.Profile, my_uuid, Investment_ID, InitialGold, InitialBoughtFor)
+        if LogChanges:
+            InitialGold, InitialBoughtFor = self.getInvestmentDetail(Investment_ID)
+            self.Log.insert(my_uuid, DB_Code.IU)
+            self.InvestmentLog.UpdateStatement(self.Profile, my_uuid, Investment_ID, InitialGold, InitialBoughtFor)
 
         # values = self.getWholeInvestmentDetail(Investment_ID)
         #
@@ -299,6 +300,8 @@ class Investment:
               ''', (Gold, BoughtFor, Investment_ID))
         self.conn.commit()
         self.conn.close()
+        print("should be updated")
+        print(f"Gold: {Gold} Bought for: {BoughtFor}, Inv id: {Investment_ID}")
 
     def getTable(self, StartDate=None, EndDate=None):
         self.__SetUpConnection()
