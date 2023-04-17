@@ -16,6 +16,7 @@ from Database.Log import Log
 from Database.Statement import Statement
 from Database.User import User
 from Database import DBFunctions
+from datetime import date
 
 
 # when reversing sell profit there is issue.
@@ -68,10 +69,9 @@ if __name__ == "__main__":
     User.SelectProfile("ma")
     User.addMoney(500)
     time.sleep(1)
-    Investment.sellAll(Rate=10)
+    Investment.sellAll(Rate=10, Date=date.today())
     time.sleep(1)
     Investment.setProfile("ma")
-    from datetime import date
 
     Investment.sellAll(Rate=10, Date=date.today())
     User.ChangeSettings(0.01, 3, 45, GoldUnits.kilogram)

@@ -265,13 +265,13 @@ class Investment:
         self.InvestmentLog.InsertStatement(Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
     # need investment id to update.
-    def updateRecord(self, Money, Gold, Purity, GoldRate):
+    def updateRecord(self, Investment_ID, Gold, BoughtFor):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
         self.__SetUpConnection()
         my_uuid = str(uuid.uuid4())
         self.c.execute('''
-              UPDATE User SET Money = ? , Gold = ?, Purity=?, ProfitLoss =(SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2), Value_Change = ProfitLoss*BoughtFor WHERE User_ID = ?
-              ''', (Money, Gold, Purity, self.Profile, GoldRate))
+              UPDATE Investment SET Gold = ?,BoughtFor = ? WHERE Investment_ID = ?
+              ''', (Gold, BoughtFor, Investment_ID))
         self.conn.commit()
         # _________________________________________________
         # self.Log.insert(my_uuid, DB_Code.IU)
@@ -786,6 +786,13 @@ class Investment:
         except:
             Rate = 0
         return Rate
+
+    def getInvestmentDetail(self, InvestmentID):
+        self.__SetUpConnection()
+        self.c.execute("SELECT Gold, BoughtFor FROM Investment WHERE Investment_ID =?", (InvestmentID,))
+        Gold, BoughtFor = self.c.fetchone()
+        self.conn.close()
+        return Gold, BoughtFor
 
     def getGoldAcquisitionCost(self):
         self.__SetUpConnection()

@@ -31,6 +31,7 @@ import FinalSellScreen
 import FinalSettings
 import FinalStatement
 import FinalStatistics
+import FinalUpdateInvestment
 import GetDataSet
 import GoldCalculator
 import SetupFile
@@ -169,6 +170,9 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.tableWidget.setStyleSheet(SetupFile.QTable)
+
+        self.tableWidget.itemDoubleClicked.connect(self.on_item_double_clicked)
+
         self.LeftSideLayout.addWidget(self.tableWidget)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -421,6 +425,17 @@ class Ui_MainWindow(object):
         self.actionManageAccount.setText(_translate("MainWindow", "Manage Account"))
         self.actionManageCash.setText(_translate("MainWindow", "Manage Cash"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
+
+    def on_item_double_clicked(self, item):
+        # Your custom code to run on double-click
+        row = item.row()
+        record = [self.tableWidget.item(row, col).text() for col in range(self.tableWidget.columnCount())]
+        print(f"Double-clicked: {record}")
+        self.window = QtWidgets.QWidget()
+        self.window = FinalUpdateInvestment.MyWindow()
+        self.window.setUpPage(record[0])
+        self.window.updateButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
+        self.window.show()
 
     def openManageAccountScreen(self):
         self.window = QtWidgets.QWidget()
