@@ -387,15 +387,16 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        # def UpdateStatement(self, id, DB_Code, User_ID, Money):
-        #     self.SetUpConnection()
-        #     self.c.execute('''
-        #     INSERT INTO UserLog (Transaction_ID,Transaction_Type,User_ID, Money)
-        #             VALUES
-        #             (?,?,?,?)
-        #           ''', (id, DB_Code, User_ID, Money))
-        #     self.conn.commit()
-        #     self.conn.close()
+        def UpdateStatement(self, User_ID, id, Investment_ID, Gold, BoughtFor):
+            self.SetUpConnection()
+            self.c.execute('''
+            INSERT INTO InvestmentLog (User_ID,Transaction_ID,Transaction_Type,Transaction_ID,Gold,BoughtFor)
+                    VALUES
+                    (?,?,?,?,?,?)
+                  ''', (User_ID, id, DB_Code.IU, Investment_ID, Gold, BoughtFor))
+            self.conn.commit()
+            self.conn.close()
+
         def dropTable(self):
             self.SetUpConnection()
             try:

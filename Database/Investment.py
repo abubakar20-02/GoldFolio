@@ -264,19 +264,40 @@ class Investment:
         self.MoneyLog.insertIntoTable(self.Profile, DB_Code.BuyInvestment, -BoughtFor, Transaction_ID=Transaction_ID)
         self.InvestmentLog.InsertStatement(Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
+    def getWholeInvestmentDetail(self, InvestmentID):
+        self.__SetUpConnection()
+        self.c.execute("SELECT * FROM Investment WHERE Investment_ID=?", (InvestmentID,))
+        values = self.c.fetchmany()
+        print(f"sdada {values}")
+        self.conn.close()
+        return values
+
     # need investment id to update.
     def updateRecord(self, Investment_ID, Gold, BoughtFor):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
-        self.__SetUpConnection()
+        # _________________________________________________
         my_uuid = str(uuid.uuid4())
+        InitialGold,InitialBoughtFor=self.getInvestmentDetail(Investment_ID)
+        self.Log.insert(my_uuid, DB_Code.IU)
+        self.InvestmentLog.UpdateStatement(self.Profile, my_uuid, Investment_ID, InitialGold, InitialBoughtFor)
+
+        # values = self.getWholeInvestmentDetail(Investment_ID)
+        #
+        # valuelist = list(values[0])
+        # print(valuelist)
+        #
+        # valuelist[0] = my_uuid
+        # # Convert the list back to a tuple
+        # new_data = [tuple(valuelist)]
+        # print(f"new data {new_data}")
+        #
+        # self.InvestmentArchive.Archive(new_data)
+        # _________________________________________________
+        self.__SetUpConnection()
         self.c.execute('''
               UPDATE Investment SET Gold = ?,BoughtFor = ? WHERE Investment_ID = ?
               ''', (Gold, BoughtFor, Investment_ID))
         self.conn.commit()
-        # _________________________________________________
-        # self.Log.insert(my_uuid, DB_Code.IU)
-        # self.InvestmentLog.UpdateStatement(my_uuid,DB_Code.IU, User_ID,)
-        # _________________________________________________
         self.conn.close()
 
     def getTable(self, StartDate=None, EndDate=None):

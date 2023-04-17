@@ -433,7 +433,7 @@ class Ui_MainWindow(object):
         print(f"Double-clicked: {record}")
         self.window = QtWidgets.QWidget()
         self.window = FinalUpdateInvestment.MyWindow()
-        self.window.setUpPage(record[0])
+        self.window.setUpPage(record[0],self.UserID)
         self.window.updateButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.show()
 
