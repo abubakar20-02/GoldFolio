@@ -433,7 +433,7 @@ class Ui_MainWindow(object):
         print(f"Double-clicked: {record}")
         self.window = QtWidgets.QWidget()
         self.window = FinalUpdateInvestment.MyWindow()
-        self.window.setUpPage(record[0],self.UserID)
+        self.window.setUpPage(record[0], self.UserID)
         self.window.updateButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.show()
 
@@ -941,7 +941,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
         self.window.setUpPage(self.UserID)
-        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getBidinGrams(), self.UserID))
+        self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAskinGrams(), self.UserID))
         self.window.Add.clicked.connect(self.window.close)
         self.window.Gold.textChanged.connect(lambda: self.window.updateRate(self.Gold.getAskinGrams()))
         # maybe come up with a way to calculate the rate from existing data
@@ -961,8 +961,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def ApplyChanges(self, rates):
         self.Gold.getLatestExchangeRate()
-        Ask = str(f"{rates.getCurrency()} {rates.getAsk()}")
-        Bid = str(f"{rates.getCurrency()} {rates.getBid()}")
+        Ask = str(f"{rates.getCurrency()} {rates.getAsk()} ({rates.getPercentageChange()})")
+        Bid = str(f"{rates.getCurrency()} {rates.getBid()} ({rates.getPercentageChange()})")
 
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)

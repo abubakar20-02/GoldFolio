@@ -36,6 +36,7 @@ class Gold:
         self.Purity = Purity
         self.bid = 0
         self.ask = 0
+        self.percentageChhange = None
         self.c = CurrencyRates()
         self.code = None
         if self.Currency == "£":
@@ -224,6 +225,10 @@ class Gold:
 
     def getCurrency(self):
         return self.Currency
+
+    def getPercentageChange(self):
+        print(f"here1 {self.percentageChhange}")
+        return self.percentageChhange
 
 
 class Curreny:

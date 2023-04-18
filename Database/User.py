@@ -303,20 +303,23 @@ class User:
         self.conn.commit()
         self.conn.close()
 
-    def addMoney(self, Money, LogChanges=None):
+    def addMoney(self, Money, LogChanges=True):
         print('add money')
         TotalMoney = self.getMoney() + Money
         self.updateMoney(TotalMoney)
-        if LogChanges is None:
+        print(f"{TotalMoney} = {self.getMoney()} + {Money}")
+        if LogChanges:
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyIn)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)
 
-    def cashout(self, Money):
+    def cashout(self, Money, LogChanges=True):
         self.updateMoney(self.getMoney() - Money)
-        Transaction_ID = generateTransactionID()
-        self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
-        self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
+        print(f"{self.getMoney()} - {Money}")
+        if LogChanges:
+            Transaction_ID = generateTransactionID()
+            self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
+            self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
     def getDataForGraph(self):
         a = ("RawCash", self.getMoney())
