@@ -104,11 +104,11 @@ class Ui_Form(QObject):
         self.goldUnit.setText(self.GoldUnit)
 
         if self.Value > 0:
-            self.totalValueChange.setStyleSheet(SetupFile.PositiveChange)
-            self.currency_2.setStyleSheet(SetupFile.PositiveChange)
+            self.totalValueChange.setStyleSheet(SetupFile.Positive)
+            self.currency_2.setStyleSheet(SetupFile.Positive)
         elif self.Value < 0:
-            self.totalValueChange.setStyleSheet(SetupFile.NegativeChange)
-            self.currency_2.setStyleSheet(SetupFile.NegativeChange)
+            self.totalValueChange.setStyleSheet(SetupFile.Negative)
+            self.currency_2.setStyleSheet(SetupFile.Negative)
 
         self.totalGoldSold.setText(str(round(self.GoldWeight, self.DecimalPoints)))
         self.totalBoughtFor.setText(str(round(self.Sum, self.DecimalPoints)))
@@ -128,6 +128,10 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.closeButton.clicked.connect(self.close)
+        self.setWindowTitle("Sell info")
+        self.setStyleSheet(SetupFile.Background)
+        self.closeButton.setStyleSheet(SetupFile.Button)
+
 
 
 if __name__ == "__main__":

@@ -92,6 +92,14 @@ NoChangeTextColor = ("QLabel{\n"
                      "color: rgb(0,0,0) "
                      "     }")
 
+Positive = ("QLabel{\n"
+                  "color: rgb(31,255,15);\n"
+                  "     }")
+
+Negative = ("QLabel{\n"
+                  "color: rgb(238,75,43);\n"
+                  "     }")
+
 PositiveChange = ("QLabel{\n"
                   "color: rgb(31,255,15);\n"
                   "background-color: white;\n"

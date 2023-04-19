@@ -101,8 +101,8 @@ def getDataSet(start_date, end_date):
         [Usd_Index_data, Oil_data, USDToEuro_data, USDToINR_data, USDToCNY_data, USDToJPY_data,
          USBond10_data, silver_data, gold_data], axis=1)
     # Drop records that don't have gold close.
-    # combined_data = combined_data.dropna()
-    # combined_data = combined_data[(combined_data >= 0).all(1)]
+    combined_data = combined_data.dropna()
+    combined_data = combined_data[(combined_data >= 0).all(1)]
     combined_data.insert(len(combined_data.columns) - 5, 'GoldToOil',
                          (combined_data['Gold Open'] / combined_data['Oil open']))
     return combined_data
@@ -112,10 +112,10 @@ def getDataSet(start_date, end_date):
 if __name__ == "__main__":
     import time
 
-    start_date = datetime.now().date() - timedelta(days=61)
-    end_date = datetime.now().date()
+    start_date = "2020-01-01"
+    end_date = "2022-04-01"
     print(f"Start date: {start_date} End date: {end_date}")
-    getDataSet(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")).to_excel("gold_data.xlsx")
+    getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
 
     # # # start_date = "2013-01-01"
     # start_date = "2022-04-08"
