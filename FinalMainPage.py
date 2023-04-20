@@ -896,7 +896,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         self.value = 0
         super().__init__()
-        pixmap = QPixmap("Aesthetic-boy-pfp.jpeg")
+        pixmap = QPixmap("Resources/SplashImage.png")
         splash = QSplashScreen(pixmap)
         splash.show()
         self.setupUi(self)

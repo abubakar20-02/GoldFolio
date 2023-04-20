@@ -1,6 +1,6 @@
 Background = "background-color: rgb(255, 244, 230)"
 
-Banner = "background-color:  rgb(75, 56, 50);image: url(Resources/logo.png);"
+Banner = "background-color:  rgb(75, 56, 50);image: url(Resources/Gold logo.png);"
 
 ComboBox = ("QComboBox {\n"
             "border: 1px solid black;\n"
