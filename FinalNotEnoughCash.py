@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 
 import FinalAddMoney
+import SetupFile
 from Database import User
 
 
@@ -93,6 +94,11 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.setupUi(self)
         self.closeButton.clicked.connect(self.close)
         self.addCashButton.clicked.connect(self.openAddCash)
+
+        self.setWindowTitle("Warning")
+        self.setStyleSheet(SetupFile.Background)
+        self.closeButton.setStyleSheet(SetupFile.Button)
+        self.addCashButton.setStyleSheet(SetupFile.Button)
 
 
 if __name__ == "__main__":
