@@ -147,17 +147,17 @@ class User:
         self.conn.commit()
         self.conn.close()
 
-    def deleteTable(self, *LogChanges):
+    def deleteTable(self):
         self.__SetUpConnection()
         try:
-            self.c.execute("SELECT * FROM User")
-            Values = self.c.fetchall()
-            self.c.execute("SELECT COUNT(*) FROM User")
-            RecordsAffected = self.c.fetchone()[0]
+            # self.c.execute("SELECT * FROM User")
+            # Values = self.c.fetchall()
+            # self.c.execute("SELECT COUNT(*) FROM User")
+            # RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            if LogChanges == ():
-                self.__LogForDelete(RecordsAffected, None, Values, generateTransactionID())
+            # if LogChanges == ():
+            #     self.__LogForDelete(RecordsAffected, None, Values, generateTransactionID())
         except sqlite3.Error as error:
             print(error)
         finally:

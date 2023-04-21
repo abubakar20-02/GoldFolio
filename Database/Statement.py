@@ -169,7 +169,7 @@ class Statement:
         # Disable foreign key constraints
         self.c.execute("PRAGMA foreign_keys = OFF")
         try:
-            self.c.execute("DROP TABLE Statement")
+            self.c.execute("DELETE FROM Statement")
             self.conn.commit()
         except sqlite3.Error as error:
             print(error)

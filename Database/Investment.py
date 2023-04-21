@@ -1,6 +1,7 @@
 import calendar
 import math
 import sqlite3
+import time
 import uuid
 from datetime import datetime
 
@@ -349,6 +350,7 @@ class Investment:
 
     def updateProfitLoss(self, GoldRate, Investment_ID=None):
         """Run continuously to update profit/loss"""
+        start_time = time.time()
         values = (GoldRate, self.Profile)
         self.__SetUpConnection()
         select = "SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID =? "
@@ -372,6 +374,9 @@ class Investment:
         self.c.execute(ValueChangeStatement, ValueChangeValues)
         self.conn.commit()
         self.conn.close()
+        end_time = time.time()
+        time_taken = end_time - start_time
+        print("Time taken: ", time_taken)
         # self.showTable()
 
     def showProfit(self):
