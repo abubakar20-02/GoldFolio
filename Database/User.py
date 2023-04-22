@@ -6,28 +6,19 @@ import bcrypt
 
 import pandas as pd
 
-from Database import DB_Code, DBFunctions, SetUpFile, Archive
-from Database.Investment import Investment
-from Database.Log import Log
-from Database.Statement import Statement
-
-dp = 1
+from Database import DB_Code, DBFunctions, SetUpFile, Archive, Investment, Log, Statement
 
 
 def generateTransactionID():
+    """ Return a new transactionID. """
     return str(uuid.uuid4())
 
 
 def hash_password(password):
-    # Convert the password to bytes
+    """ Return hashed password. """
     password_bytes = password.encode('utf-8')
-
-    # Generate a salt
     salt = bcrypt.gensalt()
-
-    # Hash the password with the salt
     hashed_password = bcrypt.hashpw(password_bytes, salt)
-
     return hashed_password
 
 
@@ -38,28 +29,31 @@ class User:
         self.Profile = None
         self.a = Archive.UserArchive()
         self.b = Archive.InvestmentArchive()
-        self.Log = Log()
-        self.UserLog = Log.UserLog()
-        self.Investment = Investment()
-        self.Statement = Statement()
-        self.MoneyLog = Log.Money()
+        self.Log = Log.Log()
+        self.UserLog = Log.Log.UserLog()
+        self.Investment = Investment.Investment()
+        self.Statement = Statement.Statement()
+        self.MoneyLog = Log.Log.Money()
 
     def __SetUpConnection(self):
         self.conn = sqlite3.connect(SetUpFile.DBName)
         self.c = self.conn.cursor()
 
     def SelectProfile(self, Profile):
+        """ Select user profile. """
         self.Profile = Profile
         self.Log.SelectProfile(self.Profile)
         self.Investment.setProfile(self.Profile)
         self.Statement.setProfile(self.Profile)
 
     def deleteArchiveLog(self):
+        """ Remove all support database files. """
         self.Log.deleteUser()
         self.a.deleteUser(self.Profile)
         self.b.deleteUser(self.Profile)
 
     def deleteUser(self):
+        """ Delete everything belonging to the user in every table. """
         self.Statement.deleteUser()
         self.Investment.deleteUser()
         self.__SetUpConnection()
@@ -69,6 +63,7 @@ class User:
         self.deleteArchiveLog()
 
     def searchLikeUserID(self, UserID):
+        """ Returns similar user ID """
         self.__SetUpConnection()
         sql = "SELECT User_ID,FirstName,LastName,Currency FROM User WHERE User_ID LIKE '%{}%'".format(UserID)
         df = pd.read_sql(sql, self.conn)
@@ -76,19 +71,11 @@ class User:
         return df
 
     def ImportFromExcel(self):
-        source = 'UserTemplate.xlsx'
+        """ Import users from excel. """
         target = 'User.xlsx'
-        # shutil.copyfile(source,target)
-        # os.system(target)
-
         sheet_name = 'Sheet1'
-
         path = target
-
-        # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
-
-        # Define the SQL query to insert the data into the table
         table_name = "User"
         columns = ','.join(df.columns)
         placeholders = ','.join(['?' for _ in range(len(df.columns))])
@@ -96,17 +83,13 @@ class User:
         sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
         print(sql)
 
-        # Loop through the rows in the DataFrame and insert them into the table
+        # load data from file.
         for _, row in df.iterrows():
             values = tuple(row)
-
-            # self.c.execute(sql, values)
-            # dont update log again and again but add to user log
             try:
-                # if not float would go to except.
                 float(values[3])
                 if not (values[1].isalpha() and values[2].isalpha()):
-                    print('name contains invalid letters')
+                    # name contain invalid letters.
                     continue
                 if str(values[0])[:2] == self.generate_unique_initials(values[1], values[2])[:2]:
                     # close function after we finish using generate unique initials.
@@ -114,10 +97,8 @@ class User:
                     self.insertIntoTable(values[1], values[2], values[3], UserID=values[0], LogChanges=False)
                 if isinstance(values[0], (int, float)) and math.isnan(values[0]):
                     self.insertIntoTable(values[1], values[2], values[3], LogChanges=False)
-                    # print("empty")
-                print("fine")
             except:
-                print("wrong")
+                None
         # send number of values added to user log
 
     def __generate_initials(self, first_name, last_name):
@@ -139,6 +120,7 @@ class User:
         return initials
 
     def createTable(self):
+        """ Create user table """
         self.__SetUpConnection()
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS User
@@ -148,23 +130,18 @@ class User:
         self.conn.close()
 
     def deleteTable(self):
+        """Delete everything from the user table."""
         self.__SetUpConnection()
         try:
-            # self.c.execute("SELECT * FROM User")
-            # Values = self.c.fetchall()
-            # self.c.execute("SELECT COUNT(*) FROM User")
-            # RecordsAffected = self.c.fetchone()[0]
             self.c.execute("DELETE FROM User")
             self.conn.commit()
-            # if LogChanges == ():
-            #     self.__LogForDelete(RecordsAffected, None, Values, generateTransactionID())
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
     def deleteRecord(self, User_ID, LogChanges=True):
-        """Takes user id to delete record and if log change is not empty, then the code saves InvestmentArchive log."""
+        """Takes user id to delete record and if log change is not False, then the code saves InvestmentArchive log."""
         Transaction_ID = generateTransactionID()
         self.__SetUpConnection()
         try:
@@ -175,7 +152,6 @@ class User:
             a = RecordsAffected
             print("checked")
             while a > 0:
-                # jnkasdjnasdkskhjansahjkndsansdjkajkasdkasdhjn
                 self.Investment.deleteRecord(User_ID, LogChanges=False)
                 a = a - 1
             self.conn.commit()
@@ -193,8 +169,6 @@ class User:
             self.conn.close()
 
     def __LogForDelete(self, RecordsAffected, User_ID, Values, Transaction_ID):
-        # sadklmasdjhnklaslkedsmaklsmlskasdkaln
-        print("wow")
         self.UserLog.DeleteStatement(Transaction_ID, RecordsAffected, User_ID)
         self.a.Archive(DB_Code.DELETECOMMAND, Values)
 
@@ -202,14 +176,14 @@ class User:
         self.UserLog.InsertStatement(Transaction_ID, User_ID, FName, LName, Money)
         self.Log.insert(Transaction_ID, DB_Code.UI)
 
-    def __LogForUpdate(self, Money, User_ID, Values, TransactionID):
-        self.Log.insert(TransactionID, DB_Code.UU)
-        self.UserLog.UpdateStatement(TransactionID, User_ID, Money)
-        # mention this was updated
-        self.a.Archive(DB_Code.UPDATECOMMAND, Values)
+    # def __LogForUpdate(self, Money, User_ID, Values, TransactionID):
+    #     self.Log.insert(TransactionID, DB_Code.UU)
+    #     self.UserLog.UpdateStatement(TransactionID, User_ID, Money)
+    #     # mention this was updated
+    #     self.a.Archive(DB_Code.UPDATECOMMAND, Values)
 
     def insertIntoTable(self, FName, LName, Money, Password, Currency, LogChanges=True, UserID=None):
-        """Takes record data to insert and if log change is not empty, then the code saves InvestmentArchive log."""
+        """Takes record data to insert and if log change is not false, then the code saves InvestmentArchive log."""
         self.__SetUpConnection()
         if UserID is None:
             UserID = self.generate_unique_initials(FName, LName)
@@ -228,7 +202,7 @@ class User:
         self.conn.close()
 
     def updateRecord(self, User_ID, Money, LogChanges=True):
-        """Takes user id to locate the user, take money to change and if log change is not empty, then the code saves
+        """Takes user id to locate the user, take money to change and if log change is not false, then the code saves
         InvestmentArchive log. """
         self.__SetUpConnection()
         self.c.execute("SELECT * FROM User WHERE User_ID = ?", (User_ID,))
@@ -242,22 +216,23 @@ class User:
             self.__LogForUpdate(Money, User_ID, Values, TransactionID)
         self.conn.close()
 
-    def showTable(self):
-        self.__SetUpConnection()
-        try:
-            self.c.execute('''
-                      SELECT * FROM User
-                      ''')
-            self.conn.commit()
-            df = pd.DataFrame(self.c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money'])
-            print(df)
-        except sqlite3.Error as error:
-            print(error)
-        finally:
-            self.conn.close()
-        # self.convertToExcel()
+    # def showTable(self):
+    #     self.__SetUpConnection()
+    #     try:
+    #         self.c.execute('''
+    #                   SELECT * FROM User
+    #                   ''')
+    #         self.conn.commit()
+    #         df = pd.DataFrame(self.c.fetchall(), columns=['User_ID', 'FirstName', 'LastName', 'Money'])
+    #         print(df)
+    #     except sqlite3.Error as error:
+    #         print(error)
+    #     finally:
+    #         self.conn.close()
+    # self.convertToExcel()
 
     def isUserExist(self, User_ID):
+        """Takes user id to check if user exists in the database, and if they do then return True. """
         self.__SetUpConnection()
         self.c.execute('''
                   SELECT COUNT(*) FROM User WHERE User_ID = ?
@@ -270,6 +245,7 @@ class User:
             return False
 
     def getMoney(self):
+        """ Returns the money of the user."""
         self.__SetUpConnection()
         self.c.execute('''
                   SELECT Money FROM User WHERE User_ID = ?
@@ -283,6 +259,7 @@ class User:
         return round(Money, 1)
 
     def getName(self):
+        """ Returns the full name of the user."""
         self.__SetUpConnection()
         self.c.execute('''
         SELECT FirstName,LastName FROM User WHERE User_ID=?
@@ -296,6 +273,7 @@ class User:
         return Name
 
     def updateMoney(self, Money):
+        """ Update the money for the user."""
         self.__SetUpConnection()
         self.c.execute('''
                   UPDATE User SET Money=? WHERE User_ID = ?
@@ -304,38 +282,40 @@ class User:
         self.conn.close()
 
     def addMoney(self, Money, LogChanges=True):
-        print('add money')
+        """ Takes money to add to the users total money and if the log change is not false, then the code saves
+        to the money log."""
         TotalMoney = self.getMoney() + Money
         self.updateMoney(TotalMoney)
-        print(f"{TotalMoney} = {self.getMoney()} + {Money}")
         if LogChanges:
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyIn)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyIn, Money, Transaction_ID=Transaction_ID)
 
     def cashout(self, Money, LogChanges=True):
+        """ Takes money to remove from the users total money and if the log change is not false, then the code saves
+        to the money log."""
         self.updateMoney(self.getMoney() - Money)
-        print(f"{self.getMoney()} - {Money}")
         if LogChanges:
             Transaction_ID = generateTransactionID()
             self.Log.insert(Transaction_ID, DB_Code.MoneyOut)
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.MoneyOut, -Money, Transaction_ID=Transaction_ID)
 
     def getDataForGraph(self):
+        """ Returns format for graph input."""
         a = ("RawCash", self.getMoney())
         self.Investment.setProfile(self.Profile)
-        b = ("GoldMoney", self.Investment.getSumBoughtFor())
+        b = ("GoldMoney", self.Investment.getSUM("BoughtFor"))
         dict1 = dict([a, b])
         return dict1
 
-        # get current money then add money for that user.
-
     def convertToExcel(self):
+        """ convert database to excel file. """
         DBFunctions.convertToExcel("User", SetUpFile.DBName, RemoveFirstColumn=False)
 
-    def getHashedPassword(self, param):
+    def getHashedPassword(self, UserID):
+        """ Returns hashed password for the given user. """
         self.__SetUpConnection()
-        self.c.execute("SELECT Password FROM USER WHERE User_ID=?", (param,))
+        self.c.execute("SELECT Password FROM USER WHERE User_ID=?", (UserID,))
         hashpass = self.c.fetchone()[0]
         self.conn.close()
         if not isinstance(hashpass, bytes):
@@ -343,7 +323,7 @@ class User:
         return hashpass
 
     def UpdatePassword(self, User_ID, Password):
-        print("in")
+        """ Update password for given user. """
         self.__SetUpConnection()
         self.c.execute('''
         UPDATE User SET Password = ? WHERE User_ID = ?'''
@@ -352,6 +332,7 @@ class User:
         self.conn.close()
 
     def ChangeSettings(self, MinimumProfitMargin, DecimalPoint, UpdateFrequency, GoldUnit):
+        """ Change setting for the user. """
         self.__SetUpConnection()
         self.c.execute('''
         UPDATE User SET MinimumProfitMargin = ?, DecimalPoint=?,UpdateFrequency=?, GoldUnit=?  WHERE User_ID = ?'''
@@ -360,6 +341,7 @@ class User:
         self.conn.close()
 
     def GetSettings(self):
+        """ Return settings of the user. """
         self.__SetUpConnection()
         self.c.execute('''
         SELECT MinimumProfitMargin, DecimalPoint,UpdateFrequency,GoldUnit,Currency FROM User  WHERE User_ID = ?''',
@@ -383,16 +365,16 @@ class User:
             return df
 
     def saveState(self, FolderName):
+        """ Save state for the given user """
         self.__SetUpConnection()
         sql = "SELECT * FROM User WHERE User_ID=?"
         param = (self.Profile,)
-        # Use pandas to read the data from the SQL database
         df = pd.read_sql(sql, self.conn, params=param)
         self.conn.close()
         df.to_excel(f"{FolderName}/User.xlsx", index=False)
 
     def loadState(self, FolderName):
-        # Use pandas to read the data from the SQL database
+        """ Load state for the given user """
         df = pd.read_excel(f"{FolderName}/User.xlsx")
         self.__SetUpConnection()
         df.to_sql(name='User', con=self.conn, if_exists='append', index=False)
