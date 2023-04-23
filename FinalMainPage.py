@@ -963,6 +963,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Gold.getLatestExchangeRate()
         Ask = str(f"{rates.getCurrency()} {rates.getAsk()} ({rates.getPercentageChange()})")
         Bid = str(f"{rates.getCurrency()} {rates.getBid()} ({rates.getPercentageChange()})")
+        print(f"Ask {Ask}")
+        print(f"Ask {Bid}")
 
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)

@@ -53,6 +53,8 @@ class Gold:
         self.ask = FormatRates(self.ask)
 
         self.percentageChhange = str(soup.find("span", id="sp-chg-percent").text)
+        print(f"ask {self.ask}")
+        print(f"bid {self.bid}")
         print(f"percentage change {self.percentageChhange}")
 
     # add get bid and get ask in a thread.
@@ -91,28 +93,25 @@ class Gold:
         # # return str(round(self.bid, 2)) + " BD"  # per gram cost
 
     def getLatestExchangeRate(self):
-        try:
-            self.Rate = self.c.get_rate('USD', self.code)
-        except:
-            self.Rate = 0
-            base_currency = 'USD'
-            target_currency = self.code
-            print(target_currency)
+        self.Rate = 0
+        base_currency = 'USD'
+        target_currency = self.code
+        print(target_currency)
 
-            response = requests.get(
-                f'https://www.x-rates.com/calculator/?from={base_currency}&to={target_currency}&amount=1')
+        response = requests.get(
+            f'https://www.x-rates.com/calculator/?from={base_currency}&to={target_currency}&amount=1')
 
-            if response.status_code != 200:
-                return f"Error: Couldn't fetch data. Status code: {response.status_code}"
+        if response.status_code != 200:
+            return f"Error: Couldn't fetch data. Status code: {response.status_code}"
 
-            soup = BeautifulSoup(response.content, 'html.parser')
-            rate_element = soup.find('span', {'class': 'ccOutputTrail'}).previous_sibling
-            if rate_element:
-                rate = float(rate_element.string)
-                self.Rate = rate
-                print(f"rate: {self.Rate}")
-            else:
-                return "Error: Couldn't find the exchange rate."
+        soup = BeautifulSoup(response.content, 'html.parser')
+        rate_element = soup.find('span', {'class': 'ccOutputTrail'}).previous_sibling
+        if rate_element:
+            rate = float(rate_element.string)
+            self.Rate = rate
+            print(f"rate: {self.Rate}")
+        else:
+            return "Error: Couldn't find the exchange rate."
 
     def convertRateTo(self, Value):
         return self.Rate * Value

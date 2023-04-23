@@ -109,24 +109,13 @@ def getDataSet(start_date, end_date):
                          (combined_data['Gold Open'] / combined_data['Oil open']))
     return combined_data
 
-def plotClosingGraph(startdate,enddate):
-
-    gold_data = yf.download("GC=F", start=startdate, end=enddate, interval="1d")
-    gold_data = gold_data[['Close']]
-    plt.plot(gold_data)
-    plt.title('Gold Closing Prices from ' + start_date + ' to ' + end_date)
-    plt.xlabel('Date')
-    plt.ylabel('Closing Price (USD)')
-    plt.show()
-# adj is real exchange rate
 if __name__ == "__main__":
     import time
 
     start_date = "2020-01-01"
     end_date = "2022-04-01"
-    plotClosingGraph(start_date,end_date)
     # print(f"Start date: {start_date} End date: {end_date}")
-    # getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
+    getDataSet(start_date, end_date).to_excel("gold_data.xlsx")
 
 
     # # # start_date = "2013-01-01"
