@@ -1,4 +1,3 @@
-import calendar
 import math
 import sqlite3
 import time
@@ -19,9 +18,6 @@ def generateTransactionID():
     return str(uuid.uuid4())
 
 
-# give user the ability when selling to input manual gold rate too.
-
-# create UserArchive function that can convert excel file to db.
 class Investment:
     def __init__(self):
         super().__init__()
@@ -35,26 +31,21 @@ class Investment:
         self.Statement = Statement.Statement()
 
     def createExcelTemplate(self):
+        """ Create an excel template for the Investment. """
         column_names = ['Date_Added', 'Gold', 'BoughtFor']
 
-        # Create an empty DataFrame with the column names
         df = pd.DataFrame(columns=column_names)
 
-        # Save the DataFrame to an Excel file
         df.to_excel('Investment.xlsx', index=False)
 
     def isFileFormatCorrect(self, FilePath):
+        """ Checks if file format is correct for investment, if it is, then return True. """
         column_names = ['Date_Added', 'Gold', 'BoughtFor']
-        # source = 'UserTemplate.xlsx'
         target = FilePath
-        # shutil.copyfile(source,target)
-        # os.system(target)
-
         sheet_name = 'Sheet1'
 
         path = target
 
-        # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
         columnnames = df.columns
@@ -64,28 +55,20 @@ class Investment:
         return True
 
     def deleteUser(self):
+        """ Delete the user's investment. """
         self.__SetUpConnection()
         self.c.execute("DELETE FROM Investment WHERE User_ID=?", (self.Profile,))
         self.conn.commit()
         self.conn.close()
 
     def ImportFromExcel(self, FilePath):
-        # source = 'UserTemplate.xlsx'
+        """ Import data from excel file."""
         target = FilePath
-        # shutil.copyfile(source,target)
-        # os.system(target)
-
         sheet_name = 'Sheet1'
-
         path = target
 
-        # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
 
-        # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
-        # date_added to be a date.
-
-        # Define the SQL query to insert the data into the table
         # Loop through the rows in the DataFrame and insert them into the table
         for _, row in df.iterrows():
             values = tuple(row)
@@ -102,22 +85,18 @@ class Investment:
                 self.insertIntoTable(values[1], 0.0, values[2], LogChanges=False, IgnoreMoney=True)
             else:
                 if isinstance(values[0], datetime):
-                    # if date is in the future then don't add it.
-                    # if datetime.strptime(values[0].strftime("%Y-%m-%d"), '%Y-%m-%d').date() > datetime.now().date():
-                    #     print("future")
-                    #     continue
-                    # convert date to Y-m-d format
                     self.insertIntoTable(values[1], 0.0, values[2], Date=values[0].strftime("%Y-%m-%d"),
                                          LogChanges=False, IgnoreMoney=True)
 
     def isEmpty(self, value):
-        # value is a number and it is not none.
+        """ checks if data from Excel file is empty."""
         if isinstance(value, (float, int)) and (math.isnan(value)):
             return True
         else:
             return False
 
     def CorrectNumberFormat(self, value):
+        """ checks if data from Excel file is a number."""
         # value is a number and it is not none.
         if isinstance(value, (float, int)) and not (math.isnan(value)):
             return True
@@ -125,6 +104,7 @@ class Investment:
             return False
 
     def setProfile(self, profile):
+        """Select profile for investment."""
         self.Profile = profile
         self.Log.SelectProfile(self.Profile)
 
@@ -145,33 +125,20 @@ class Investment:
         self.conn.close()
 
     def deleteTable(self):
+        """ Delete everything from the investment table."""
         self.__SetUpConnection()
         try:
             self.c.execute("DELETE FROM Investment")
             self.conn.commit()
-            print("Delete Investment")
-            # self.c.execute("SELECT * FROM Investment")
-            # Values = self.c.fetchall()
-            # self.c.execute("SELECT COUNT(*) FROM Investment")
-            # RecordsAffected = self.c.fetchone()[0]
-            # self.c.execute("DROP TABLE Investment")
-            # self.conn.commit()
-            # if RecordsAffected > 0:
-            #     self.Log.insert(id, "DeleteInvestment")
-            #     self.InvestmentLog.DeleteStatement(id, "DropInvestments", RecordsAffected, None)
-            #     self.UserArchive.Archive(Values)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
-    # dsfjknnnsjhjjjhjhjhjhjhjhjhjhjhjhjhjhjhjhjahjkfsd
-    # need to use investment id to delete
     def deleteRecord(self, User_ID, LogChanges=True, Archive=True, TransactionID=None):
         """Takes in the user ID to delete investment for that ID."""
         self.__SetUpConnection()
         if TransactionID is not None:
-            print("yoooooooo")
             self.c.execute('''
                   SELECT * FROM Investment WHERE Investment_ID = ? LIMIT 1
                   ''', (TransactionID,))
@@ -189,8 +156,6 @@ class Investment:
                   SELECT COUNT(*) FROM Investment WHERE User_Id = ?
                   ''', (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
-            a = RecordsAffected
-            # while a > 0:
             self.c.execute('''
                   SELECT * FROM Investment WHERE User_Id = ? LIMIT 1
                   ''', (User_ID,))
@@ -200,10 +165,6 @@ class Investment:
             self.c.execute('''
                   DELETE FROM Investment WHERE Investment_ID = (SELECT Investment_ID FROM Investment WHERE User_Id = ?) 
                   ''', (User_ID,))
-            print("---")
-            print(User_ID)
-            print("---")
-            # a = a - 1
             self.conn.commit()
             if LogChanges is True:
                 self.LogForDelete(generateTransactionID(), RecordsAffected, User_ID)
@@ -213,6 +174,7 @@ class Investment:
             self.conn.close()
 
     def LogForDelete(self, id, RecordsAffected, User_ID):
+        """Logs for delete in investment."""
         self.Log.insert(id, DB_Code.ID)
         self.InvestmentLog.DeleteStatement(id, RecordsAffected, User_ID)
 
@@ -229,13 +191,11 @@ class Investment:
             from Database import User
             User = User.User()
             User.SelectProfile(self.Profile)
-            TotalMoney = User.getMoney()
 
         if Date is None:
             Date = datetime.now().date()
         else:
             if datetime.strptime(Date, '%Y-%m-%d').date() > datetime.now().date():
-                print("date is in future")
                 return
         Error = True
         # loop until there is no error.
@@ -261,44 +221,30 @@ class Investment:
                 Error = True
 
     def __LogForInsert(self, BoughtFor, Gold, Purity, Transaction_ID):
+        """Log for insert in investment."""
         self.Log.insert(Transaction_ID, DB_Code.IB)
         self.MoneyLog.insertIntoTable(self.Profile, DB_Code.BuyInvestment, -BoughtFor, Transaction_ID=Transaction_ID)
         self.InvestmentLog.InsertStatement(Transaction_ID, self.Profile, Gold, Purity, BoughtFor, 0.00)
 
     def getWholeInvestmentDetail(self, InvestmentID):
+        """Return entire record of given investment ID."""
         self.__SetUpConnection()
         self.c.execute("SELECT * FROM Investment WHERE Investment_ID=?", (InvestmentID,))
         values = self.c.fetchmany()
-        print(f"sdada {values}")
         self.conn.close()
         return values
 
-    # need investment id to update.
     def updateRecord(self, Investment_ID, Gold, BoughtFor, LogChanges=True):
         """Takes in the user id to update the value of gold , weight of the gold and the purity of the gold."""
-        # _________________________________________________
         my_uuid = str(uuid.uuid4())
         if LogChanges:
             InitialGold, InitialBoughtFor = self.getInvestmentDetail(Investment_ID)
             self.Log.insert(my_uuid, DB_Code.IU)
             self.InvestmentLog.UpdateStatement(self.Profile, my_uuid, Investment_ID, InitialGold, InitialBoughtFor)
 
-        # values = self.getWholeInvestmentDetail(Investment_ID)
-        #
-        # valuelist = list(values[0])
-        # print(valuelist)
-        #
-        # valuelist[0] = my_uuid
-        # # Convert the list back to a tuple
-        # new_data = [tuple(valuelist)]
-        # print(f"new data {new_data}")
-        #
-        # self.InvestmentArchive.Archive(new_data)
-        # _________________________________________________
         self.User = User.User()
         self.User.SelectProfile(self.Profile)
         value = self.MoneyLog.getChange(Investment_ID)
-        print(f"money1 - {value}")
         self.User.cashout(value, LogChanges=False)
 
         self.__SetUpConnection()
@@ -309,12 +255,10 @@ class Investment:
         self.conn.close()
         # need to update value for the one stored in user
         self.MoneyLog.updateBoughtFor(Investment_ID, BoughtFor)
-        print("should be updated")
-        print(f"Gold: {Gold} Bought for: {BoughtFor}, Inv id: {Investment_ID}")
         self.User.addMoney(self.MoneyLog.getChange(Investment_ID), LogChanges=False)
-        print(f"Money2 +: {self.MoneyLog.getChange(Investment_ID)}")
 
     def getTable(self, StartDate=None, EndDate=None):
+        """Returns a dataframe of the investment table."""
         self.__SetUpConnection()
         try:
             sql = "SELECT * FROM Investment WHERE User_ID = ?"
@@ -325,7 +269,6 @@ class Investment:
                 sql += f" AND Date_Added <= '{EndDate}'"
             sql += f" ORDER BY Date_Added DESC"
 
-            print(sql)
             values = (self.Profile,)
             df = pd.read_sql(sql, self.conn, params=values)
             df = df.drop('User_ID', axis=1)
@@ -334,7 +277,6 @@ class Investment:
             print(error)
         finally:
             self.conn.close()
-            # print(df)
             return df
 
     def showInvestmentForUser(self):
@@ -350,7 +292,7 @@ class Investment:
 
     def updateProfitLoss(self, GoldRate, Investment_ID=None):
         """Run continuously to update profit/loss"""
-        start_time = time.time()
+        # start_time = time.time()
         values = (GoldRate, self.Profile)
         self.__SetUpConnection()
         select = "SELECT round(((?-(BoughtFor/Gold))/(BoughtFor/Gold))*100,2) WHERE User_ID =? "
@@ -363,8 +305,6 @@ class Investment:
         complete = "UPDATE Investment SET ProfitLoss =({0}) WHERE User_ID =?".format(select)
         if Investment_ID is not None:
             complete += "AND Investment_ID = ?"
-        # Value = ProfitLoss* Bought For
-        print(complete)
         self.c.execute(complete, values)
         ValueChangeStatement = "UPDATE Investment SET Value_Change = (ProfitLoss/100)*BoughtFor WHERE User_ID =?"
         ValueChangeValues = (self.Profile,)
@@ -374,34 +314,35 @@ class Investment:
         self.c.execute(ValueChangeStatement, ValueChangeValues)
         self.conn.commit()
         self.conn.close()
-        end_time = time.time()
-        time_taken = end_time - start_time
-        print("Time taken: ", time_taken)
+        # end_time = time.time()
+        # time_taken = end_time - start_time
+        # print("Time taken: ", time_taken)
         # self.showTable()
 
-    def showProfit(self):
-        self.__SetUpConnection()
-        self.c.execute('''
-                    SELECT * FROM Investment WHERE ProfitLoss>0
-                  ''')
-        self.conn.commit()
-        df = pd.DataFrame(self.c.fetchall(),
-                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
-        print(df)
-        self.conn.close()
+    # def showProfit(self):
+    #     self.__SetUpConnection()
+    #     self.c.execute('''
+    #                 SELECT * FROM Investment WHERE ProfitLoss>0
+    #               ''')
+    #     self.conn.commit()
+    #     df = pd.DataFrame(self.c.fetchall(),
+    #                       columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
+    #     print(df)
+    #     self.conn.close()
 
-    def showLoss(self):
-        self.__SetUpConnection()
-        self.c.execute('''
-                    SELECT * FROM Investment WHERE ProfitLoss<0
-                  ''')
-        self.conn.commit()
-        df = pd.DataFrame(self.c.fetchall(),
-                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
-        print(df)
-        self.conn.close()
+    # def showLoss(self):
+    #     self.__SetUpConnection()
+    #     self.c.execute('''
+    #                 SELECT * FROM Investment WHERE ProfitLoss<0
+    #               ''')
+    #     self.conn.commit()
+    #     df = pd.DataFrame(self.c.fetchall(),
+    #                       columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
+    #     print(df)
+    #     self.conn.close()
 
     def showSumForIndividual(self, id):
+        """Returns sum of gold bought fro and value change of single investment."""
         self.__SetUpConnection()
         sql = "SELECT SUM(Gold),SUM(BoughtFor),SUM(Value_Change) FROM Investment WHERE Investment_ID = ?"
         self.c.execute(sql, (id,))
@@ -410,7 +351,7 @@ class Investment:
         return gold_sum, bought_for_sum, value_change_sum
 
     def showSumSale(self, StartDate=None, EndDate=None, MinimumProfitMargin=None, uniqueID=None):
-        print(uniqueID)
+        """takes list of investment ID to show sum of custom sale."""
         if uniqueID is not None:
             gold_sum = bought_for_sum = value_change_sum = 0
             for id in uniqueID:
@@ -425,8 +366,6 @@ class Investment:
         if MinimumProfitMargin is not None:
             sql += " AND ProfitLoss>=?"
             values += (MinimumProfitMargin,)
-            # if Mode == "Custom":
-            #     # add values of sum for each ID
         if StartDate:
             sql += f" AND Date_Added >= '{StartDate}'"
 
@@ -437,13 +376,11 @@ class Investment:
         self.conn.close()
         return gold_sum, bought_for_sum, value_change_sum
 
-    # add user here
     def sellProfit(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None, ProfitMargin=None):
+        """Sell profitable investment."""
         if ProfitMargin is None:
             ProfitMargin = 1
-        # only apply rate to what is going to be sold.
         if Rate is not None:
-            # if connected to a thread this might not work all the time.
             self.updateProfitLoss(Rate)
 
         sql = "SELECT * FROM Investment WHERE User_ID = ? AND ProfitLoss>=?"
@@ -493,8 +430,6 @@ class Investment:
         Values = self.c.fetchall()
         self.c.execute(sqlCount, (self.Profile, ProfitMargin))
         RecordsAffected = self.c.fetchone()[0]
-        # calculate total profit
-        # profitloss/100 * bought for
         self.c.execute(sqlProfitLoss,
                        (self.Profile, ProfitMargin))
         TotalProfit = self.c.fetchone()[0]
@@ -507,17 +442,12 @@ class Investment:
         User = User.User()
         User.SelectProfile(self.Profile)
         User.addMoney(TotalProfit + TotalCost, LogChanges=False)
-        print("Total Profit:" + str(TotalProfit))
         self.c.execute(
             sqlSelectStatement,
             (self.Profile, ProfitMargin))
         values = self.c.fetchall()
-        print("--------------")
-        print(values)
-        print("--------------")
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
-        print(values)
         self.c.executemany('''
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change,Date_Added) 
                     VALUES (?,?,?,?,?,?,?,?)  
@@ -527,23 +457,21 @@ class Investment:
         if LogChanges is True:
             Transaction_ID = generateTransactionID()
             self.__LogSellProfit(RecordsAffected, Values, Transaction_ID)
-            print("hmmm")
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,
                                           TradeCost=TotalCost)
         self.conn.close()
 
     def __LogSellProfit(self, RecordsAffected, Values, my_uuid):
+        """Log sell profit"""
         self.Log.insert(my_uuid, DB_Code.ISP)
         self.InvestmentLog.SellAllProfitStatement(my_uuid, RecordsAffected, self.Profile)
         self.InvestmentArchive.Archive(Values)
 
     # add user here
     def sellAll(self, LogChanges=True, Rate=None, Date=None, StartDate=None, EndDate=None):
+        """Sell all investment within given dates."""
         # only apply rate to what is going to be sold.
         if Rate is not None:
-            # if connected to a thread this might not work all the time.
-
-            # maybe use investment id to update specific records only.
             self.updateProfitLoss(Rate)
         self.__SetUpConnection()
         sql = "SELECT * FROM Investment WHERE User_ID = ?"
@@ -592,8 +520,6 @@ class Investment:
         Values = self.c.fetchall()
         self.c.execute(sqlCount, (self.Profile,))
         RecordsAffected = self.c.fetchone()[0]
-        # calculate total profit
-        # profitloss/100 * bought for
         self.c.execute(sqlProfitLoss,
                        (self.Profile,))
         TotalProfit = self.c.fetchone()[0]
@@ -606,14 +532,12 @@ class Investment:
         User = User.User()
         User.SelectProfile(self.Profile)
         User.addMoney(TotalProfit + TotalCost, LogChanges=False)
-        print("Total Profit:" + str(TotalProfit))
         self.c.execute(
             sqlSelectStatement,
             (self.Profile,))
         values = self.c.fetchall()
         for i in range(len(values)):
             values[i] = values[i] + (Date,)
-        print(values)
 
         self.c.executemany('''
                     INSERT INTO Statement(Investment_ID, User_ID , Gold, Purity, BoughtFor, ProfitLoss,Value_Change,Date_Added) 
@@ -624,84 +548,13 @@ class Investment:
         if LogChanges is True:
             Transaction_ID = generateTransactionID()
             self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
-            print("hmmm")
             self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, TotalProfit, Transaction_ID=Transaction_ID,
                                           TradeCost=TotalCost)
         self.conn.close()
 
-    # # add user here
-    # def sellAll(self, LogChanges=True, Date=None, Rate=None):
-    #     if Rate is not None:
-    #         self.updateProfitLoss(Rate)
-    #     self.__SetUpConnection()
-    #     if Date is None:
-    #         Date = datetime.now().date()
-    #     self.c.execute('''SELECT MIN(Date_Added) FROM Investment WHERE User_ID= ?''', (self.Profile,))
-    #     minimum_date = self.c.fetchone()[0]
-    #     print(minimum_date)
-    #     if minimum_date is not None and datetime.strptime(str(Date), '%Y-%m-%d').date() < datetime.strptime(
-    #             minimum_date, '%Y-%m-%d').date():
-    #         print("------------")
-    #         print("invalid")
-    #         print("------------")
-    #         return
-    #
-    #     #
-    #     #     Values = self.c.fetchall()
-    #     #     if  > datetime.now().date():
-    #     #         print("date is in future")
-    #     #         return
-    #
-    #     self.c.execute('''SELECT * FROM Investment WHERE User_ID= ?''', (self.Profile,))
-    #     Values = self.c.fetchall()
-    #     self.c.execute('''SELECT COUNT(*) FROM Investment WHERE User_ID= ?''', (self.Profile,))
-    #     RecordsAffected = self.c.fetchone()[0]
-    #
-    #     # calculate total profit
-    #     # profitloss/100 * bought for
-    #     self.c.execute('''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss>=0)''',
-    #                    (self.Profile,))
-    #     TotalPositiveProfit = self.c.fetchone()[0]
-    #     self.c.execute(
-    #         '''SELECT SUM((ProfitLoss/100)*BoughtFor) FROM Investment WHERE (User_ID=? AND ProfitLoss<0)''',
-    #         (self.Profile,))
-    #     TotalNegativeProfit = self.c.fetchone()[0]
-    #     print("-" + str(TotalNegativeProfit))
-    #     print("+" + str(TotalPositiveProfit))
-    #
-    #     self.c.execute('''SELECT SUM(BoughtFor) FROM Investment WHERE (User_ID=?)''',
-    #                    (self.Profile,))
-    #     TotalCost = self.c.fetchone()[0]
-    #     if TotalCost is None:
-    #         TotalCost = 0
-    #
-    #     print(TotalCost)
-    #
-    #     from Database import User
-    #     User = User.User()
-    #     User.SelectProfile(self.Profile)
-    #     if TotalPositiveProfit is None:
-    #         TotalPositiveProfit = 0
-    #     if TotalNegativeProfit is None:
-    #         TotalNegativeProfit = 0
-    #         print(TotalPositiveProfit + TotalNegativeProfit)
-    #     User.addMoney((TotalPositiveProfit + TotalNegativeProfit + TotalCost), LogChanges=False)
-    #
-    #     self.c.execute('''
-    #                 INSERT INTO Statement(Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss) SELECT Investment_ID,User_ID,Gold,Purity,BoughtFor,ProfitLoss FROM Investment WHERE User_ID= ?
-    #               ''', (self.Profile,))
-    #     self.c.execute('''
-    #                 DELETE FROM Investment WHERE User_ID=?
-    #               ''', (self.Profile,))
-    #     self.conn.commit()
-    #     self.conn.close()
-    #     if RecordsAffected > 0 and LogChanges is True:
-    #         Transaction_ID = generateTransactionID()
-    #         self.__LogSellAll(RecordsAffected, Values, Transaction_ID)
-    #         self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, (TotalPositiveProfit + TotalNegativeProfit),
-    #                                       Transaction_ID=Transaction_ID, TradeCost=TotalCost)
 
     def __LogSellAll(self, RecordsAffected, Values, id):
+        """Log sell all"""
         self.Log.insert(id, DB_Code.ISA)
         self.InvestmentLog.SellAllStatement(id, RecordsAffected, self.Profile)
         self.InvestmentArchive.Archive(Values)
@@ -724,9 +577,7 @@ class Investment:
             date = datetime.strptime(date, format_str)
             sum_of_values = self.c.fetchone()[0]
             dictionary[date] = sum_of_values
-        print(dictionary)
 
-        # close database connection
         self.conn.close()
         return dictionary
 
@@ -738,19 +589,18 @@ class Investment:
         DBFunctions.convertToExcel("Investment", SetUpFile.DBName)
 
     def sell(self, uniqueID, Rate=None, Date=None):
+        """Sell custom investments."""
         if len(uniqueID) == 0:
             return
         # instead of total sum, use profit
         self.TotalProfitLoss = 0
         self.TotalSum = 0
-        print(len(uniqueID))
         from Database import User
         User = User.User()
         for id in uniqueID:
             self.sellIndividual(id, Rate=Rate, Date=Date)
         Transaction_ID = generateTransactionID()
         self.LogForDelete(Transaction_ID, len(uniqueID), self.Profile)
-        # print(self.TotalSum)
         User.SelectProfile(self.Profile)
         self.MoneyLog.insertIntoTable(self.Profile, DB_Code.ProfitLoss, self.TotalProfitLoss,
                                       Transaction_ID=Transaction_ID,
@@ -758,10 +608,10 @@ class Investment:
         User.addMoney(self.TotalSum + self.TotalProfitLoss, LogChanges=False)
 
     def getInvestmentCount(self, StartDate=None, EndDate=None):
+        """Get the count of investment for given date."""
         self.__SetUpConnection()
         sql = "SELECT COUNT(User_ID) From Investment WHERE User_ID=?"
         if StartDate:
-            # idk why I have to do this.
             sql += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
@@ -773,6 +623,7 @@ class Investment:
         return value
 
     def sellIndividual(self, id, Rate=None, Date=None):
+        """Code for selling individual investment."""
         if Rate is not None:
             self.updateProfitLoss(Rate, Investment_ID=id)
         self.__SetUpConnection()
@@ -785,24 +636,21 @@ class Investment:
             ProfitLoss = self.c.fetchone()[0]
             self.TotalProfitLoss += ProfitLoss
             self.TotalSum += BoughtFor
-            print("---")
-            print("---")
             a = [Values]
             self.InvestmentArchive.Archive(a)
             sql = "DELETE FROM Investment WHERE Investment_ID =?"
             self.c.execute(sql, (id,))
             self.conn.commit()
             self.Statement.setProfile(Values[2])
-            print(Date)
             self.Statement.addIntoTable(Values[3], Values[4], Values[5], Values[6], Transaction_ID=Values[0],
                                         Date=Date.strftime("%Y-%m-%d"))
-            print(Date)
         except sqlite3.Error as error:
             print(error)
         finally:
             self.conn.close()
 
     def getSUM(self, ColumnName, StartDate=None, EndDate=None):
+        """Returns sum of given column name in the given date range."""
         self.__SetUpConnection()
         sql = "SELECT SUM({0}) FROM Investment WHERE User_ID =?".format(ColumnName)
         if StartDate:
@@ -818,6 +666,7 @@ class Investment:
         return Sum
 
     def getRateRequired(self, StartDate=None, EndDate=None):
+        """Return rate required not to make a loss."""
         try:
             Rate = (self.getSUM("BoughtFor", StartDate=StartDate, EndDate=EndDate) / self.getSUM("Gold",
                                                                                                  StartDate=StartDate,
@@ -827,6 +676,7 @@ class Investment:
         return Rate
 
     def getInvestmentDetail(self, InvestmentID):
+        """Get detail of single investment using investment ID."""
         self.__SetUpConnection()
         self.c.execute("SELECT Gold, BoughtFor FROM Investment WHERE Investment_ID =?", (InvestmentID,))
         Gold, BoughtFor = self.c.fetchone()
@@ -834,6 +684,7 @@ class Investment:
         return Gold, BoughtFor
 
     def getGoldAcquisitionCost(self):
+        """Return the acquisition cost"""
         self.__SetUpConnection()
         self.c.execute("SELECT SUM(BoughtFor) FROM Investment WHERE User_ID=?", (self.Profile,))
         value = self.c.fetchone()[0]
@@ -844,31 +695,28 @@ class Investment:
 
     # requires Rate in grams
     def getCurrentGoldValue(self, Rate):
+        """requires Rate in grams which is used to calculate total gold value."""
         totalgold = self.getSUM("Gold")
         return Rate * totalgold
 
     def saveState(self, FolderName):
+        """save the current state of the database for the user."""
         self.__SetUpConnection()
         sql = "SELECT * FROM Investment WHERE User_ID=?"
         param = (self.Profile,)
-        # Use pandas to read the data from the SQL database
         df = pd.read_sql(sql, self.conn, params=param)
         self.conn.close()
         df.to_excel(f"{FolderName}/Investment.xlsx", index=False)
 
     def loadState(self, FolderName):
+        """load the current state of the database for the user."""
         self.__SetUpConnection()
-        # Use pandas to read the data from the SQL database
-        print("load")
         df = pd.read_excel(f"{FolderName}/Investment.xlsx")
-        print("--------")
-        print(df)
-        print("--------")
-        print("load")
         df.to_sql(name='Investment', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
     def PDF(self):
+        """convert to pdf with the users setting for the given dates."""
         self.__SetUpConnection()
 
         # Execute the SQL statement and get the results as a pandas DataFrame
