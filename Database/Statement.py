@@ -5,13 +5,10 @@ import subprocess
 import uuid
 from datetime import datetime, timedelta
 import calendar
-
-import openpyxl
 import pandas as pd
 from fpdf import FPDF
 
-from Database import DBFunctions, SetUpFile
-import win32com.client as win32
+from Database import SetUpFile
 
 
 class Statement:
@@ -22,65 +19,45 @@ class Statement:
         self.Profile = None
 
     def setProfile(self, user):
+        """ Select user profile. """
         self.Profile = user
 
     def createExcelTemplate(self):
+        """ Create an excel template for the statement. """
         try:
             column_names = ['Date_Added', 'Gold', 'BoughtFor', 'ProfitLoss']
-
-            # Create an empty DataFrame with the column names
             df = pd.DataFrame(columns=column_names)
-
-            # Save the DataFrame to an Excel file
             df.to_excel('Statement.xlsx', index=False)
         except:
             None
 
     def isFileFormatCorrect(self, FilePath):
+        """ Checks if file format is correct for statement, if it is, then return True. """
         column_names = ['Date_Added', 'Gold', 'BoughtFor', 'ProfitLoss']
-        # source = 'UserTemplate.xlsx'
         target = FilePath
-        # shutil.copyfile(source,target)
-        # os.system(target)
-
         sheet_name = 'Sheet1'
-
         path = target
-
-        # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
-
         columnnames = df.columns
+
         for col in columnnames:
             if not col in column_names:
                 return False
         return True
 
     def deleteUser(self):
+        """ Delete the user's statement. """
         self.__SetUpConnection()
         self.c.execute("DELETE FROM Statement WHERE User_ID=?", (self.Profile,))
         self.conn.commit()
         self.conn.close()
 
-    # can't handle empty lines at the moment
     def ImportFromExcel(self, FilePath):
-        # source = 'UserTemplate.xlsx'
+        """ Import data from excel file."""
         target = FilePath
-        # shutil.copyfile(source,target)
-        # os.system(target)
-
         sheet_name = 'Sheet1'
-
         path = target
-
-        # Read the Excel file into a DataFrame
         df = pd.read_excel(path, sheet_name=sheet_name)
-
-        # check if user id exists already then only add. use purity boughtfor gold to be sure its real number.
-        # date_added to be a date.
-
-        # Define the SQL query to insert the data into the table
-        table_name = "Statement"
 
         # Loop through the rows in the DataFrame and insert them into the table
         for _, row in df.iterrows():
@@ -92,21 +69,15 @@ class Statement:
                     values[3])):
                 continue
 
-            # self, InvestmentId, Date_added, UserID, Gold, Purity, BoughtFor
-
             # checks if time is none or date is empty.
             if isinstance(values[0], datetime) and values[0] is pd.NaT or self.isEmpty(values[0]):
                 self.addIntoTable(values[1], 0.0, values[2], values[3])
             else:
                 if isinstance(values[0], datetime):
-                    # if date is in the future then don't add it.
-                    # if datetime.strptime(values[0].strftime("%Y-%m-%d"), '%Y-%m-%d').date() > datetime.now().date():
-                    #     print("future")
-                    #     continue
-                    # convert date to Y-m-d format
                     self.addIntoTable(values[1], 0.0, values[2], values[3], Date=values[0].strftime("%Y-%m-%d"))
 
     def isEmpty(self, value):
+        """ checks if data from Excel file is empty."""
         # value is a number and it is not none.
         if isinstance(value, (float, int)) and (math.isnan(value)):
             return True
@@ -114,7 +85,7 @@ class Statement:
             return False
 
     def CorrectNumberFormat(self, value):
-        # value is a number and it is not none.
+        """ checks if data from Excel file is a number."""
         if isinstance(value, (float, int)) and not (math.isnan(value)):
             return True
         else:
@@ -143,7 +114,6 @@ class Statement:
             Date = datetime.now().date()
         else:
             if datetime.strptime(Date, '%Y-%m-%d').date() > datetime.now().date():
-                print("date is in future")
                 return
         Error = True
         # loop until there is no error.
@@ -165,8 +135,8 @@ class Statement:
         self.conn.close()
 
     def deleteTable(self):
+        """ Delete everything from the statement table."""
         self.__SetUpConnection()
-        # Disable foreign key constraints
         self.c.execute("PRAGMA foreign_keys = OFF")
         try:
             self.c.execute("DELETE FROM Statement")
@@ -194,16 +164,16 @@ class Statement:
         finally:
             self.conn.close()
 
-    def showStatement(self):
-        self.__SetUpConnection()
-        self.c.execute('''
-                    SELECT * FROM Statement WHERE User_ID = ?
-                  ''', (self.Profile,))
-        self.conn.commit()
-        df = pd.DataFrame(self.c.fetchall(),
-                          columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
-        print(df)
-        self.conn.close()
+    # def showStatement(self):
+    #     self.__SetUpConnection()
+    #     self.c.execute('''
+    #                 SELECT * FROM Statement WHERE User_ID = ?
+    #               ''', (self.Profile,))
+    #     self.conn.commit()
+    #     df = pd.DataFrame(self.c.fetchall(),
+    #                       columns=['Investment_ID', 'User_ID', 'Gold', 'Purity', 'BoughtFor', 'ProfitLoss'])
+    #     print(df)
+    #     self.conn.close()
 
     def getData(self, User_ID, *Investment_ID):
         """Takes in user id to show statement and it can also take investment id to get record for the investment id"""
@@ -236,6 +206,7 @@ class Statement:
         return Data
 
     def convertToExcel(self, Currency, DecimalPoint, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
+        """Export statement as excel file."""
         self.__SetUpConnection()
         # Define the parameters for the query
         params = (self.Profile,)
@@ -249,9 +220,7 @@ class Statement:
         df = pd.read_sql(sql, con=self.conn, params=params)
         df.columns = ["Date", "Gold (g)", f"Bought for({Currency})", "Profit/Loss (%)",
                       f"Value change ({Currency})"]
-        # Define lambda function to round only numerical values to 2 decimal places
         round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
-        # Apply lambda function to DataFrame using applymap()
         df = df.applymap(round_num)
 
         df.to_excel(FilePath, index=False)
@@ -259,6 +228,7 @@ class Statement:
         subprocess.Popen(['start', 'excel.exe', FilePath], shell=True)
 
     def addtoTable(self, Values):
+        """Insert values to the statement."""
         print(Values)
         self.__SetUpConnection()
         self.c.executemany('''
@@ -271,6 +241,7 @@ class Statement:
         self.conn.close()
 
     def getTable(self, StartDate=None, EndDate=None):
+        """Returns a dataframe of the statement table."""
         self.__SetUpConnection()
         try:
             sql = "SELECT * FROM Statement WHERE User_ID = ?"
@@ -289,10 +260,10 @@ class Statement:
             return df
 
     def getInvestmentCount(self, StartDate=None, EndDate=None):
+        """Returns the investment count of the user in the given dates if any."""
         self.__SetUpConnection()
         sql = "SELECT COUNT(User_ID) From Statement WHERE User_ID=?"
         if StartDate:
-            # idk why I have to do this.
             sql += f" AND Date_Added >= '{StartDate}'"
 
         if EndDate:
@@ -304,6 +275,7 @@ class Statement:
         return value
 
     def getMinMaxDates(self):
+        """Returns the minimum and maximum date the user has records of the statement."""
         self.__SetUpConnection()
         self.c.execute("SELECT MIN(Date_Added),Max(Date_Added) FROM Statement")
         results = self.c.fetchone()
@@ -311,6 +283,7 @@ class Statement:
         return results
 
     def Overall(self, Column, StartDate=None, EndDate=None):
+        """Get dataframe for different modes."""
         if StartDate is None and EndDate is None:
             StartDate, EndDate = self.getMinMaxDates()
             if StartDate is None and EndDate is None:
@@ -323,35 +296,33 @@ class Statement:
         if delta >= timedelta(days=366):
             return self.Yearly(Column, Start=StartDate, End=EndDate)
             # generate yearly
-            print("years")
         elif delta <= timedelta(days=31):
             return self.Daily(Column, Start=StartDate, End=EndDate)
             # generate single
-            print("single")
         else:
             return self.Monthly(Column, Start=StartDate, End=EndDate)
             # generate monthly
-            print("months")
         self.conn.close()
 
     def generate_monthly_dict(self, start_date, end_date):
+        """generates a dictionary between the dates timestep is 1 month."""
         result = {}
         current_date = start_date.replace(day=1)
         while current_date <= end_date:
             result[current_date.strftime('%Y-%m')] = 0
             current_date += timedelta(days=32)
             current_date = current_date.replace(day=1)
-        print(result)
         return result
 
     def generate_yearly_dict(self, start_date, end_date):
+        """generates a dictionary between the dates timestep is 1 year."""
         result = {}
         for year in range(start_date.year, end_date.year + 1):
             result[year] = 0
-        print(result)
         return result
 
     def generate_daily_dict(self, start_date, end_date):
+        """generates a dictionary between the dates timestep is 1 day."""
         result = {}
         date = start_date
         while date <= end_date:
@@ -360,6 +331,7 @@ class Statement:
         return result
 
     def getPositiveTradeSum(self, StartDate=None, EndDate=None):
+        """get sum of the positive trades in the statement between the given dates if any."""
         self.__SetUpConnection()
         sql = "SELECT SUM(Value_Change) FROM Statement WHERE ProfitLoss>0 AND User_ID=?"
         if StartDate:
@@ -374,6 +346,7 @@ class Statement:
         return value
 
     def getNegativeTradeSum(self, StartDate=None, EndDate=None):
+        """get sum of the negative trades in the statement between the given dates if any."""
         self.__SetUpConnection()
         sql = "SELECT SUM(Value_Change) FROM Statement WHERE ProfitLoss<0 AND User_ID=?"
         if StartDate:
@@ -389,6 +362,7 @@ class Statement:
         return value
 
     def getProfitLossData(self, year, month):
+        """ returns profit loss date in a form that can be used in matplotlib."""
         days_in_month = calendar.monthrange(year, month)[1]
         StartDate = datetime(year, month, 1).date()
         EndDate = datetime(year, month, days_in_month).date()
@@ -398,12 +372,12 @@ class Statement:
         return data
 
     def Yearly(self, ColumnName, Start=None, End=None):
+        """Return selection in yearly mode within given dates."""
         self.__SetUpConnection()
         sql = (
             "SELECT strftime('%Y', Date_Added) AS year, SUM({0}) AS total_value FROM Statement WHERE User_ID=?").format(
             ColumnName)
         if Start:
-            # idk why I have to do this.
             sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
 
         if End:
@@ -414,8 +388,6 @@ class Statement:
         if Start and End:
             yearlydict = self.generate_yearly_dict(Start, End)
 
-        print(sql)
-
         self.c.execute(sql, (self.Profile,))
 
         total = 0
@@ -424,22 +396,16 @@ class Statement:
             total = total + sum
             print(type(year))
             yearlydict[datetime.strptime(year, '%Y').year] = total
-
-        print("----")
-        print(yearlydict)
-        print("----")
-
         self.conn.close()
         return yearlydict
 
     def Monthly(self, ColumnName, Start=None, End=None):
+        """Return selection in monthly mode within given dates."""
         self.__SetUpConnection()
-        # might need to include trade cost too
         sql = (
             "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0}) AS total_value FROM Statement WHERE User_ID=?").format(
             ColumnName)
         if Start:
-            # idk why I have to do this.
             sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
 
         if End:
@@ -447,36 +413,26 @@ class Statement:
 
         sql += f"GROUP BY month"
 
-        print(sql)
-
         if Start and End:
             monthlydict = self.generate_monthly_dict(Start, End)
-
-        print(sql)
 
         self.c.execute(sql, (self.Profile,))
         total = 0
         for rows in self.c.fetchall():
-            print("hmm")
-            print(rows)
             month, sum = rows
             total = total + sum
             monthlydict[month] = total
-
-        print("----")
-        print(monthlydict)
-        print("----")
 
         self.conn.close()
         return monthlydict
 
     def Daily(self, ColumnName, Start=None, End=None):
+        """Return selection in daily mode within given dates."""
         sql = "SELECT SUM({0}) FROM Statement WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
 
         sql1 = "SELECT DISTINCT Date_Added FROM Statement WHERE User_ID = ?"
 
         if Start:
-            # idk why I have to do this.
             StartDate = Start - timedelta(days=1)
             sql1 += f" AND Date_Added >= '{StartDate}'"
 
@@ -485,7 +441,6 @@ class Statement:
 
         sql1 += f" ORDER BY Date_Added ASC"
 
-        # execute SQL query to get all dates
         self.c.execute(sql1, (self.Profile,))
 
         dictionary = self.generate_daily_dict(Start, End)
@@ -498,27 +453,17 @@ class Statement:
         # loop through dates and print the sum of values for each date
         sum = 0
         for date in dates:
-            # format_str = '%Y-%m-%d'
-            # date = datetime.strptime(date, format_str)
             self.c.execute(sql, (date, self.Profile))
             sum_of_values = self.c.fetchone()[0]
             if sum_of_values is None:
                 sum_of_values = 0
             sum += sum_of_values
             dictionary[date] = sum
-            # if Mode is None:
-            # dictionary[date] = sum_of_values
-            # else:
-            #     dictionary[date] = sum
-
-        # close database connection
         self.conn.close()
-        print("----")
-        print(dictionary)
-        print("----")
         return dictionary
 
     def getSUM(self, ColumnName, StartDate=None, EndDate=None):
+        """Return sum of the column within given dates."""
         self.__SetUpConnection()
         sql = "SELECT SUM({0}) FROM Statement WHERE User_ID =?".format(ColumnName)
         if StartDate:
@@ -534,6 +479,7 @@ class Statement:
         return Sum
 
     def formatToWeek(self, number):
+        """format week for statistic graph."""
         ranges = []
         start = 1
         end = 7
@@ -545,6 +491,7 @@ class Statement:
         return ranges
 
     def getDatesInWeekFormatForMonthValueChange(self, year, month):
+        """get data for the weeks positive and negative trade."""
         positive = {}
         negative = {}
         days_in_month = calendar.monthrange(year, month)[1]
@@ -558,6 +505,7 @@ class Statement:
         return positive, negative
 
     def getDatesInWeekFormatForMonth(self, Column, year, month):
+        """get data for the months positive and negative trade."""
         dict1 = {}
         days_in_month = calendar.monthrange(year, month)[1]
         print(self.formatToWeek(days_in_month))
@@ -568,24 +516,10 @@ class Statement:
 
         return dict1
 
-    def getSum(self, Column, StartDate=None, EndDate=None):
-        sql = "SELECT SUM({0}) FROM Statement WHERE User_ID=?".format(Column)
-        if StartDate:
-            sql += f" AND Date_Added >= '{StartDate}'"
-        if EndDate:
-            sql += f" AND Date_Added <= '{EndDate}'"
-
-        self.__SetUpConnection()
-        self.c.execute(sql, (self.Profile,))
-        sum = self.c.fetchone()[0]
-        if sum is None:
-            sum = 0
-        self.conn.close()
-        return sum
-
     def getAvgProfitLoss(self, StartDate=None, EndDate=None):
-        Sum = self.getSum("Value_Change", StartDate=StartDate, EndDate=EndDate)
-        Gold = self.getSum("Gold", StartDate=StartDate, EndDate=EndDate)
+        """Returns average profit loss."""
+        Sum = self.getSUM("Value_Change", StartDate=StartDate, EndDate=EndDate)
+        Gold = self.getSUM("Gold", StartDate=StartDate, EndDate=EndDate)
         if Sum == 0:
             return 0
         if Gold == 0:
@@ -593,22 +527,23 @@ class Statement:
         return Sum / Gold
 
     def saveState(self, FolderName):
+        """save the current state of the database for the user."""
         self.__SetUpConnection()
         sql = "SELECT * FROM Statement WHERE User_ID=?"
         param = (self.Profile,)
-        # Use pandas to read the data from the SQL database
         df = pd.read_sql(sql, self.conn, params=param)
         self.conn.close()
         df.to_excel(f"{FolderName}/Statement.xlsx", index=False)
 
     def loadState(self, FolderName):
+        """load the current state of the database for the user."""
         self.__SetUpConnection()
-        # Use pandas to read the data from the SQL database
         df = pd.read_excel(f"{FolderName}/Statement.xlsx")
         df.to_sql(name='Statement', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
     def PDF(self, FilePath, Currency, DecimalPoint, StartDate=None, EndDate=None):
+        """convert to pdf with the users setting for the given dates."""
         self.__SetUpConnection()
         # Define the parameters for the query
         params = (self.Profile,)
