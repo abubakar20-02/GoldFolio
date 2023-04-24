@@ -116,7 +116,6 @@ class InvestmentArchive:
 
     def __createTable(self):
         self.__SetUpConnection()
-        print("should work")
         self.c.execute('''
               CREATE TABLE IF NOT EXISTS ArchiveInvestment                                                         
               ([Investment_ID] VARCHAR ,[Date_added] DATE,[User_ID] VARCHAR, [Gold] Real , [Purity] Real, [BoughtFor] REAL,[ProfitLoss] Real,[Value_Change] Real,[deleted_at] TIMESTAMP DEFAULT CURRENT_TIMESTAMP)

@@ -119,19 +119,20 @@ class Ui_Form(QObject):
 
 
     def setProfile(self,Profile):
+        """Select profile."""
         self.Profile= Profile
 
     def generateTemplate(self):
+        """Generate appropriate template."""
         if self.GenerateTemplateFor.currentIndex() == 0:
             Investment.Investment().createExcelTemplate()
             os.startfile("Investment.xlsx")
-            print("investment")
         else:
             Statement.Statement().createExcelTemplate()
             os.startfile("Statement.xlsx")
-            print("statement")
 
     def ImportInvestment1(self):
+        """Import investment"""
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         filename = QFileDialog.getOpenFileName(None, 'Investment',
@@ -143,6 +144,7 @@ class Ui_Form(QObject):
             self.InvestmentPath.setText("")
 
     def ImportStatement1(self):
+        """Import statement"""
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         filename = QFileDialog.getOpenFileName(None, 'Statement',
@@ -154,6 +156,7 @@ class Ui_Form(QObject):
             self.StatementPath.setText("")
 
     def Import(self):
+        """Import one, or both files."""
         if not self.InvestmentPath.text() == "":
             self.Investment.setProfile(self.Profile)
             self.Action.setText("")

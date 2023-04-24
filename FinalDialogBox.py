@@ -57,6 +57,7 @@ class Ui_Form(QObject):
         self.CancelButton.setText(_translate("Form", "Cancel"))
 
     def setText(self, Text):
+        """Set text to the dialog box."""
         self.Text.setText(Text)
 
 class MyWindow(QtWidgets.QWidget, Ui_Form):

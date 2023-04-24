@@ -53,9 +53,6 @@ class Gold:
         self.ask = FormatRates(self.ask)
 
         self.percentageChhange = str(soup.find("span", id="sp-chg-percent").text)
-        print(f"ask {self.ask}")
-        print(f"bid {self.bid}")
-        print(f"percentage change {self.percentageChhange}")
 
     # add get bid and get ask in a thread.
     def getBid(self):
@@ -96,7 +93,6 @@ class Gold:
         self.Rate = 0
         base_currency = 'USD'
         target_currency = self.code
-        print(target_currency)
 
         response = requests.get(
             f'https://www.x-rates.com/calculator/?from={base_currency}&to={target_currency}&amount=1')
@@ -109,7 +105,6 @@ class Gold:
         if rate_element:
             rate = float(rate_element.string)
             self.Rate = rate
-            print(f"rate: {self.Rate}")
         else:
             return "Error: Couldn't find the exchange rate."
 
@@ -205,7 +200,6 @@ class Gold:
         if RateInOunce is None:
             return
         RateInGram = RateInOunce / TroyOunce
-        print(RateInGram)
         return self.convertRate(RateInGram)
 
     def convertWeight(self, WeightInGram):
@@ -226,7 +220,6 @@ class Gold:
         return self.Currency
 
     def getPercentageChange(self):
-        print(f"here1 {self.percentageChhange}")
         return self.percentageChhange
 
 

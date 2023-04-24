@@ -207,13 +207,11 @@ def Load(FolderName):
 
     file = [f for f in os.listdir(FolderName) if
             fnmatch.fnmatch(f, "*.db") and os.path.isfile(os.path.join(FolderName, f))]
-    print(file[0])
 
     conn = sqlite3.connect(f"{FolderName}/{file[0]}")
 
     # Create a file object to store the snapshot
     FilePath = f"{SetUpFile.DBName}"
-    print(FilePath)
     snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
@@ -255,9 +253,7 @@ def convertToExcel(tableName, Database, RemoveFirstColumn=True):
     worksheet = workbook.add_worksheet()
     # Write column names to the worksheet
     col = __getColumnName(tableName, Database, RemoveFirstColumn=RemoveFirstColumn)
-    print(col)
     data = __getData(tableName, Database, RemoveFirstColumn=RemoveFirstColumn)
-    print(data)
     for col_num, column_name in enumerate(col):
         worksheet.write(0, col_num, column_name)
 
@@ -317,7 +313,6 @@ def previousStage(UserID, num=None):
     """go to multiple previous stages."""
     from Database import Log
     Log = Log.Log()
-    print(f"UserID: {UserID}")
     Log.SelectProfile(UserID)
     if num is not None:
         for i in range(0, num):

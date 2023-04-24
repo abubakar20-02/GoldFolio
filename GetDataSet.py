@@ -12,19 +12,13 @@ import matplotlib.pyplot as plt
 def getDataSet(start_date, end_date):
     gold_data = yf.download("GC=F", start=start_date, end=end_date, interval="1d")
     gold_data = gold_data[['Open', 'Close']]
-    print(type(gold_data))
     mapping = {gold_data.columns[0]: 'Gold Open', gold_data.columns[1]: 'Gold Close'}
     gold_data = gold_data.rename(columns=mapping)
-    print(gold_data.columns)
 
     silver_data = yf.download("SIL=F", start=start_date, end=end_date, interval="1d")
     silver_data = silver_data[['Open']]
-    print("--------")
-    print(silver_data)
-    print("--------")
     mapping = {silver_data.columns[0]: 'Silver Future Open'}
     silver_data = silver_data.rename(columns=mapping)
-    print(silver_data.columns)
 
     # platinum_data = yf.download("PL=F", start=start_date, end=end_date, interval="1d")
     # platinum_data = platinum_data[['Open']]
@@ -40,7 +34,6 @@ def getDataSet(start_date, end_date):
 
     USBond10_data = yf.download("^TNX", start=start_date, end=end_date, interval="1d")
     USBond10_data = USBond10_data[['Open']]
-    print(type(USBond10_data))
     mapping = {USBond10_data.columns[0]: 'US Bond 10 Y'}
     USBond10_data = USBond10_data.rename(columns=mapping)
 
@@ -56,19 +49,16 @@ def getDataSet(start_date, end_date):
     Usd_Index_data = Usd_Index_data[['Open']]
     mapping = {Usd_Index_data.columns[0]: 'USD Index Starting'}
     Usd_Index_data = Usd_Index_data.rename(columns=mapping)
-    print(Usd_Index_data)
 
     # download the S&P 500 index data
     Oil_data = yf.download("CL=F", start=start_date, end=end_date, interval="1d")
     Oil_data = Oil_data[['Open']]
     mapping = {Oil_data.columns[0]: 'Oil open'}
     Oil_data = Oil_data.rename(columns=mapping)
-    print(Usd_Index_data)
 
     # download the S&P 500 index data
     USDToEuro_data = yf.download("USDEUR=X", start=start_date, end=end_date, interval="1d")
     USDToEuro_data = USDToEuro_data[['Open']]
-    print(USDToEuro_data)
     # USDToEuro_data = USDToEuro_data[['Open']]
     mapping = {USDToEuro_data.columns[0]: 'USD To Euro'}
     USDToEuro_data = USDToEuro_data.rename(columns=mapping)
@@ -77,7 +67,6 @@ def getDataSet(start_date, end_date):
     # download the S&P 500 index data
     USDToINR_data = yf.download("USDINR=X", start=start_date, end=end_date, interval="1d")
     USDToINR_data = USDToINR_data[['Open']]
-    print(USDToINR_data)
     # USDToEuro_data = USDToEuro_data[['Open']]
     mapping = {USDToINR_data.columns[0]: 'USD To INR'}
     USDToINR_data = USDToINR_data.rename(columns=mapping)
@@ -85,7 +74,6 @@ def getDataSet(start_date, end_date):
     # download the S&P 500 index data
     USDToCNY_data = yf.download("USDCNY=X", start=start_date, end=end_date, interval="1d")
     USDToCNY_data = USDToCNY_data[['Open']]
-    print(USDToCNY_data)
     # USDToEuro_data = USDToEuro_data[['Open']]
     mapping = {USDToCNY_data.columns[0]: 'USD To CNY'}
     USDToCNY_data = USDToCNY_data.rename(columns=mapping)
@@ -93,7 +81,6 @@ def getDataSet(start_date, end_date):
     # download the S&P 500 index data
     USDToJPY_data = yf.download("USDJPY=X", start=start_date, end=end_date, interval="1d")
     USDToJPY_data = USDToJPY_data[['Open']]
-    print(USDToJPY_data)
     # USDToEuro_data = USDToEuro_data[['Open']]
     mapping = {USDToJPY_data.columns[0]: 'USD To JPY'}
     USDToJPY_data = USDToJPY_data.rename(columns=mapping)

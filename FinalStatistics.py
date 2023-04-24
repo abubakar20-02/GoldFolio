@@ -292,6 +292,7 @@ class Ui_Form(QObject):
         self.AverageProfitLossChange.setText(_translate("Form", "TextLabel"))
 
     def updateDateEdit(self):
+        """update mode year/month"""
         if self.comboBox.currentIndex() == 0:
             self.Date.setDisplayFormat("MM-yyyy")
         elif self.comboBox.currentIndex() == 1:
@@ -300,14 +301,13 @@ class Ui_Form(QObject):
         self.updateGraph()
 
     def updateGraph(self):
+        """update the graph."""
         self.BarGraph()
         self.canvas.draw()
         self.setupDates()
 
-        # for year set start start date to year-1-1 end date= year-12-31
-
     def setupDates(self):
-        # go back 1 month instead of using date
+        """Set up dates"""
         if self.comboBox.currentIndex() == 1:
             self.start_date = datetime(self.Date.date().year(), 1, 1).date()
             self.end_date = datetime(self.Date.date().year(), 12, 31).date()
@@ -324,6 +324,7 @@ class Ui_Form(QObject):
         self.updateVariables()
 
     def SetupPage(self):
+        """Set up page"""
         with open("my_variable.pickle", "rb") as f:
             UserID = pickle.load(f)
         self.User = User.User()
@@ -351,16 +352,16 @@ class Ui_Form(QObject):
         self.start_date1 = datetime(one_month_ago.year, one_month_ago.month, 1).date()
         self.end_date1 = datetime(one_month_ago.year, one_month_ago.month, days_in_month).date()
 
-        # increase = ((current value - previous value) / previous value) * 100
-
         self.updateVariables()
 
         self.BarGraph()
 
     def loadSettings(self):
+        """load user settings."""
         _, self.DecimalPoints, _, self.GoldUnit, self.Currency = self.User.GetSettings()
 
     def updateVariables(self):
+        """update statistical variables."""
         self.MoneyIn.setText(
             self.Currency + " " + str(round(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
         self.MoneyOut.setText(self.Currency + " " + str(round(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
@@ -426,12 +427,14 @@ class Ui_Form(QObject):
             self.AverageProfitLossChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
     def formatPercentageChange(self, Percentage, dp):
+        """format percentage change."""
         sign = ""
         if Percentage > 0:
             sign = "+"
         return f"{sign}{round(Percentage, dp)} %"
 
     def applyColorChange(self, PercentageIncrease, a):
+        """apply color changes."""
         if PercentageIncrease > 0:
             a.setStyleSheet(SetupFile.PositiveChange)
         elif PercentageIncrease < 0:
@@ -440,9 +443,11 @@ class Ui_Form(QObject):
             a.setStyleSheet(SetupFile.Label)
 
     def getPercentageIncrease(self, CurrentValue, PrevValue):
+        """get percentage increase"""
         return ((CurrentValue - PrevValue) / abs(PrevValue)) * 100
 
     def BarGraph(self):
+        """plot bar graph."""
         self.canvas.axes.clear()
         self.Statement.getProfitLossData(self.Date.date().year(), self.Date.date().month())
         if self.comboBox.currentIndex() == 0:

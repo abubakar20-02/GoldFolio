@@ -100,12 +100,14 @@ class Ui_Form(object):
         self.LoadDatabaseStateButton.setText(_translate("Form", "Load database state"))
 
     def saveDatabase(self):
+        """save database state."""
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
         if not path == "":
             DBFunctions.saveSnapshot(path)
 
     def loadDatabase(self):
+        """load database state"""
         filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
         path = filename
         if not path == "":
@@ -114,6 +116,7 @@ class Ui_Form(object):
             self.loadDataFromTable()
 
     def Search(self):
+        """search for user id in the table."""
         if self.UserID.text() == "":
             self.loadDataFromTable()
             return
@@ -121,6 +124,7 @@ class Ui_Form(object):
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def loadDataFromTable(self):
+        """display data in qtablewidget."""
         self.User = User.User()
         table = self.User.getTable()
         self.load_dataframe_to_table(table, self.tableWidget)
@@ -138,11 +142,11 @@ class Ui_Form(object):
         for row in range(len(dataframe)):
             for column in range(len(dataframe.columns)):
                 item = QtWidgets.QTableWidgetItem()
-                print(dataframe.iloc[row, column])
                 item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 table_widget.setItem(row, column, item)
 
     def deleteAccount(self):
+        """delete account from the system."""
         if self.get_selected_row() is None:
             return
         if os.path.exists("my_variable.pickle"):  # Check if file exists
@@ -152,14 +156,16 @@ class Ui_Form(object):
         self.loadDataFromTable()
 
     def get_selected_row(self):
+        """get index of  the current selected row."""
         row = self.tableWidget.currentRow()
         if row == -1:
-            print("No row is selected.")
+            None
         else:
             item = self.tableWidget.item(row, 0).text()
             return item
 
     def changePassScreen(self, UserID):
+        """open the change password screen."""
         self.window = QtWidgets.QWidget()
         self.window = FinalChangePassword.MyWindow()
         self.window.setupPage(UserID)

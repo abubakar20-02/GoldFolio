@@ -158,6 +158,7 @@ class Ui_Form(object):
         self.CreateButton.setText(_translate("Form", "Create"))
 
     def checkbutton(self):
+        """checks if password is checked and if so show password"""
         if self.showPassword.isChecked():
             self.Password.setEchoMode(QLineEdit.Normal)
             self.ReEnterPassword.setEchoMode(QLineEdit.Normal)
@@ -166,6 +167,7 @@ class Ui_Form(object):
             self.ReEnterPassword.setEchoMode(QLineEdit.Password)
 
     def getCurrency(self):
+        """get the currency the user has selected."""
         if self.currency.currentIndex() == 0:
             return "$"
         if self.currency.currentIndex() == 1:
@@ -175,6 +177,7 @@ class Ui_Form(object):
 
 
     def openMainPage(self):
+        """launch the main page."""
         self.window = QtWidgets.QMainWindow()
         self.window = FinalMainPage.MyWindow()
         self.window.show()
@@ -197,6 +200,7 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.CreateButton.setStyleSheet(SetupFile.Button)
 
     def AddUser(self):
+        """Add user to the database"""
         if self.FirstName.text() == "" or self.LastName.text() == "":
             self.Error.setText("User credentials are incorrect")
             self.Error.setHidden(False)
@@ -218,6 +222,7 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.openLogInScreen()
 
     def openLogInScreen(self):
+        """open log in screen"""
         self.window = QtWidgets.QWidget()
         self.window = FinalLogInPage.MyWindow()
         self.window.show()

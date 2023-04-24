@@ -427,10 +427,10 @@ class Ui_MainWindow(object):
         self.actionSave.setText(_translate("MainWindow", "Save"))
 
     def on_item_double_clicked(self, item):
+        """Open update window"""
         # Your custom code to run on double-click
         row = item.row()
         record = [self.tableWidget.item(row, col).text() for col in range(self.tableWidget.columnCount())]
-        print(f"Double-clicked: {record}")
         self.window = QtWidgets.QWidget()
         self.window = FinalUpdateInvestment.MyWindow()
         self.window.setUpPage(record[0], self.UserID)
@@ -438,6 +438,7 @@ class Ui_MainWindow(object):
         self.window.show()
 
     def openManageAccountScreen(self):
+        """Open manage account window"""
         self.window = QtWidgets.QWidget()
         self.window = FinalManageAccount.MyWindow()
         self.window.show()
@@ -445,25 +446,28 @@ class Ui_MainWindow(object):
         self.window.DeleteAccountButton.clicked.connect(lambda: self.openDeleteAccountScreen())
 
     def openDeleteAccountScreen(self):
+        """Open delete account window"""
         self.window = QtWidgets.QWidget()
         self.window = FinalDeletePage.MyWindow()
         self.window.setProfile(self.UserID)
-        # self.window.setProfile(self.UserID)
         self.window.deleteButton.clicked.connect(lambda: self.__deleteAccount(self.window))
         self.window.show()
 
     def openGoldPortfolio(self):
+        """Open gold portfolio window"""
         self.window = QtWidgets.QWidget()
         self.window = FinalGoldPortfolio.MyWindow()
         self.window.setCurrentGoldRate(Rate=self.Gold.getBidinGrams())
         self.window.show()
 
     def __deleteAccount(self, window):
+        """delete account if password is correct."""
         if window.passwordCorrect():
             self.__logOut()
             self.UserProfile.deleteUser()
 
     def openImportData(self):
+        """Open import data page """
         self.window = QtWidgets.QWidget()
         self.window = FinalImport.MyWindow()
         self.window.setProfile(self.UserID)
@@ -472,21 +476,16 @@ class Ui_MainWindow(object):
         self.window.ImportButton.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
 
     def Save(self):
-        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        """open file explorer to save database state"""
+        filename = str(QFileDialog.getExistingDirectory(None, "Save state"))
         path = filename
         if not path == "":
             DBFunctions.save(path, self.UserID)
-            # DBFunctions.saveSnapshot(path)
 
     def Load(self):
-        filename = str(QFileDialog.getExistingDirectory(None, "Import images", 'Raw Data'))
+        """open file explorer to load database state"""
+        filename = str(QFileDialog.getExistingDirectory(None, "Load state"))
         path = filename
-        # if not DBFunctions.IsFileCorrect(path):
-        #     self.window = QtWidgets.QWidget()
-        #     self.window = FinalDialogBox.MyWindow()
-        #     self.window.setText("The file format is wrong")
-        #     self.window.show()
-        #     return
         if not path == "":
             self.window = QtWidgets.QWidget()
             self.window = FinalDialogBox.MyWindow()
@@ -511,6 +510,7 @@ class Ui_MainWindow(object):
         # self.__logOut()
 
     def openLoadLogIn(self, path):
+        """open load login page"""
         self.window = QtWidgets.QWidget()
         self.window = FinalLoadLogIn.MyWindow()
         profile = DBFunctions.getUserIDForLoadedFile(path)
@@ -520,7 +520,7 @@ class Ui_MainWindow(object):
         self.window.show()
 
     def __a(self, window, path, profile):
-        # log out and log in other profile
+        """log out and log in other profile"""
         if window.passwordCorrect():
             DBFunctions.load(path, profile)
             self.__logOut()
@@ -528,31 +528,33 @@ class Ui_MainWindow(object):
                 pickle.dump(profile, f)
             self.reopenWindow()
 
-            # update pickle file to contain user id
-
     def reopenWindow(self):
+        """restart main page."""
         self.window = QtWidgets.QMainWindow()
         self.window = MyWindow()
         self.window.show()
 
     def __logOut(self):
+        """log out user"""
         self.close()
         os.remove("my_variable.pickle")
         self.openLogInScreen()
 
     def openStatistics(self):
+        """open statistic page"""
         self.window = QtWidgets.QWidget()
         self.window = FinalStatistics.MyWindow()
         self.window.showMaximized()
-        # self.window.setCurrentGoldRate(self.Gold.getBidinGrams())
         self.window.show()
 
     def openLogInScreen(self):
+        """open log in screen"""
         self.window = QtWidgets.QWidget()
         self.window = FinalLogInPage.MyWindow()
         self.window.show()
 
     def openGoldCalculator(self):
+        """open gold calculator screen"""
         self.window = QtWidgets.QWidget()
         self.window = FinalGoldCalculator.MyWindow()
         self.window.show()
@@ -561,6 +563,7 @@ class Ui_MainWindow(object):
             lambda: self.window.getRate(self.Gold.getAskinGrams()))
 
     def SaveChanges(self):
+        """save changes, cant undo anymore if done"""
         self.window = QtWidgets.QWidget()
         self.window = FinalDialogBox.MyWindow()
         self.window.setText("Are you sure you want to save changes? Once done, it cannot be undone.")
@@ -568,6 +571,7 @@ class Ui_MainWindow(object):
         self.window.OkButton.clicked.connect(lambda: self.UserProfile.deleteArchiveLog())
 
     def LogOut(self):
+        """open log out prompt"""
         self.window = QtWidgets.QWidget()
         self.window = FinalDialogBox.MyWindow()
         self.window.setText("Are you sure you want to log out?")
@@ -577,32 +581,33 @@ class Ui_MainWindow(object):
         self.window.OkButton.clicked.connect(lambda: self.openLogInScreen())
 
     def openMoneyLog(self):
+        """open money log window."""
         self.window = QtWidgets.QWidget()
         self.window = FinalMoneyLog.MyWindow()
         self.window.showMaximized()
         self.window.show()
 
     def openStatement(self):
+        """open statement window."""
         self.window = QtWidgets.QWidget()
         self.window = FinalStatement.MyWindow()
         self.window.showMaximized()
         self.window.show()
 
     def manageCash(self):
+        """open manage cash window."""
         self.window = QtWidgets.QWidget()
         self.window = FinalAddMoney.MyWindow()
         self.window.setUserID(self.UserID)
         self.window.show()
         self.window.AddMoney.clicked.connect(self.window.close)
         self.window.AddMoney.clicked.connect(self.getUserData)
-        # self.window.AddButton.clicked.connect(self.loadDataFromTable)
-        # self.window.AddButton.clicked.connect(self.window.close)
 
     def updateTable(self, Rate=None):
+        """update investment table with a rate"""
         self.getUserData()
         startDate = endDate = None
         if Rate is not None:
-            print("update table rate")
             self.Investment.updateProfitLoss(Rate)
         if self.radioButton.isChecked():
             startDate = self.StartDate.date().toPyDate()
@@ -613,18 +618,16 @@ class Ui_MainWindow(object):
             self.StartDate.setEnabled(False)
             self.EndDate.setEnabled(False)
         self.loadDataFromTable(StartDate=startDate, EndDate=endDate)
-        # get rate required
         self.RateRequired.setText(self.Currency + " " + str(
             round(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=startDate, EndDate=endDate)),
                   self.DecimalPoints)) + f" /{self.GoldUnit}")
 
     def loadDataFromTable(self, StartDate=None, EndDate=None):
+        """load data from the database to the table."""
         with open("my_variable.pickle", "rb") as f:
             self.UserID = pickle.load(f)
         self.Investment.setProfile(self.UserID)
-        print("yo" + str(StartDate))
         table = self.Investment.getTable(StartDate=StartDate, EndDate=EndDate)
-        print(self.Gold.convertRate(self.Investment.getRateRequired(StartDate=StartDate, EndDate=EndDate)))
         self.load_dataframe_to_table(table, self.tableWidget)
 
     def load_dataframe_to_table(self, dataframe, table_widget):
@@ -647,7 +650,6 @@ class Ui_MainWindow(object):
                     item.setData(QtCore.Qt.DisplayRole, str(dataframe.iloc[row, column]))
                 else:
                     item.setData(QtCore.Qt.DisplayRole, round(float(dataframe.iloc[row, column]), self.DecimalPoints))
-                # item = QTableWidgetItem(str(dataframe.iloc[row, column]))
                 # Set the color based on the value
                 if column == len(dataframe.columns) - 1 or column == len(dataframe.columns) - 2:
                     #
@@ -660,6 +662,7 @@ class Ui_MainWindow(object):
                 table_widget.setItem(row, column, item)
 
     def openSell(self):
+        """open sell window."""
         if self.StartDate.isEnabled():
             StartDate = self.StartDate.date().toPyDate()
             EndDate = self.EndDate.date().toPyDate()
@@ -684,8 +687,7 @@ class Ui_MainWindow(object):
         self.window.Sell.clicked.connect(self.getUserData)
 
     def getTransactionID(self):
-        # could be better.
-        # assigned transaction id 5 times.
+        """return transcation ID of custom investments."""
         selected_rows = self.tableWidget.selectedItems()
         id = []
         column_index = 0
@@ -701,35 +703,35 @@ class Ui_MainWindow(object):
         return uniqueID
 
     def loadSettings(self):
+        """load settings from the user database."""
         self.ProfitMargin, self.DecimalPoints, self.UpdateFrequency, self.GoldUnit, self.Currency = self.UserProfile.GetSettings()
         self.Gold = Gold(24, self.GoldUnit, self.Currency)
         self.Gold.getLatestExchangeRate()
-        # close previous timer and start new one
 
     def updateDateRangeForEndDate(self):
+        """update date range for end date so it is not in the future"""
         self.updateTable()
         self.EndDate.setMinimumDate(self.StartDate.date())
 
     def updateDateRangeForStartDate(self):
+        """update date range for start date so it is not in the future"""
         self.updateTable()
         self.StartDate.setMaximumDate(self.EndDate.date())
 
     def prevStage(self):
+        """undo changes"""
         DBFunctions.previousStage(self.UserID)
-        # still not good as it keeps asking api for asking values over and over again.
         self.updateTable(Rate=self.Gold.getBidinGrams())
         self.getUserData()
 
     def getUserData(self):
+        """get user money and id"""
         self.Cash.setText(f"{self.Currency} {str(round(self.UserProfile.getMoney(), 2))}")
-        # add function in user to get user name.
         self.User.setText(self.UserProfile.getName())
 
-    def line(self, Mode="Month", ValueSelect="Gold", StartDate=None, EndDate=None):
-        self.canvas.axes.clear()
-        self.canvas.draw()
 
     def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):
+        """convert to correct format for machine learning."""
         n_vars = 1 if type(data) is list else data.shape[1]
         dff = pd.DataFrame(data)
         cols, names = list(), list()
@@ -753,7 +755,7 @@ class Ui_MainWindow(object):
         return agg
 
     def loadModel(self):
-        from joblib import load
+        """load the machine learning model."""
         self.updateDataSet()
         interval = 60
         model = load_model('model.h5')
@@ -774,7 +776,6 @@ class Ui_MainWindow(object):
         df = scaler.fit_transform(df)
 
         reframed = self.series_to_supervised(df, 1, 1)
-        print("-----------")
         # split into train and test sets
         values = reframed.values
 
@@ -788,7 +789,6 @@ class Ui_MainWindow(object):
         # reshape input to be 3D [samples, timesteps, features]
         train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
         test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
-        print(train_X.shape, train_y.shape, test_X.shape, test_y.shape)
 
         test_X = test_X.reshape((test_X.shape[0], 21))
         test_y = test_y.reshape((len(test_y), 1))
@@ -800,23 +800,16 @@ class Ui_MainWindow(object):
         yhat = self.recursive_forecast(model, test_X, n_days)
         # Reshape yhat to (1, n_days)
         yhat = yhat.reshape(-1, 1)
-        print(yhat)
 
         inv_yhat = np.concatenate((test_X[:n_days, -10:], yhat), axis=1)
         inv_yhat = scaler.inverse_transform(inv_yhat)
         inv_yhat = inv_yhat[:, -1]
 
-        print(inv_yhat)
 
-        predictinterval = interval + n_days
         bb = self.forecastdates(date_list[-1], n_days)
-        # bb = [x for x in range(interval - 1, predictinterval)]
 
-        print("-------Dates-------")
         self.ActualDates = aa
-        print(self.ActualDates)
         self.PredictedDates = bb
-        print(self.PredictedDates)
         self.ActualData = inv_y[len(inv_y) - interval:]
         inv_yhat = np.insert(inv_yhat, 0, inv_y[-1])
         self.PredictedData = inv_yhat[:]
@@ -824,6 +817,7 @@ class Ui_MainWindow(object):
         self.updateGraph()
 
     def forecastdates(self, start_date, days):
+        """get future dates"""
         # Initialize an empty list to store the dates
         dates = []
         count = 0
@@ -839,6 +833,7 @@ class Ui_MainWindow(object):
         return dates
 
     def recursive_forecast(self, model, input_data, n_days):
+        """predict x dats in the future."""
         # load model.
         forecast = []
         current_input = input_data[-1].copy()
@@ -851,9 +846,9 @@ class Ui_MainWindow(object):
 
         return np.array(forecast)
 
-    # closeExcelFile()
 
     def updateGraph(self):
+        """update machine learning graph at the end of the day."""
         self.ActualData1 = np.copy(self.ActualData)
         self.PredictedData1 = np.copy(self.PredictedData)
         self.canvas.axes.clear()
@@ -878,6 +873,7 @@ class Ui_MainWindow(object):
         self.canvas.axes.xaxis.set_major_locator(ticker.MultipleLocator(10))
 
     def convertCurrency(self, Rate):
+        """convert currency to appropriate value."""
         if self.Currency == "£":
             Rate = self.Gold.convertRateTo(Rate)
         elif self.Currency == "€":
@@ -885,9 +881,9 @@ class Ui_MainWindow(object):
         return Rate
 
     def updateDataSet(self):
+        """get data for machine learning model."""
         start_date = self.DateOpenedAt - timedelta(days=366)
         end_date = self.DateOpenedAt
-        print(f"Start date: {start_date} End date: {end_date}")
         GetDataSet.getDataSet(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")).to_excel("gold_data.xlsx")
 
 
@@ -901,12 +897,12 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         splash.show()
         self.setupUi(self)
         self.StartThread()
-        print("ready")
 
         self.actionSettings.triggered.connect(self.openSettings)
         self.BuyButton.clicked.connect(lambda: self.openBuyInvestment())
 
     def StartThread(self):
+        """Start thread to get live gold rate."""
         self.my_thread = QThread()
         self.worker = UpdateRatesContinuously(self.Gold, self.UpdateFrequency, self.DateOpenedAt)
         # We're connecting things to the correct spots
@@ -923,48 +919,48 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.my_thread.start()
 
     def openSettings(self):
+        """open settings page."""
         self.window = QtWidgets.QWidget()
         self.window = FinalSettings.MyWindow()
         self.window.setProfile(self.UserID)
         self.window.SaveButton.clicked.connect(self.loadSettings)
         self.window.SaveButton.clicked.connect(self.restartThread)
         self.window.SaveButton.clicked.connect(self.reloadGraph)
-        # self.window.SaveButton.clicked.connect(
-        #     lambda: self.restartThread() if self.window.updatefreqchanged() else None)
         self.window.show()
 
     def reloadGraph(self):
+        """reload graph"""
         self.updateGraph()
         self.canvas.draw()
 
     def openBuyInvestment(self):
+        """open buy investment window."""
         self.window = QtWidgets.QWidget()
         self.window = FinalAddInvestment.MyWindow()
         self.window.setUpPage(self.UserID)
         self.window.Add.clicked.connect(lambda: self.window.add(self.Gold.getAskinGrams(), self.UserID))
         self.window.Add.clicked.connect(self.window.close)
         self.window.Gold.textChanged.connect(lambda: self.window.updateRate(self.Gold.getAskinGrams()))
-        # maybe come up with a way to calculate the rate from existing data
         self.window.Add.clicked.connect(lambda: self.updateTable(Rate=self.Gold.getBidinGrams()))
         self.window.Add.clicked.connect(self.getUserData)
         self.window.show()
 
     def restartThread(self):
-        print("restart")
+        """close and restart thread."""
         self.DateOpenedAt = datetime.now().date()
         self.worker.StopThread()
         self.StartThread()
 
     def ClearRates(self):
+        """clear rates"""
         self.Bid.setText("")
         self.Ask.setText("")
 
     def ApplyChanges(self, rates):
+        """apply newly fetched rates."""
         self.Gold.getLatestExchangeRate()
         Ask = str(f"{rates.getCurrency()} {rates.getAsk()} ({rates.getPercentageChange()})")
         Bid = str(f"{rates.getCurrency()} {rates.getBid()} ({rates.getPercentageChange()})")
-        print(f"Ask {Ask}")
-        print(f"Ask {Bid}")
 
         if self.value > float(rates.getAsk()):
             self.Bid.setStyleSheet(SetupFile.NegativeChangeTextColor)
@@ -980,10 +976,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Bid.setText(Bid)
         self.value = float(rates.getAsk())
 
-        # When user closes the application, loop turns false which results in exiting the thread.
 
     def closeEvent(self, event):
-        print("closed")
         self.worker.StopThread()
 
 
@@ -1009,10 +1003,8 @@ class UpdateRatesContinuously(QObject):
                 rates = self.GoldRate
                 rates.getLatestRate()
                 self.values.emit(rates)
-                print("emitted")
             except:
                 self.error.emit()
-            print(f"time freq: {self.TimeFreq}")
             for i in range(self.TimeFreq):
                 if not self.isRunning:
                     self.finished.emit()
@@ -1020,14 +1012,8 @@ class UpdateRatesContinuously(QObject):
                 CurrentDate = datetime.now().date()
                 if CurrentDate != self.DateOpenedAt:
                     self.DateChanged.emit()
-                    print("Date changed")
                     # if date changed restart thread with updated graph and set Date started at to current date.
                 time.sleep(1)
-                # print("working")
-                # global Change
-                # if Change:
-                #     Change = not Change
-                #     break
 
     def StopThread(self):
         self.isRunning = False
