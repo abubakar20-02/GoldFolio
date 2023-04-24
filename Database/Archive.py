@@ -7,6 +7,7 @@ from Database import SetUpFile
 
 
 def generateTransactionID():
+    """Generate unique ID"""
     return str(uuid.uuid4())
 
 
@@ -31,6 +32,7 @@ class UserArchive:
         self.conn.close()
 
     def saveState(self, FolderName, Profile):
+        """Save state for user archive."""
         self.SetUpConnection()
         sql = "SELECT * FROM ArchiveUser WHERE User_ID=?"
         param = (Profile,)
@@ -40,13 +42,14 @@ class UserArchive:
         df.to_excel(f"{FolderName}/ArchiveUser.xlsx", index=False)
 
     def loadState(self, FolderName):
+        """Load state for user archive."""
         self.SetUpConnection()
-        # Use pandas to read the data from the SQL database
         df = pd.read_excel(f"{FolderName}/ArchiveUser.xlsx")
         df.to_sql(name='ArchiveUser', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
     def deleteUser(self, UserID):
+        """Delete everything belonging to the user"""
         self.SetUpConnection()
         self.c.execute("DELETE FROM ArchiveUser WHERE User_ID=?", (UserID,))
         self.conn.commit()
@@ -89,22 +92,9 @@ class UserArchive:
         else:
             self.c.execute("SELECT COUNT(*) FROM ArchiveUser WHERE User_ID = ?", (User_ID,))
             Count = self.c.fetchone()[0]
-        print(Count)
 
-        # if User_ID is None:
-        #     self.c.execute("SELECT * FROM ArchiveUser LIMIT 1 OFFSET ?", (Count - 1,))
-        # else:
-        #     self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID = ? LIMIT 1 OFFSET ?", (User_ID, Count - 1,))
-        #     print(self.c.fetchone())
-
-        # self.c.execute("SELECT * FROM ArchiveUser WHERE time_stamp = (SELECT MAX(time_stamp) FROM ArchiveUser)")
         self.c.execute("SELECT * FROM ArchiveUser WHERE User_ID =? ORDER BY time_stamp DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
-        # print("____________________________")
-        # print(Data)
-        # print("____________________________")
-        #     DESC, ROWID
-        # ASC
         self.c.execute(
             "DELETE FROM ArchiveUser WHERE Transaction_ID = (SELECT Transaction_ID FROM ArchiveUser WHERE User_ID =? ORDER BY time_stamp DESC LIMIT 1)",
             (User_ID,))
@@ -135,6 +125,7 @@ class InvestmentArchive:
         self.conn.close()
 
     def saveState(self, FolderName, Profile):
+        """save state for archive investment."""
         self.__SetUpConnection()
         sql = "SELECT * FROM ArchiveInvestment WHERE User_ID=?"
         param = (Profile,)
@@ -144,6 +135,7 @@ class InvestmentArchive:
         df.to_excel(f"{FolderName}/ArchiveInvestment.xlsx", index=False)
 
     def loadState(self, FolderName):
+        """load state for archive investment."""
         self.__SetUpConnection()
         # Use pandas to read the data from the SQL database
         df = pd.read_excel(f"{FolderName}/ArchiveInvestment.xlsx")
@@ -151,6 +143,7 @@ class InvestmentArchive:
         self.conn.close()
 
     def deleteUser(self, UserID):
+        """delete everything in the archive investment for the user."""
         self.__SetUpConnection()
         self.c.execute("DELETE FROM ArchiveInvestment WHERE User_ID=?", (UserID,))
         self.conn.commit()
@@ -170,9 +163,9 @@ class InvestmentArchive:
             self.conn.close()
 
     def dropTable(self):
+        """Delete everything from the archive investment table."""
         self.__SetUpConnection()
         try:
-            print("Archive Investment deleted")
             self.c.execute("DELETE FROM ArchiveInvestment")
             self.conn.commit()
         except sqlite3.Error as error:
@@ -187,11 +180,6 @@ class InvestmentArchive:
 
         self.c.execute("SELECT * FROM ArchiveInvestment WHERE User_ID =? ORDER BY deleted_at DESC LIMIT 1", (User_ID,))
         Data = self.c.fetchone()
-        # print("____________________________")
-        # # print(Data)
-        # print("____________________________")
-        #     DESC, ROWID
-        # ASC
         self.c.execute(
             "DELETE FROM ArchiveInvestment WHERE Investment_ID = ?",
             (Data[0],))

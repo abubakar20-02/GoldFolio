@@ -11,6 +11,7 @@ from Database import Log, Archive
 
 
 def saveSnapshot(FolderName):
+    """copy database and store in a directory"""
     folder_name = os.path.basename(FolderName)
     if os.path.exists(FolderName):
         # Use shutil.rmtree() to delete the directory and all its contents
@@ -23,7 +24,6 @@ def saveSnapshot(FolderName):
 
     # Create a file object to store the snapshot
     FilePath = f"{FolderName}/{folder_name}{SetUpFile.DBName}"
-    print(FilePath)
     snapshot_file = sqlite3.connect(FilePath)
 
     # Take a snapshot of the database
@@ -61,6 +61,7 @@ def saveSnapshot(FolderName):
 
 
 def save(FolderName, Profile):
+    """copy database for certain user and store in a directory"""
     folder_name = os.path.basename(FolderName)
     if os.path.exists(FolderName):
         # Use shutil.rmtree() to delete the directory and all its contents
@@ -101,9 +102,9 @@ def save(FolderName, Profile):
 
 
 def isFileFormatCorrect(folder_path):
+    """check if file format is correct, if so return true."""
     all_entries = os.listdir(folder_path)
     file_count = sum(os.path.isfile(os.path.join(folder_path, entry)) for entry in all_entries)
-    print(file_count)
     if not file_count == 9:
         return False
     files_to_check = ['Investment.xlsx', 'InvestmentLog.xlsx', 'Log.xlsx', 'MoneyLog.xlsx', 'Statement.xlsx',
@@ -115,11 +116,10 @@ def isFileFormatCorrect(folder_path):
 
 
 def load(FolderName, Profile):
+    """load database for certain user."""
     if not isFileFormatCorrect(FolderName):
-        print("Wrong format")
         return
 
-    print(f"Folder name: {FolderName} Profile: {Profile}")
     User1 = User.User()
     User1.SelectProfile(Profile)
     User1.deleteUser()
@@ -151,18 +151,21 @@ def load(FolderName, Profile):
 
 
 def getUserIDForLoadedFile(FolderName):
+    """Get user Id of the file being loaded"""
     df = pd.read_excel(f"{FolderName}/User.xlsx")
     UserID = df["User_ID"][0]
     return UserID
 
 
 def getUserHashedPass(FolderName):
+    """return hashed password."""
     df = pd.read_excel(f"{FolderName}/User.xlsx")
     UserID = df["Password"][0]
     return UserID
 
 
 def IsFileCorrect(FolderName):
+    """check if file format is correct"""
     # Specify the directory path and directory name to check
     parent_directory_path = FolderName
     directory_name = "DBSupportFiles"
@@ -188,6 +191,7 @@ def IsFileCorrect(FolderName):
 
 
 def Load(FolderName):
+    """load database state."""
     if not IsFileCorrect(FolderName):
         return
 
@@ -293,6 +297,7 @@ def __getData(tableName, Database, RemoveFirstColumn=True):
 
 
 def __ClearArchive():
+    """clear all archives"""
     from Database import Archive
     UserArchive = Archive.UserArchive()
     InvestmentArchive = Archive.InvestmentArchive()
@@ -301,6 +306,7 @@ def __ClearArchive():
 
 
 def ClearTables():
+    """clear all setup files."""
     from Database import Log
     Log = Log.Log()
     Log.dropTable()
@@ -308,6 +314,7 @@ def ClearTables():
 
 
 def previousStage(UserID, num=None):
+    """go to multiple previous stages."""
     from Database import Log
     Log = Log.Log()
     print(f"UserID: {UserID}")
