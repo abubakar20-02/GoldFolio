@@ -409,6 +409,7 @@ class Ui_MainWindow(object):
         self.menuStatements.setTitle(_translate("MainWindow", "Statements"))
         self.menuManage.setTitle(_translate("MainWindow", "Manage"))
         self.actionUndo.setText(_translate("MainWindow", "Undo"))
+        self.actionUndo.setShortcut(_translate("MainWindow", "CTRL+Z"))
         self.actionGold_Calculator.setText(_translate("MainWindow", "Gold Calculator"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionSaveState.setText(_translate("MainWindow", "Save State"))
@@ -422,6 +423,7 @@ class Ui_MainWindow(object):
         self.actionManageAccount.setText(_translate("MainWindow", "Manage Account"))
         self.actionManageCash.setText(_translate("MainWindow", "Manage Cash"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionSave.setShortcut(_translate("MainWindow", "CTRL+S"))
 
     def on_item_double_clicked(self, item):
         """Open update window"""
