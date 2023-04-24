@@ -148,13 +148,3 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.MinimumProfitMargin.setStyleSheet(SetupFile.DoubleSpinBox)
         self.SaveButton.setStyleSheet(SetupFile.Button)
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())

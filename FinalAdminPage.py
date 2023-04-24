@@ -13,7 +13,7 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QAbstractItemView, QFileDialog
 
 import FinalChangePassword
-import FinalLogInPage
+import GoldFolio
 import SetupFile
 from Database import User
 from Database import DBFunctions
@@ -194,13 +194,3 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.window = FinalLogInPage.MyWindow()
         self.window.show()
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())

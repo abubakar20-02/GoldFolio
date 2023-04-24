@@ -272,24 +272,14 @@ class Ui_Form(QObject):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", "TextLabel"))
         self.MoneyTitle.setText(_translate("Form", "Money"))
         self.MoneyIn_Text.setText(_translate("Form", "Money in: "))
         self.MoneyIn.setText(_translate("Form", "TextLabel"))
-        self.MoneyInChange.setText(_translate("Form", "TextLabel"))
         self.MoneyOut_Text.setText(_translate("Form", "Money out:"))
-        self.MoneyOut.setText(_translate("Form", "TextLabel"))
-        self.MoneyOutChange.setText(_translate("Form", "TextLabel"))
         self.InvestmentTitle.setText(_translate("Form", "Investment"))
         self.InvestmentSold_Text.setText(_translate("Form", "Investment sold: "))
-        self.InvestmentSold.setText(_translate("Form", "TextLabel"))
-        self.InvestmentSoldChange.setText(_translate("Form", "TextLabel"))
         self.GoldSold_Text.setText(_translate("Form", "Gold sold: "))
-        self.GoldSold.setText(_translate("Form", "TextLabel"))
-        self.GoldSoldChange.setText(_translate("Form", "TextLabel"))
         self.AverageProfitLoss_Text.setText(_translate("Form", "Average profit/loss: "))
-        self.AverageProfitLoss.setText(_translate("Form", "TextLabel"))
-        self.AverageProfitLossChange.setText(_translate("Form", "TextLabel"))
 
     def updateDateEdit(self):
         """update mode year/month"""
@@ -478,13 +468,3 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.setupUi(self)
         self.setWindowTitle("Statistics")
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())

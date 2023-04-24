@@ -24,7 +24,7 @@ import FinalGoldCalculator
 import FinalGoldPortfolio
 import FinalImport
 import FinalLoadLogIn
-import FinalLogInPage
+import GoldFolio
 import FinalManageAccount
 import FinalMoneyLog
 import FinalSellScreen
@@ -397,11 +397,8 @@ class Ui_MainWindow(object):
         self.StartDate_Text.setText(_translate("MainWindow", "Start Date:"))
         self.EndDate_Text.setText(_translate("MainWindow", "End Date:"))
         self.RateRequired_Text.setText(_translate("MainWindow", "Rate required to break even :"))
-        self.RateRequired.setText(_translate("MainWindow", "TextLabel"))
         self.Bid_Text.setText(_translate("MainWindow", "   Bid: "))
-        self.Bid.setText(_translate("MainWindow", "TextLabel"))
         self.Ask_Text.setText(_translate("MainWindow", "   Ask: "))
-        self.Ask.setText(_translate("MainWindow", "TextLabel"))
         self.BuyButton.setText(_translate("MainWindow", "Buy"))
         self.SellButton.setText(_translate("MainWindow", "Sell"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
@@ -550,7 +547,7 @@ class Ui_MainWindow(object):
     def openLogInScreen(self):
         """open log in screen"""
         self.window = QtWidgets.QWidget()
-        self.window = FinalLogInPage.MyWindow()
+        self.window = GoldFolio.MyWindow()
         self.window.show()
 
     def openGoldCalculator(self):

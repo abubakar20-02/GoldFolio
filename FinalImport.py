@@ -200,12 +200,3 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.InvestmentPath.setStyleSheet(SetupFile.NoChangeTextColor)
         self.StatementPath.setStyleSheet(SetupFile.NoChangeTextColor)
 
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())

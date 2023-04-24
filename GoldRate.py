@@ -221,16 +221,3 @@ class Gold:
 
     def getPercentageChange(self):
         return self.percentageChhange
-
-
-class Curreny:
-    def __init__(self):
-        data = requests.get(
-            "https://www.currency.me.uk/convert/usd/bhd"
-        )
-        soup = BeautifulSoup(data.text, 'html.parser')
-        self.ConversionRateOfUSDToBHD = str(soup.find("span", class_="mini ccyrate"))
-        self.ConversionRateOfUSDToBHD = FormatCurrency(self.ConversionRateOfUSDToBHD)
-
-    def GetRateinBHD(self, RateinDollars):
-        return round(RateinDollars * self.ConversionRateOfUSDToBHD, 2)

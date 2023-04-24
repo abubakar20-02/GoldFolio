@@ -79,9 +79,7 @@ class User:
         table_name = "User"
         columns = ','.join(df.columns)
         placeholders = ','.join(['?' for _ in range(len(df.columns))])
-        print(placeholders)
         sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-        print(sql)
 
         # load data from file.
         for _, row in df.iterrows():
@@ -150,7 +148,6 @@ class User:
             self.c.execute("SELECT COUNT(*) FROM Investment WHERE User_ID = ?", (User_ID,))
             RecordsAffected = self.c.fetchone()[0]
             a = RecordsAffected
-            print("checked")
             while a > 0:
                 self.Investment.deleteRecord(User_ID, LogChanges=False)
                 a = a - 1
@@ -348,14 +345,12 @@ class User:
                        (self.Profile,))
         values = self.c.fetchone()
         self.conn.close()
-        print(values)
         return values
 
     def getTable(self):
         self.__SetUpConnection()
         try:
             sql = "SELECT User_ID,FirstName,LastName,Currency FROM User"
-            print(sql)
             df = pd.read_sql(sql, self.conn)
         except sqlite3.Error as error:
             print(error)

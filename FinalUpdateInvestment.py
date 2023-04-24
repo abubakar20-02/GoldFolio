@@ -106,13 +106,3 @@ class MyWindow(QtWidgets.QWidget, Ui_Form):
         self.boughtFor.setStyleSheet(SetupFile.DoubleSpinBox)
         self.updateButton.setStyleSheet(SetupFile.Button)
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())
