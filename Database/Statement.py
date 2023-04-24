@@ -181,7 +181,6 @@ class Statement:
         Data = None
         self.c.execute("SELECT COUNT(*) FROM Statement WHERE User_ID = ?", (User_ID,))
         Count = self.c.fetchone()[0]
-        print(Count)
         if Count > 0:
             if not Investment_ID:
                 self.c.execute("SELECT * FROM Statement WHERE User_ID = ? LIMIT 1 OFFSET ?",
@@ -229,7 +228,6 @@ class Statement:
 
     def addtoTable(self, Values):
         """Insert values to the statement."""
-        print(Values)
         self.__SetUpConnection()
         self.c.executemany('''
               INSERT INTO Statement (Investment_ID,Date_Added, User_ID , Gold, Purity, BoughtFor, ProfitLoss)
@@ -394,7 +392,6 @@ class Statement:
         for rows in self.c.fetchall():
             year, sum = rows
             total = total + sum
-            print(type(year))
             yearlydict[datetime.strptime(year, '%Y').year] = total
         self.conn.close()
         return yearlydict
@@ -495,7 +492,6 @@ class Statement:
         positive = {}
         negative = {}
         days_in_month = calendar.monthrange(year, month)[1]
-        print(self.formatToWeek(days_in_month))
         for start, end in self.formatToWeek(days_in_month):
             start_date = datetime(year, month, start).date()
             end_date = datetime(year, month, end).date()
@@ -508,7 +504,6 @@ class Statement:
         """get data for the months positive and negative trade."""
         dict1 = {}
         days_in_month = calendar.monthrange(year, month)[1]
-        print(self.formatToWeek(days_in_month))
         for start, end in self.formatToWeek(days_in_month):
             start_date = datetime(year, month, start).date()
             end_date = datetime(year, month, end).date()

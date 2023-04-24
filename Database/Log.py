@@ -1,15 +1,14 @@
-# create UserArchive function that can convert excel file to db.
+import calendar
 import os
 import sqlite3
 import subprocess
 import uuid
 from datetime import timedelta, datetime
-import calendar
 
 import pandas as pd
 from fpdf import FPDF
 
-from Database import DB_Code, DBFunctions, SetUpFile
+from Database import DB_Code, SetUpFile
 
 dp = 1
 
@@ -29,27 +28,27 @@ class Log:
         self.createTable()
 
     def SelectProfile(self, User):
+        """ Select user profile. """
         self.Profile = User
-        print(self.Profile)
 
     def saveState(self, FolderName):
+        """ save state of the log. """
         self.__SetUpConnection()
         sql = "SELECT * FROM Log WHERE User_ID=?"
         param = (self.Profile,)
-        # Use pandas to read the data from the SQL database
         df = pd.read_sql(sql, self.conn, params=param)
         self.conn.close()
         df.to_excel(f"{FolderName}/Log.xlsx", index=False)
 
     def loadState(self, FolderName):
-        # Use pandas to read the data from the SQL database
+        """ load state of the log. """
         df = pd.read_excel(f"{FolderName}/Log.xlsx")
         self.__SetUpConnection()
         df.to_sql(name='Log', con=self.conn, if_exists='append', index=False)
         self.conn.close()
 
-    # need refactoring
     def generateTransactionID(self):
+        """ generate a unique transaction ID. """
         self.uid = str(uuid.uuid4())
 
     # __ makes the method private
@@ -58,6 +57,7 @@ class Log:
         self.c = self.conn.cursor()
 
     def deleteUser(self):
+        """ Delete all log for the user. """
         self.MoneyLog.deleteUser(self.Profile)
         self.InvestmentLog.deleteUser(self.Profile)
         self.UserLog.deleteUser(self.Profile)
@@ -76,6 +76,7 @@ class Log:
         self.conn.close()
 
     def dropTable(self):
+        """Delete everything from all log tables."""
         self.__SetUpConnection()
         try:
             self.c.execute("DELETE FROM Log")
@@ -89,6 +90,7 @@ class Log:
             self.conn.close()
 
     def insert(self, Transaction_ID, TransactionType):
+        """insert to the log with a transaction id and description of the change."""
         self.__SetUpConnection()
         self.generateTransactionID()
         self.TransactionType = TransactionType
@@ -100,8 +102,8 @@ class Log:
         self.conn.commit()
         self.conn.close()
 
-    # use timestamp here
     def previousStage(self):
+        """ Undo previous changes."""
         self.__SetUpConnection()
         self.generateTransactionID()
         self.c.execute('''
@@ -110,18 +112,13 @@ class Log:
         Records = self.c.fetchone()[0]
         if Records == 0:
             return
-        print(f"Inside profile: {self.Profile}")
         self.c.execute('''
             SELECT * FROM Log WHERE User_ID = ?
               ''', (self.Profile,))
-        Data = self.c.fetchone()
-        print(f"everything {Data}")
         self.c.execute('''
             SELECT * FROM Log WHERE User_ID = ? ORDER BY TIMESTAMP DESC LIMIT 1
               ''', (self.Profile,))
         Data = self.c.fetchone()
-        print(f"actual data: {Data}")
-        # print(Data[1])
         self.c.execute('''
             DELETE FROM Log WHERE Transaction_ID = ?
               ''', (Data[2],))
@@ -142,16 +139,16 @@ class Log:
             self.c = self.conn.cursor()
 
         def saveState(self, FolderName, Profile):
+            """save state of the user log."""
             self.SetUpConnection()
             sql = "SELECT * FROM UserLog WHERE User_ID=?"
             param = (Profile,)
-            # Use pandas to read the data from the SQL database
             df = pd.read_sql(sql, self.conn, params=param)
             self.conn.close()
             df.to_excel(f"{FolderName}/UserLog.xlsx", index=False)
 
         def loadState(self, FolderName):
-            # Use pandas to read the data from the SQL database
+            """load state of the user log."""
             df = pd.read_excel(f"{FolderName}/UserLog.xlsx")
             self.SetUpConnection()
             df.to_sql(name='UserLog', con=self.conn, if_exists='append', index=False)
@@ -168,12 +165,14 @@ class Log:
             self.conn.close()
 
         def deleteUser(self, UserID):
+            """delete user from user log."""
             self.SetUpConnection()
             self.c.execute("DELETE FROM UserLog WHERE User_ID=?", (UserID,))
             self.conn.commit()
             self.conn.close()
 
         def DeleteStatement(self, id, RecordsAffected, User_ID):
+            """log changes of number of records affected for the user ID."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO UserLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
@@ -184,6 +183,7 @@ class Log:
             self.conn.close()
 
         def InsertStatement(self, id, User_ID, FName, LName, Money):
+            """log changes for insert statements."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO UserLog (Transaction_ID,Transaction_Type,User_ID,FirstName, LastName, Money)
@@ -194,6 +194,7 @@ class Log:
             self.conn.close()
 
         def UpdateStatement(self, id, investmentID, User_ID, Money):
+            """log changes for update statements."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO UserLog (Transaction_ID,Investment_ID,Transaction_Type,User_ID, Money)
@@ -204,6 +205,7 @@ class Log:
             self.conn.close()
 
         def dropTable(self):
+            """delete everything from the user table."""
             self.SetUpConnection()
             try:
                 self.c.execute("DROP TABLE UserLog")
@@ -215,6 +217,7 @@ class Log:
 
         # move this to user.py
         def SearchByID(self, Transaction_ID):
+            """find log statement for the id, checks all logs."""
             self.SetUpConnection()
             self.c.execute("BEGIN TRANSACTION")
             self.c.execute('''
@@ -237,10 +240,6 @@ class Log:
                 Transaction_Type = Data[2]
                 NoOfRecordsAffected = Data[3]
                 User_ID = Data[4]
-                FirstName = Data[5]
-                LastName = Data[6]
-                Money = Data[7]
-                print("User")
                 from Database import User
                 from Database import Archive
                 self.user = User.User()
@@ -248,23 +247,11 @@ class Log:
                 if Transaction_Type == DB_Code.UD:
                     if User_ID is None:
                         print("Recover from User archive using No of records")
-                        # none
-                        # self.UserArchive.getData()
-                        # reverse order
-                        # while not NoOfRecordsAffected == 0:
-                        #
-                        #     # self.InsertStatement()
-                        #     NoOfRecordsAffected = NoOfRecordsAffected-1
                     else:
                         from Database.Investment import Investment
                         from Database import Archive
 
                         RecoverdData = self.UserArchive.getData(User_ID)
-                        print("------------------")
-                        # print(RecoverdData)
-                        print("------------------")
-                        # FirstName, LastName,Money, False(Not Log)
-                        # use same transaction id
                         if RecoverdData is not None:
                             self.user.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                       LogChanges=False)
@@ -272,7 +259,6 @@ class Log:
                         # problem here
                         print("Using count recover the most recent data from archive for that user")
                         while NoOfRecordsAffected > 0:
-                            print("yo")
                             self.Investment = Investment()
                             self.InvestmentArchive = Archive.InvestmentArchive()
                             self.Investment.setProfile(User_ID)
@@ -289,16 +275,12 @@ class Log:
                 elif Transaction_Type == DB_Code.UU:
                     print("Update using archive user data")
                     RecoverdData = self.UserArchive.getData(User_ID)
-                    print("-------------")
-                    # print(RecoverdData)
                     if RecoverdData is not None:
                         print(RecoverdData[2], RecoverdData[5])
                         self.user.updateRecord(RecoverdData[2], RecoverdData[5], LogChanges=False)
-                    print("-------------")
                     # self.userArchive.getData()
                 else:
-                    print("Something else")
-                print("")
+                    None
             self.conn.commit()
             # print(User_ID)
             self.conn.close()
@@ -314,22 +296,23 @@ class Log:
             self.c = self.conn.cursor()
 
         def saveState(self, FolderName, Profile):
+            """Save state for the investment log."""
             self.SetUpConnection()
             sql = "SELECT * FROM InvestmentLog WHERE User_ID=?"
             param = (Profile,)
-            # Use pandas to read the data from the SQL database
             df = pd.read_sql(sql, self.conn, params=param)
             self.conn.close()
             df.to_excel(f"{FolderName}/InvestmentLog.xlsx", index=False)
 
         def loadState(self, FolderName):
-            # Use pandas to read the data from the SQL database
+            """load state for the investment log."""
             df = pd.read_excel(f"{FolderName}/InvestmentLog.xlsx")
             self.SetUpConnection()
             df.to_sql(name='InvestmentLog', con=self.conn, if_exists='append', index=False)
             self.conn.close()
 
         def deleteUser(self, UserID):
+            """delete everything for the user from investment log."""
             self.SetUpConnection()
             self.c.execute("DELETE FROM InvestmentLog WHERE User_ID=?", (UserID,))
             self.conn.commit()
@@ -345,8 +328,8 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        # could be refactored
         def SellAllProfitStatement(self, id, RecordsAffected, User_ID):
+            """Log for profit statement."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
@@ -356,8 +339,8 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        # could be refactored
         def SellAllStatement(self, id, RecordsAffected, User_ID):
+            """Log for sell all."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
@@ -368,6 +351,7 @@ class Log:
             self.conn.close()
 
         def DeleteStatement(self, id, RecordsAffected, User_ID):
+            """Log for delete statement."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,NoOfRecordsAffected,User_ID)
@@ -378,6 +362,7 @@ class Log:
             self.conn.close()
 
         def InsertStatement(self, id, User_ID, Gold, Purity, BoughtFor, ProfitLoss):
+            """Log for insert statement."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (Transaction_ID,Transaction_Type,User_ID,Gold, Purity, BoughtFor, ProfitLoss)
@@ -388,6 +373,7 @@ class Log:
             self.conn.close()
 
         def UpdateStatement(self, User_ID, id, Investment_ID, Gold, BoughtFor):
+            """Log for update statement."""
             self.SetUpConnection()
             self.c.execute('''
             INSERT INTO InvestmentLog (User_ID,Transaction_ID,Transaction_Type,Investment_ID,Gold,BoughtFor)
@@ -398,6 +384,7 @@ class Log:
             self.conn.close()
 
         def dropTable(self):
+            """Delete everything from investment log."""
             self.SetUpConnection()
             try:
                 self.c.execute("DROP TABLE InvestmentLog")
@@ -408,6 +395,7 @@ class Log:
                 self.conn.close()
 
         def SearchByID(self, Transaction_ID):
+            """Search for transaction ID in Investment log."""
             self.SetUpConnection()
             self.c.execute("BEGIN TRANSACTION")
             self.c.execute('''
@@ -438,26 +426,16 @@ class Log:
                 self.InvestmentArchive = Archive.InvestmentArchive()
                 self.Statement = Statement.Statement()
 
-                print("Investment")
-                print(Transaction_Type)
                 if Transaction_Type == DB_Code.IB:
-                    print("Use Investment ID to delete")
-                    # RecoverdData = self.InvestmentArchive.getData(User_ID)
-                    # print(RecoverdData)
-                    # if RecoverdData is not None:
                     self.Investment.deleteRecord(User_ID, TransactionID=Data[1], LogChanges=False, Archive=False)
                 elif Transaction_Type == DB_Code.IU:
-                    print("Use archive data to update using Investment ID")
-                    print(f"{Data[1]} ,{Data[5]}, {Data[9]}")
                     self.Investment.setProfile(User_ID)
                     self.Investment.updateRecord(Data[9], Data[5], Data[7], LogChanges=False)
                 elif Transaction_Type == DB_Code.ISP:
-                    print("Use User_ID to find most recent deleted investment using count")
                     self.Investment.setProfile(User_ID)
                     # loop count till all values inserted
                     while NoOfRecordsAffected > 0:
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
-                        print("Date:" + str(RecoverdData[1]))
                         self.Investment.insertIntoTable(RecoverdData[3], RecoverdData[4], RecoverdData[5],
                                                         LogChanges=False, Transaction_ID=RecoverdData[0],
                                                         Date=RecoverdData[1], ProfitLoss=RecoverdData[6],
@@ -467,10 +445,7 @@ class Log:
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                     # adding archived data to User investment
                 elif Transaction_Type == DB_Code.ID:
-                    # problem here
-                    print("Using count recover the most recent data from archive for that user")
                     while NoOfRecordsAffected > 0:
-                        print("yo")
                         self.Investment.setProfile(User_ID)
                         RecoverdData = self.InvestmentArchive.getData(User_ID)
                         if RecoverdData is not None:
@@ -478,11 +453,9 @@ class Log:
                                                             LogChanges=False, Transaction_ID=RecoverdData[0],
                                                             Date=RecoverdData[1], ProfitLoss=RecoverdData[6],
                                                             IgnoreMoney=True)
-                            # code to remove record from statement.
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 elif Transaction_Type == DB_Code.ISA:
-                    print("Use User_ID to find most recent statement using count")
                     self.Investment.setProfile(User_ID)
                     # loop count till all values inserted
                     while NoOfRecordsAffected > 0:
@@ -495,8 +468,7 @@ class Log:
                         self.Statement.getData(User_ID)
                         NoOfRecordsAffected = NoOfRecordsAffected - 1
                 else:
-                    print("nothing")
-                print("")
+                    None
             self.conn.commit()
             self.conn.close()
 
@@ -509,20 +481,20 @@ class Log:
             self.createTable()
 
         def setProfile(self, Profile):
+            """ Select user profile. """
             self.Profile = Profile
-            print(f"profile set to: {Profile}")
 
         def saveState(self, FolderName, Profile):
+            """save state for money log."""
             self.__SetUpConnection()
             sql = "SELECT * FROM Money WHERE User_ID=?"
             param = (Profile,)
-            # Use pandas to read the data from the SQL database
             df = pd.read_sql(sql, self.conn, params=param)
             self.conn.close()
             df.to_excel(f"{FolderName}/MoneyLog.xlsx", index=False)
 
         def loadState(self, FolderName):
-            # Use pandas to read the data from the SQL database
+            """load state for money log."""
             df = pd.read_excel(f"{FolderName}/MoneyLog.xlsx")
             self.__SetUpConnection()
             df.to_sql(name='Money', con=self.conn, if_exists='append', index=False)
@@ -533,6 +505,7 @@ class Log:
             self.c = self.conn.cursor()
 
         def deleteUser(self, UserID):
+            """Delete user from money log."""
             self.__SetUpConnection()
             self.c.execute("DELETE FROM Money WHERE User_ID=?", (UserID,))
             self.conn.commit()
@@ -548,6 +521,7 @@ class Log:
             self.conn.close()
 
         def deleteTable(self):
+            """Delete everything from the money table."""
             self.__SetUpConnection()
             try:
                 self.c.execute("DELETE FROM Money")
@@ -558,6 +532,7 @@ class Log:
                 self.conn.close()
 
         def insertIntoTable(self, User_ID, ActionType, Change, Transaction_ID=None, TradeCost=None):
+            """Log insert statement for money log."""
             self.__SetUpConnection()
             if TradeCost is None:
                 TradeCost = 0
@@ -572,6 +547,7 @@ class Log:
             self.conn.close()
 
         def deletefromTable(self, Transaction_ID):
+            """Delete a transaction with given transaction ID"""
             self.__SetUpConnection()
             self.c.execute('''
                   DELETE FROM Money WHERE Transaction_ID = ?
@@ -579,8 +555,8 @@ class Log:
             self.conn.commit()
             self.conn.close()
 
-        # move this to user.py
         def SearchByID(self, Transaction_ID):
+            """Search money log using transaction ID."""
             self.__SetUpConnection()
             self.c.execute("BEGIN TRANSACTION")
             self.c.execute('''
@@ -603,11 +579,8 @@ class Log:
             except sqlite3.Error as Error:
                 print(Error)
             ActionType = Data[3]
-            print(ActionType)
             from Database import User
-            from Database.Investment import Investment
             User = User.User()
-            Investment = Investment()
             User.SelectProfile(Data[2])
             if ActionType == DB_Code.MoneyIn:
                 User.addMoney(-Data[4], LogChanges=False)
@@ -621,23 +594,21 @@ class Log:
             self.conn.close()
 
         def __getSum(self, ActionType, ColumnName, StartDate=None, EndDate=None):
-            # add date as parameter too.
+            """get Sum for column name in given date ranges."""
             self.__SetUpConnection()
             sql = "SELECT SUM({0}) FROM Money WHERE ActionType = ? AND User_ID = ?".format(ColumnName)
             if StartDate:
-                # idk why I have to do this.
                 StartDate = StartDate - timedelta(days=1)
                 sql += f" AND Date_Added >= '{StartDate}'"
-
             if EndDate:
                 sql += f" AND Date_Added <= '{EndDate}'"
             self.c.execute(sql, (ActionType, self.Profile))
             Sum = self.c.fetchone()[0]
             self.conn.close()
-            print(Sum)
             return Sum
 
         def dataforgraph(self, StartDate=None, EndDate=None):
+            """generate data for graph."""
             b = 0
             a = self.__getSum(DB_Code.MoneyIn, "Change", StartDate=StartDate, EndDate=EndDate)
             if self.__getSum(DB_Code.MoneyOut, "Change", StartDate=StartDate, EndDate=EndDate) is not None:
@@ -653,10 +624,10 @@ class Log:
                 d = 0
 
             dict1 = dict([(DB_Code.MoneyIn, a), (DB_Code.MoneyOut, b), (DB_Code.ProfitLoss, c), ("TradeCost", d)])
-            print(dict1)
             return dict1
 
         def getTable(self, StartDate=None, EndDate=None):
+            """Returns dataframe of the table for the given dates."""
             self.__SetUpConnection()
             try:
                 sql = "SELECT * FROM Money WHERE User_ID = ?"
@@ -675,6 +646,7 @@ class Log:
                 return df
 
         def getMinMaxDates(self):
+            """Returns min and max date present in the money log."""
             self.__SetUpConnection()
             self.c.execute("SELECT MIN(Date_Added),Max(Date_Added) FROM Money")
             results = self.c.fetchone()
@@ -682,6 +654,7 @@ class Log:
             return results
 
         def Overall(self, Column, StartDate=None, EndDate=None):
+            """Get dataframe for different modes."""
             if StartDate is None and EndDate is None:
                 StartDate, EndDate = self.getMinMaxDates()
                 StartDate = datetime.strptime(StartDate, '%Y-%m-%d').date()
@@ -691,36 +664,31 @@ class Log:
             delta = abs(EndDate - StartDate)
             if delta >= timedelta(days=366):
                 return self.Yearly(Column, Start=StartDate, End=EndDate)
-                # generate yearly
-                print("years")
             elif delta <= timedelta(days=31):
                 return self.Daily(Column, Start=StartDate, End=EndDate)
-                # generate single
-                print("single")
             else:
                 return self.Monthly(Column, Start=StartDate, End=EndDate)
-                # generate monthly
-                print("months")
             self.conn.close()
 
         def generate_monthly_dict(self, start_date, end_date):
+            """generates a dictionary between the dates timestep is 1 month."""
             result = {}
             current_date = start_date.replace(day=1)
             while current_date <= end_date:
                 result[current_date.strftime('%Y-%m')] = 0
                 current_date += timedelta(days=32)
                 current_date = current_date.replace(day=1)
-            print(result)
             return result
 
         def generate_yearly_dict(self, start_date, end_date):
+            """generates a dictionary between the dates timestep is 1 year."""
             result = {}
             for year in range(start_date.year, end_date.year + 1):
                 result[year] = 0
-            print(result)
             return result
 
         def generate_daily_dict(self, start_date, end_date):
+            """generates a dictionary between the dates timestep is 1 day."""
             result = {}
             date = start_date
             while date <= end_date:
@@ -729,14 +697,13 @@ class Log:
             return result
 
         def Yearly(self, ColumnName, Start=None, End=None):
+            """Return selection in yearly mode within given dates."""
             self.__SetUpConnection()
             sql = (
                 "SELECT strftime('%Y', Date_Added) AS year, SUM({0} + TradeCost) AS total_value FROM Money WHERE User_ID=?").format(
                 ColumnName)
             if Start:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
-
             if End:
                 sql += f" AND Date_Added <= '{End.strftime('%Y-%m-%d')}'"
 
@@ -745,32 +712,24 @@ class Log:
             if Start and End:
                 yearlydict = self.generate_yearly_dict(Start, End)
 
-            print(sql)
-
             self.c.execute(sql, (self.Profile,))
 
             total = 0
             for rows in self.c.fetchall():
                 year, sum = rows
                 total = total + sum
-                print(type(year))
                 yearlydict[datetime.strptime(year, '%Y').year] = total
-
-            print("----")
-            print(yearlydict)
-            print("----")
 
             self.conn.close()
             return yearlydict
 
         def Monthly(self, ColumnName, Start=None, End=None):
+            """Return selection in monthly mode within given dates."""
             self.__SetUpConnection()
-            # might need to include trade cost too
             sql = (
                 "SELECT strftime('%Y-%m', Date_Added) AS month, SUM({0} + TradeCost) AS total_value FROM Money WHERE User_ID=?").format(
                 ColumnName)
             if Start:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{Start.strftime('%Y-%m-%d')}'"
 
             if End:
@@ -778,36 +737,26 @@ class Log:
 
             sql += f"GROUP BY month"
 
-            print(sql)
-
             if Start and End:
                 monthlydict = self.generate_monthly_dict(Start, End)
-
-            print(sql)
 
             self.c.execute(sql, (self.Profile,))
             total = 0
             for rows in self.c.fetchall():
-                print("hmm")
-                print(rows)
                 month, sum = rows
                 total = total + sum
                 monthlydict[month] = total
-
-            print("----")
-            print(monthlydict)
-            print("----")
 
             self.conn.close()
             return monthlydict
 
         def Daily(self, ColumnName, Start=None, End=None):
+            """Return selection in daily mode within given dates."""
             sql = "SELECT SUM({0} + TradeCost) FROM Money WHERE Date_Added = ? AND User_ID=?".format(ColumnName)
 
             sql1 = "SELECT DISTINCT Date_Added FROM Money WHERE User_ID = ?"
 
             if Start:
-                # idk why I have to do this.
                 StartDate = Start - timedelta(days=1)
                 sql1 += f" AND Date_Added >= '{StartDate}'"
 
@@ -815,9 +764,6 @@ class Log:
                 sql1 += f" AND Date_Added <= '{End}'"
 
             sql1 += f" ORDER BY Date_Added ASC"
-
-            # execute SQL query to get all dates
-            # self.c.execute(sql1, (self.Profile,))
 
             dictionary = self.generate_daily_dict(Start, End)
             dates = []
@@ -829,37 +775,25 @@ class Log:
             # loop through dates and print the sum of values for each date
             sum = 0
             for date in dates:
-                # format_str = '%Y-%m-%d'
-                # date = datetime.strptime(date, format_str)
                 self.c.execute(sql, (date, self.Profile))
                 sum_of_values = self.c.fetchone()[0]
                 if sum_of_values is None:
                     sum_of_values = 0
                 sum += sum_of_values
                 dictionary[date] = sum
-                # if Mode is None:
-                # dictionary[date] = sum_of_values
-                # else:
-                #     dictionary[date] = sum
 
-            # close database connection
             self.conn.close()
-            print("----")
-            print(dictionary)
-            print("----")
             return dictionary
 
         def getMoneyAdded(self, StartDate=None, EndDate=None):
+            """Returns sum of money added within the given dates."""
             self.__SetUpConnection()
             sql = "SELECT SUM(Change) From Money WHERE User_ID = ? AND ActionType = ?"
             if StartDate:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{StartDate}'"
 
             if EndDate:
                 sql += f" AND Date_Added <= '{EndDate}'"
-            print(sql)
-            print(f"profile {self.Profile} , code {DB_Code.MoneyIn}")
             self.c.execute(sql,
                            (self.Profile, DB_Code.MoneyIn))
             value = self.c.fetchone()[0]
@@ -869,26 +803,11 @@ class Log:
             self.conn.close()
             return value
 
-        # def getMoneyAdded(self, StartDate=None, EndDate=None):
-        #     self.__SetUpConnection()
-        #     sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType = ?"
-        #     if StartDate:
-        #         # idk why I have to do this.
-        #         sql += f" AND Date_Added >= '{StartDate}'"
-        #
-        #     if EndDate:
-        #         sql += f" AND Date_Added <= '{EndDate}'"
-        #     self.c.execute(sql,
-        #                    (self.Profile,DB_Code.MoneyIn))
-        #     value = self.c.fetchone()[0]
-        #     self.conn.close()
-        #     return value
-
         def getMoneyOut(self, StartDate=None, EndDate=None):
+            """Returns sum of money withdrawn within the given dates."""
             self.__SetUpConnection()
             sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
             if StartDate:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{StartDate}'"
 
             if EndDate:
@@ -903,6 +822,7 @@ class Log:
             return value
 
         def formatToWeek(self, number):
+            """format week for statistic graph."""
             ranges = []
             start = 1
             end = 7
@@ -914,10 +834,10 @@ class Log:
             return ranges
 
         def getDatesInWeekFormatForMonth(self, year, month):
+            """get data for the weeks' money in and out."""
             Add = {}
             Withdrawn = {}
             days_in_month = calendar.monthrange(year, month)[1]
-            print(self.formatToWeek(days_in_month))
             for start, end in self.formatToWeek(days_in_month):
                 start_date = datetime(year, month, start).date()
                 end_date = datetime(year, month, end).date()
@@ -927,6 +847,7 @@ class Log:
             return Add, Withdrawn
 
         def getDatesInMonthFormatForMonth(self, year):
+            """get data for the months' money in and out."""
             Add = {}
             Withdrawn = {}
             for month in range(12):
@@ -940,11 +861,10 @@ class Log:
             return Add, Withdrawn
 
         def getInvestmentMade(self, StartDate=None, EndDate=None):
+            """Returns count of the investment made during the given dates."""
             sql = "SELECT COUNT(User_ID) FROM Money WHERE User_ID=? AND ActionType=?"
             if StartDate:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{StartDate}'"
-
             if EndDate:
                 sql += f" AND Date_Added <= '{EndDate}'"
             self.__SetUpConnection()
@@ -954,9 +874,9 @@ class Log:
             return count
 
         def getInvestmentSold(self, StartDate=None, EndDate=None):
+            """Returns count of the investment sold during the given dates."""
             sql = "SELECT COUNT(User_ID) FROM Money WHERE User_ID=? AND ActionType=?"
             if StartDate:
-                # idk why I have to do this.
                 sql += f" AND Date_Added >= '{StartDate}'"
 
             if EndDate:
@@ -968,31 +888,23 @@ class Log:
             return count
 
         def updateBoughtFor(self, InvestmentID, BoughtFor):
+            """update bought for value"""
             self.__SetUpConnection()
             self.c.execute("UPDATE Money SET Change=? WHERE Transaction_ID=?", (-BoughtFor, InvestmentID))
             self.conn.commit()
             self.conn.close()
 
         def getChange(self, InvestmentID):
+            """return change of an investment."""
             self.__SetUpConnection()
             self.c.execute("SELECT Change FROM Money WHERE Transaction_ID=?", (InvestmentID,))
             change = 0
             change = self.c.fetchone()[0]
             self.conn.close()
             return change
-            # for i, r in enumerate(self.getMonthRange(days_in_month)):
-            #     print(f"Range {i + 1}: {r[0]}-{r[1]}")
-            # self.__SetUpConnection()
-            # sql = "SELECT SUM(Change) From Money WHERE User_ID=? AND ActionType=?"
-            # self.c.execute(sql,
-            #                (self.Profile, DB_Code.MoneyOut))
-            # value = self.c.fetchone()[0]
-            # if value is None:
-            #     value = 0
-            # self.conn.close()
-            # return value
 
         def convertToExcel(self, Currency, DecimalPoint, StartDate=None, EndDate=None, FilePath='output_file.xlsx'):
+            """Export money log as excel file."""
             self.__SetUpConnection()
             # Define the parameters for the query
             params = (self.Profile,)
@@ -1006,9 +918,7 @@ class Log:
             df = pd.read_sql(sql, con=self.conn, params=params)
             df.columns = ["Date", "Action", f"Change({Currency})",
                           f"Trade cost ({Currency})"]
-            # Define lambda function to round only numerical values to 2 decimal places
             round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
-            # Apply lambda function to DataFrame using applymap()
             df = df.applymap(round_num)
 
             df.to_excel(FilePath, index=False)
@@ -1016,6 +926,7 @@ class Log:
             subprocess.Popen(['start', 'excel.exe', FilePath], shell=True)
 
         def PDF(self, FilePath, Currency, DecimalPoint, StartDate=None, EndDate=None):
+            """convert to pdf with the users setting for the given dates."""
             self.__SetUpConnection()
             # Define the parameters for the query
             params = (self.Profile,)
@@ -1030,9 +941,7 @@ class Log:
 
             df.columns = ["Date", "Action", f"Change({Currency})",
                           f"Trade cost ({Currency})"]
-            # Define lambda function to round only numerical values to 2 decimal places
             round_num = lambda x: round(x, DecimalPoint) if isinstance(x, (int, float)) else x
-            # Apply lambda function to DataFrame using applymap()
             df = df.applymap(round_num)
 
             # Create a PDF document using the fpdf library

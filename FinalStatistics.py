@@ -364,11 +364,9 @@ class Ui_Form(QObject):
         self.MoneyIn.setText(
             self.Currency + " " + str(round(self.Log.getMoneyAdded(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
         self.MoneyOut.setText(self.Currency + " " + str(round(self.Log.getMoneyOut(StartDate=self.start_date, EndDate=self.end_date), self.DecimalPoints)))
-        # use MoneyLog to get count.
-        # self.InvestmentMade.setText(str(self.Log.getInvestmentMade(StartDate=self.start_date, EndDate=self.end_date)))
         self.InvestmentSold.setText(
             str(self.Statement.getInvestmentCount(StartDate=self.start_date, EndDate=self.end_date)))
-        self.GoldSold.setText(str(round(self.Gold.convertWeight(self.Statement.getSum("Gold", StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + " " + self.GoldUnit)
+        self.GoldSold.setText(str(round(self.Gold.convertWeight(self.Statement.getSUM("Gold", StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + " " + self.GoldUnit)
         self.AverageProfitLoss.setText(
             self.Currency + " " + str(round(self.Gold.convertRate(self.Statement.getAvgProfitLoss(StartDate=self.start_date, EndDate=self.end_date)), self.DecimalPoints)) + f" /{self.GoldUnit}")
 
@@ -405,12 +403,12 @@ class Ui_Form(QObject):
             self.applyColorChange(PercentageIncrease, self.InvestmentSoldChange)
             self.InvestmentSoldChange.setText(self.formatPercentageChange(PercentageIncrease, self.DecimalPoints))
 
-        if self.Statement.getSum("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
+        if self.Statement.getSUM("Gold", StartDate=self.start_date1, EndDate=self.end_date1) == 0:
             self.GoldSoldChange.setText("")
         else:
-            CurrentValue = self.Statement.getSum("Gold", StartDate=self.start_date,
+            CurrentValue = self.Statement.getSUM("Gold", StartDate=self.start_date,
                                                  EndDate=self.end_date)
-            PrevValue = self.Statement.getSum("Gold", StartDate=self.start_date1,
+            PrevValue = self.Statement.getSUM("Gold", StartDate=self.start_date1,
                                               EndDate=self.end_date1)
             PercentageIncrease = self.getPercentageIncrease(CurrentValue, PrevValue)
             self.applyColorChange(PercentageIncrease, self.GoldSoldChange)
