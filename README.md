@@ -75,7 +75,7 @@ GoldFolio places the reins of personalization firmly in your hands. With an abun
 <br><br><br>
 <p>
  <img align= right width= 600 src="https://github.com/abubakar20-02/GoldFolio/blob/master/Images/Settings.png">
-The user can select their desired gold unit, decimal points and minimum profit margins which will be applied to the entire application. Update frequency determines how quickly gold rate are fetched and updated.
+At the heart of GoldFolio is the promise of a personalized experience tailored to your unique investing preferences. Define your interaction with the application by selecting your preferred gold unit, the number of decimal points for precision, and the minimum profit margins that resonate with your investment goals. Additionally, adjust the update frequency to regulate how swiftly the gold rates are fetched and updated. GoldFolio, in essence, molds itself around your investing style, ensuring an engaging and custom-fit experience throughout your gold investment journey.
   <br clear="right"/>
   <br><hr><br><br>
 </p>
