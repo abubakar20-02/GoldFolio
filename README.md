@@ -16,10 +16,6 @@
 
 # <a name="libraries"></a>
 ## Libraries 💻
-The following libraries were used in this project:
-* PyQt5
-* PIL
-
 Download the requirements.txt file and while in virtual environment
 ```
 pip install -r requirements.txt
@@ -88,7 +84,8 @@ The user can select their desired gold unit, decimal points and minimum profit m
 <a name="FutureImporvements"></a>
 # Future improvements
 As of now the project is deemed complete and in the future this is all I would like to work on:
-* Drag and drop for logo settings.
-* Have a feature to maintain logo aspect ratio
-* Have the ability to change the position of the logo by dragging it.
-* Add more features to change logo and background.
+* Try to increase the efficiency of the database.
+* Try to improve the machine learning model.
+* Add more complex visualisation.
+* Try to move the entire project to website if possible.
+* Try to improve security.
